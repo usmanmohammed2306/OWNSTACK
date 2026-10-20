@@ -41,32 +41,22 @@ The idea is simple: the model can suggest a change. It does not get to decide wh
 
 ```mermaid
 flowchart TD
-    R["A customer needs something different"] --> P["Saved request and bounded proposal"]
-    P --> C{"Fits a versioned Capability Contract?"}
-
-    C -->|"Temporary access"| V["Host-derived preview"]
-    V --> A["Admin approves the exact proposal"]
-    A --> H["Host checks every protected read"]
-    H --> X["Atlas only · expires · can be revoked"]
-
-    C -->|"New PDF capability"| E["Engineer Cockpit"]
-    E --> D["Review the exact candidate diff"]
-    D --> T["Restricted runner + independent PDF oracle"]
-    T --> Q["Human adopts, rejects or takes over"]
-    Q --> N["Checked handoff · not deployed"]
-
-    X -.-> S["Observed use + repeated needs"]
-    N -.-> S
-    S --> K["Convergence Queue · human product decision"]
+    R["A customer needs something different"] --> C{"Existing capability?"}
+    C -->|"Temporary access"| A["CONTRACT PATH<br/>Host preview + exact admin approval"]
+    A --> H["Atlas-only host enforcement<br/>Expires or can be revoked"]
+    C -->|"New PDF feature"| E["ENGINEERING PATH<br/>Exact diff + independent checks"]
+    E --> N["Human review + checked handoff<br/>Never automatic deployment"]
+    H -.-> Q["CONVERGENCE QUEUE<br/>Observed use + human product decisions"]
+    N -.-> Q
 
     classDef input fill:#102638,stroke:#62cad6,color:#eaf7ff;
     classDef access fill:#103432,stroke:#6bd6b0,color:#ecfff8;
     classDef engineering fill:#342719,stroke:#dfb46c,color:#fff5e4;
     classDef decision fill:#202639,stroke:#9faee0,color:#f2f4ff;
-    class R,P input;
-    class V,A,H,X access;
-    class E,D,T,Q,N engineering;
-    class C,S,K decision;
+    class R input;
+    class A,H access;
+    class E,N engineering;
+    class C,Q decision;
 ```
 
 ### Path 1: a change the app already knows how to make
@@ -145,7 +135,7 @@ The live PDF patch failed independent checks. Its failure remains recorded. A su
 
 Current inference is paused. The original ten-call allowance is exhausted; no counter reset or fresh database grants permission to spend again. Saved evidence and manual workflows remain usable.
 
-Evidence and methods: **security hardening**, **validation ledger**, **live usage**, **graph comparison** and **source-revision qualifications**.
+The implementation's documentation includes the security methodology, validation ledger, live-usage records, graph comparison and source-revision qualifications. These files will accompany source publication; they are not yet available in this overview-only repository.
 
 ## Run it locally with AI off
 
@@ -235,7 +225,7 @@ OwnStack is the Nebius product. Relief is a separate project. The older shared A
 
 ## Explore, rebuild, contribute
 
-Start with **the architecture**, then follow **the demo**. Read **the decisions** for tradeoffs and **the open questions** for what the evidence does not yet support.
+When the implementation is published, start with its architecture and demo guides. Its decision log explains the tradeoffs; its open-questions ledger records what the evidence does not yet support.
 
 The **learning plan** breaks the implementation into small, testable slices. Reconstruct them in a separate learning repository. An existing reference, passing suite or calendar date does not mark an independently completed exercise.
 
