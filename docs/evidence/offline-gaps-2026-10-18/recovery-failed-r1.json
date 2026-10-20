@@ -1,0 +1,15 @@
+{
+  "started_at": "2026-10-18T23:46:51.866482+00:00",
+  "passed": false,
+  "target_database": "ownstack_restore_3127f608a0874a71b52369eaed4f7c02",
+  "database": "postgresql",
+  "source_snapshot_read_only": true,
+  "target_retained": true,
+  "new_inference_calls": 0,
+  "limits": [
+    "Local public-schema logical recovery, not machine-loss failover or an RPO/RTO.",
+    "Restored accounts and code are private; never publish the dump or target credentials."
+  ],
+  "error_type": "CalledProcessError",
+  "finished_at": "2026-10-18T23:46:53.806663+00:00"
+}

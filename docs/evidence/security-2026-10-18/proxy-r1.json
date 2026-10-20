@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "peer": "127.0.0.1",
+      "path": "/v1/session",
+      "expected_scheme": "http",
+      "observed_scheme": "http",
+      "passed": true
+    },
+    {
+      "peer": "127.0.0.1",
+      "path": "/v1/probe",
+      "expected_scheme": "http",
+      "observed_scheme": "http",
+      "passed": true
+    },
+    {
+      "peer": "127.0.0.1",
+      "path": "/health/live",
+      "expected_scheme": "http",
+      "observed_scheme": "http",
+      "passed": true
+    },
+    {
+      "peer": "127.0.0.2",
+      "path": "/v1/session",
+      "expected_scheme": "https",
+      "observed_scheme": "https",
+      "passed": true
+    },
+    {
+      "peer": "127.0.0.2",
+      "path": "/v1/probe",
+      "expected_scheme": "https",
+      "observed_scheme": "https",
+      "passed": true
+    },
+    {
+      "peer": "127.0.0.2",
+      "path": "/health/live",
+      "expected_scheme": "https",
+      "observed_scheme": "https",
+      "passed": true
+    }
+  ],
+  "date": "2026-10-19T02:28:01.031608+00:00",
+  "new_inference_calls": 0,
+  "database_used": false,
+  "public_ports": false,
+  "template_sha256": "57d86673e533009a56af41d9d07aa9a8c0f770ad6da3d72a6f723b048930f678",
+  "limits": "Actual Nginx HTTP forwarding only; no TLS certificate, Caddy or public network test."
+}

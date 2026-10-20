@@ -1,0 +1,124 @@
+# Local full-stack rehearsal. Do not expose this default fixture configuration publicly.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ownstack
+      POSTGRES_PASSWORD: ownstack
+      POSTGRES_DB: ownstack
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ownstack"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+    volumes:
+      - full_pg:/var/lib/postgresql/data
+
+  migrate:
+    build: .
+    command: ["sh", "-c", "alembic upgrade head && python -m ownstack.seed"]
+    environment: &runtime_environment
+      OWNSTACK_DATABASE_URL: postgresql+psycopg://ownstack:ownstack@db:5432/ownstack
+      OWNSTACK_ENV: ${OWNSTACK_ENV:-local}
+      OWNSTACK_AI_MODE: ${OWNSTACK_AI_MODE:-fixture}
+      OWNSTACK_SIGNING_SECRET: ${OWNSTACK_SIGNING_SECRET:-local-demo-secret-not-for-deployment}
+      OWNSTACK_DEMO_PASSWORD: ${OWNSTACK_DEMO_PASSWORD:-demo-only-pass}
+      OWNSTACK_MAX_LIVE_CALLS: ${OWNSTACK_MAX_LIVE_CALLS:-0}
+      OWNSTACK_AI_TIMEOUT_SECONDS: ${OWNSTACK_AI_TIMEOUT_SECONDS:-20}
+      OWNSTACK_PUBLIC_ORIGIN: ${OWNSTACK_PUBLIC_ORIGIN:-http://127.0.0.1:8080}
+      OWNSTACK_BUILD_REVISION: ${OWNSTACK_BUILD_REVISION:-uncommitted-reference}
+      OWNSTACK_REQUIRE_BACKGROUND: "true"
+      NEBIUS_API_KEY: ${NEBIUS_API_KEY:-}
+      NEBIUS_MODEL_ID: ${NEBIUS_MODEL_ID:-}
+      NEBIUS_PATCH_MODEL_ID: ${NEBIUS_PATCH_MODEL_ID:-}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  queue-init:
+    build: .
+    user: "0:0"
+    group_add: ["10001"]
+    command: ["python", "-m", "ownstack.queue_init"]
+    network_mode: none
+    read_only: true
+    cap_drop: ["ALL"]
+    cap_add: ["CHOWN"]
+    volumes:
+      - verifier_jobs:/srv/jobs
+
+  api:
+    build: .
+    environment:
+      <<: *runtime_environment
+      OWNSTACK_VERIFIER_BACKEND: queue
+      OWNSTACK_VERIFIER_JOBS_DIR: /srv/jobs
+    volumes:
+      - verifier_jobs:/srv/jobs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      queue-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=16m"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+
+  worker:
+    build: .
+    command: ["python", "-m", "ownstack.worker"]
+    environment:
+      <<: *runtime_environment
+      OWNSTACK_VERIFIER_BACKEND: queue
+      OWNSTACK_VERIFIER_JOBS_DIR: /srv/jobs
+    volumes:
+      - verifier_jobs:/srv/jobs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      queue-init:
+        condition: service_completed_successfully
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=16m"]
+
+  verifier:
+    build: .
+    user: "0:0"
+    group_add: ["10001"]
+    command: ["python", "-m", "ownstack.verifier_service"]
+    environment:
+      OWNSTACK_VERIFIER_JOBS_DIR: /srv/jobs
+      OWNSTACK_BUILD_REVISION: ${OWNSTACK_BUILD_REVISION:-uncommitted-reference}
+    network_mode: none
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    cap_add: ["SETUID", "SETGID", "KILL"]
+    pids_limit: 64
+    mem_limit: 384m
+    cpus: 1.0
+    volumes:
+      - verifier_jobs:/srv/jobs
+    depends_on:
+      queue-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  web:
+    build: ./web
+    ports:
+      - "127.0.0.1:${OWNSTACK_WEB_PORT:-8080}:8080"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  full_pg:
+  verifier_jobs:

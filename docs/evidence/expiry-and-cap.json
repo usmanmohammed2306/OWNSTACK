@@ -1,0 +1,51 @@
+{
+  "observed_at": "2026-10-07T19:04:26.638726+00:00",
+  "budget_before": {
+    "mode": "nebius",
+    "reserved_calls": 10,
+    "max_live_calls": 10,
+    "remaining_calls": 0,
+    "note": "Reservations are a conservative call cap, not confirmed provider billing."
+  },
+  "proposal_source": "manual-engineer-handoff",
+  "ai_calls": 0,
+  "cap_response": {
+    "detail": "Live inference call cap reached or budget not initialized"
+  },
+  "preview": {
+    "before": false,
+    "after": true,
+    "visible_documents": [
+      {
+        "id": "atlas-budget",
+        "title": "Atlas budget"
+      },
+      {
+        "id": "atlas-roadmap",
+        "title": "Atlas roadmap"
+      }
+    ],
+    "expires_at": "2026-10-07T19:04:34.736213+00:00",
+    "snapshot_hash": "3a656d2597346bd6e38b0ab3cd4fdb6fdbdc4d0fafccc0dabb1cb8046539a7dc",
+    "counterfactual": {
+      "checks": 24,
+      "intended_delta_observed": true,
+      "unexpected_delta_count": 0
+    },
+    "limitations": "Finite replay over the current synthetic host fixture. Not a production observation or exhaustive security proof.",
+    "matches_saved_proposal": true
+  },
+  "after_expiry": {
+    "detail": "Host denied document read"
+  },
+  "expiry": "observed_denied_before_revoke",
+  "request_id": "eba9b3be-94a4-48c2-9121-68d662299381",
+  "budget_after": {
+    "mode": "nebius",
+    "reserved_calls": 10,
+    "max_live_calls": 10,
+    "remaining_calls": 0,
+    "note": "Reservations are a conservative call cap, not confirmed provider billing."
+  },
+  "reserved_this_run": 0
+}

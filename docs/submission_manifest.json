@@ -1,0 +1,22 @@
+{
+  "project": "OwnStack",
+  "track": "Best Apps and Agents",
+  "deadline": "2026-10-30T10:00:00-07:00",
+  "judge_access_through": "2026-12-15T12:00:00-08:00",
+  "rules_checked_on": "2026-10-09",
+  "actual_form_audited_on": "2026-10-09",
+  "repository_url": "https://github.com/usmanmohammed2306/OWNSTACK",
+  "test_build_url": null,
+  "youtube_url": null,
+  "video_duration_seconds": 162,
+  "submitted_receipt_url": null,
+  "owner_confirmations": {
+    "public_repository_and_license_checked": false,
+    "judge_build_access_checked": false,
+    "public_youtube_playback_checked": false,
+    "current_devpost_form_checked": false,
+    "eligibility_and_terms_checked": false,
+    "work_period_and_ai_assistance_disclosed": false,
+    "tool_feedback_included": false
+  }
+}

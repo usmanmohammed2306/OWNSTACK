@@ -1,0 +1,198 @@
+{
+  "started_at": "2026-10-18T23:52:31.461967+00:00",
+  "passed": true,
+  "checks": [
+    {
+      "name": "runtime_ai_off",
+      "passed": true
+    },
+    {
+      "name": "exhausted_ledger_and_zero_cap",
+      "passed": true
+    },
+    {
+      "name": "proof_digest_414beaf0",
+      "passed": true
+    },
+    {
+      "name": "served_source_matches_reference_414beaf0",
+      "passed": true
+    },
+    {
+      "name": "restart_preserved_414beaf0",
+      "passed": true
+    },
+    {
+      "name": "proof_digest_7ec51596",
+      "passed": true
+    },
+    {
+      "name": "served_source_matches_reference_7ec51596",
+      "passed": true
+    },
+    {
+      "name": "restart_preserved_7ec51596",
+      "passed": true
+    },
+    {
+      "name": "proof_digest_cf4dc820",
+      "passed": true
+    },
+    {
+      "name": "served_source_matches_reference_cf4dc820",
+      "passed": true
+    },
+    {
+      "name": "restart_preserved_cf4dc820",
+      "passed": true
+    },
+    {
+      "name": "budget_unchanged",
+      "passed": true
+    }
+  ],
+  "http": [
+    {
+      "actor": "anonymous",
+      "method": "GET",
+      "path": "/health/ready",
+      "status": 200,
+      "elapsed_ms": 42.632
+    },
+    {
+      "actor": "atlas-admin",
+      "method": "POST",
+      "path": "/v1/session",
+      "status": 200,
+      "elapsed_ms": 57.86
+    },
+    {
+      "actor": "atlas-engineer",
+      "method": "POST",
+      "path": "/v1/session",
+      "status": 200,
+      "elapsed_ms": 38.027
+    },
+    {
+      "actor": "atlas-contractor",
+      "method": "POST",
+      "path": "/v1/session",
+      "status": 200,
+      "elapsed_ms": 38.074
+    },
+    {
+      "actor": "nova-admin",
+      "method": "POST",
+      "path": "/v1/session",
+      "status": 200,
+      "elapsed_ms": 37.054
+    },
+    {
+      "actor": "nova-contractor",
+      "method": "POST",
+      "path": "/v1/session",
+      "status": 200,
+      "elapsed_ms": 38.794
+    },
+    {
+      "actor": "platform-owner",
+      "method": "POST",
+      "path": "/v1/session",
+      "status": 200,
+      "elapsed_ms": 37.562
+    },
+    {
+      "actor": "atlas-admin",
+      "method": "GET",
+      "path": "/v1/inference-budget",
+      "status": 200,
+      "elapsed_ms": 5.905
+    },
+    {
+      "actor": "atlas-engineer",
+      "method": "GET",
+      "path": "/v1/requests/414beaf0-3938-43ab-9d01-fbe7f0779754/proof",
+      "status": 200,
+      "elapsed_ms": 82.78
+    },
+    {
+      "actor": "atlas-engineer",
+      "method": "GET",
+      "path": "/v1/requests/7ec51596-ed72-41cf-b78d-1ca87cad9cd1/proof",
+      "status": 200,
+      "elapsed_ms": 16.094
+    },
+    {
+      "actor": "atlas-engineer",
+      "method": "GET",
+      "path": "/v1/requests/cf4dc820-41cd-4671-af61-64a9a62da998/proof",
+      "status": 200,
+      "elapsed_ms": 11.172
+    },
+    {
+      "actor": "atlas-admin",
+      "method": "GET",
+      "path": "/v1/inference-budget",
+      "status": 200,
+      "elapsed_ms": 5.58
+    },
+    {
+      "actor": "atlas-admin",
+      "method": "POST",
+      "path": "/v1/session/logout",
+      "status": 200,
+      "elapsed_ms": 4.705
+    },
+    {
+      "actor": "atlas-engineer",
+      "method": "POST",
+      "path": "/v1/session/logout",
+      "status": 200,
+      "elapsed_ms": 3.549
+    },
+    {
+      "actor": "atlas-contractor",
+      "method": "POST",
+      "path": "/v1/session/logout",
+      "status": 200,
+      "elapsed_ms": 3.814
+    },
+    {
+      "actor": "nova-admin",
+      "method": "POST",
+      "path": "/v1/session/logout",
+      "status": 200,
+      "elapsed_ms": 3.967
+    },
+    {
+      "actor": "nova-contractor",
+      "method": "POST",
+      "path": "/v1/session/logout",
+      "status": 200,
+      "elapsed_ms": 2.632
+    },
+    {
+      "actor": "platform-owner",
+      "method": "POST",
+      "path": "/v1/session/logout",
+      "status": 200,
+      "elapsed_ms": 2.443
+    }
+  ],
+  "request_ids": {},
+  "saved_fingerprints": {
+    "414beaf0-3938-43ab-9d01-fbe7f0779754": "f94a5bf9164e0a2849916f28442bb25371aa549afdd979c28e82fd58caa3f246",
+    "7ec51596-ed72-41cf-b78d-1ca87cad9cd1": "b92086b9688cbe2b6c2226710cc9c739f7c60a42ce906a5c8672df36033cd715",
+    "cf4dc820-41cd-4671-af61-64a9a62da998": "6bcad414879d94788ab5cf055df9629c62f53560ba6dbdfb6f44c781f47c74fc"
+  },
+  "new_inference_calls": 0,
+  "limits": [
+    "Synthetic local restored fixture, not independent user feedback or production readiness.",
+    "Handwritten manual patch, not a live Nemotron result. Checks are not sandbox certification.",
+    "Human acceptance and Convergence decisions are record-only, never deployment."
+  ],
+  "reserved_calls_before": 10,
+  "resume_only": true,
+  "reserved_calls_after": 10,
+  "finished_at": "2026-10-18T23:52:31.950462+00:00"
+}

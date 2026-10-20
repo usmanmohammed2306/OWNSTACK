@@ -1,0 +1,114 @@
+{
+  "observed_at": "2026-10-07T18:31:45.996433+00:00",
+  "live": true,
+  "budget_before": {
+    "mode": "nebius",
+    "reserved_calls": 0,
+    "max_live_calls": 10,
+    "remaining_calls": 10,
+    "note": "Reservations are a conservative call cap, not confirmed provider billing."
+  },
+  "access_attempts": [
+    {
+      "id": "8fc35683-355c-4b34-b527-4436c0bdbfea",
+      "number": 1,
+      "state": "accepted",
+      "model_id": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "deadline_at": "2026-10-07T18:32:46.402823+00:00",
+      "error_code": null,
+      "latency_ms": 1357,
+      "input_tokens": 114,
+      "output_tokens": 167
+    }
+  ],
+  "access": "observed_enforced_then_revoked",
+  "nova": "observed_denied",
+  "access_request_id": "87550b11-9208-481f-83ab-3fa9bd39ff4d",
+  "preview": {
+    "before": false,
+    "after": true,
+    "visible_documents": [
+      {
+        "id": "atlas-budget",
+        "title": "Atlas budget"
+      },
+      {
+        "id": "atlas-roadmap",
+        "title": "Atlas roadmap"
+      }
+    ],
+    "expires_at": "2026-10-09T18:31:46.370531+00:00",
+    "snapshot_hash": "4d4a394b93c0ca1be983e4ae87a223cb4620cd5f630da571e8b2c85cf12ccd0d",
+    "counterfactual": {
+      "checks": 24,
+      "intended_delta_observed": true,
+      "unexpected_delta_count": 0
+    },
+    "limitations": "Finite replay over the current synthetic host fixture. Not a production observation or exhaustive security proof.",
+    "matches_saved_proposal": true
+  },
+  "saved_after_refresh": {
+    "id": "87550b11-9208-481f-83ab-3fa9bd39ff4d",
+    "tenant_id": "atlas",
+    "text": "Give atlas-contractor read-only access to Project Atlas until Friday",
+    "kind": "access",
+    "project_id": "atlas-project",
+    "viewer_id": "atlas-contractor",
+    "expires_at": "2026-10-09T18:31:46.370531+00:00",
+    "status": "revoked",
+    "revision": 1,
+    "current_attempt_id": "8fc35683-355c-4b34-b527-4436c0bdbfea",
+    "accepted_proposal_id": "b748f025-47f4-47aa-bc00-5c695d5fc39d"
+  },
+  "access_evidence": [
+    {
+      "id": "fb6d9fc2-99ce-4976-a7d3-7b46f40bb5c1",
+      "kind": "counterfactual_preview",
+      "subject_hash": "4d4a394b93c0ca1be983e4ae87a223cb4620cd5f630da571e8b2c85cf12ccd0d",
+      "result": {
+        "checks": 24,
+        "intended_delta_observed": true,
+        "unexpected_delta_count": 0
+      },
+      "limitation": "Finite replay over the current synthetic host fixture. Not a production observation or exhaustive security proof."
+    },
+    {
+      "id": "454ac68b-5fbc-45c8-9dc2-a5b580102af8",
+      "kind": "model_interpretation",
+      "subject_hash": "20616e24f16469bcca9a2d516748559f63fce932f69a75debc09db4a101abe3b",
+      "result": {
+        "proposed_route": "configure",
+        "accepted_route": "configure",
+        "reason": "Granting temporary read-only access to Project Atlas for user atlas-contractor until Friday",
+        "model_id": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+        "latency_ms": 1357,
+        "input_tokens": 114,
+        "output_tokens": 167,
+        "live": true
+      },
+      "limitation": "Model interpretation is not an authorization decision, preview observation, or security proof."
+    }
+  ],
+  "feature_attempts": [
+    {
+      "id": "bc70399c-039a-4f97-a024-dc9dd2004880",
+      "number": 1,
+      "state": "accepted",
+      "model_id": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "deadline_at": "2026-10-07T18:32:48.613029+00:00",
+      "error_code": null,
+      "latency_ms": 1251,
+      "input_tokens": 108,
+      "output_tokens": 156
+    }
+  ],
+  "failure_type": "AssertionError",
+  "budget_after": {
+    "mode": "nebius",
+    "reserved_calls": 3,
+    "max_live_calls": 10,
+    "remaining_calls": 7,
+    "note": "Reservations are a conservative call cap, not confirmed provider billing."
+  },
+  "reserved_this_run": 3
+}

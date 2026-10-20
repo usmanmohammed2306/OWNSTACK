@@ -1,0 +1,671 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-19T02:20:57.267265+00:00",
+  "kind": "offline-adversarial-verifier-experiment",
+  "backend": "sidecar",
+  "live_inference_calls": 0,
+  "provenance": {
+    "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+    "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+    "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+    "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+    "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+    "build_revision": "uncommitted-reference"
+  },
+  "script_hash": "8ff78573a90a00eb91e1ac99502712d93523794ad884e743ea3dff17bf0a641f",
+  "source_inventory": {
+    "src/ownstack/runner.py": "6ce3f1c898d66e694ec54391229b4139cb6a2c46d3cba1a5e7bc4b2489e36ded",
+    "src/ownstack/bounded_process.py": "7846175b9ab21ad6a13c63367aa0f8d624a0ca6384b945b1d3e72a5308fadaee",
+    "src/ownstack/verifier_service.py": "717a240ef8b812c7f4be8459dbf96d3a3c2fbfa5cc4e2934e7142e4ba1114816",
+    "src/ownstack/patch_agent.py": "6d800906c64f708fe861145e45c18fb7608dde0f7a03f64d551c25e413ecdd5a",
+    "src/ownstack/process_supervisor.py": "de315e12436a49bfaf56cc9b6ded96b525d8f35c2102e5aad056aa66a7aae1a5",
+    "compose.full.yaml": "a3297872f7eba7a92df703d3b05caa86b3215ab32798ddd1e0280a3a7345a0bd"
+  },
+  "legacy_control": {
+    "exit_code": 0,
+    "legacy_would_pass": true,
+    "stdout": "",
+    "stderr": "",
+    "patch_hash": "bc9dfda828a95f2b6c05a36767cc0806592c83ec33fcc619bded394677f60b5e",
+    "valid_export_implemented": false
+  },
+  "cases": [
+    {
+      "case": "known_reference",
+      "expected_pass": true,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 303.93,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "ec75d44ecb3f2e8d2723358b46d8b36242d255848d2d610a0e1ca4735d33ff60"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "1a58d725bb364063179a45867db3ede74540ae0f30b4a841f681451ddb2cbe80",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "early_exit_zero",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 380.67,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 0,
+        "cases": [],
+        "passed": false,
+        "oracle_error": "Expecting value: line 1 column 1 (char 0)",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "Expecting value: line 1 column 1 (char 0)",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "bc9dfda828a95f2b6c05a36767cc0806592c83ec33fcc619bded394677f60b5e",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "system_exit_zero",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 328.37,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 0,
+        "cases": [],
+        "passed": false,
+        "oracle_error": "Expecting value: line 1 column 1 (char 0)",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "Expecting value: line 1 column 1 (char 0)",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "d2677df2ae4511abcca7a3242ec1491b4ff653c1e95eba895c904677758f3a5f",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "forged_success_json",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 380.45,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 0,
+        "cases": [],
+        "passed": false,
+        "oracle_error": "Missing or extra exported documents",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "Missing or extra exported documents",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "68b17752640abc41bb3870671d636dfa0a470bfb85b6c1e89b796b6076a9fc08",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "test_framework_patch",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 433.88,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 0,
+        "cases": [],
+        "passed": false,
+        "oracle_error": "Candidate failed or exceeded output bounds",
+        "exit_code": 1,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 103, in <module>\n  File \"candidate.py\", line 1, in <module>\nModuleNotFoundError: No module named 'unittest'\n",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "0a8e8d353b369041f0d9344fb59d4c47a465a29b7203e848f0831c9b2bd3b839",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "wrong_scope",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 399.89,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "escaped",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "empty",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "latin1",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "many",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "nonce",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "separate_scope",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          }
+        ],
+        "passed": false,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "e586e68582ab95813dac4b218760be8a9f439fa7fbdfaac2aa929b3cc60b4f01",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "bad_xref",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 304.87,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": false,
+            "reason": "Invalid cross-reference table"
+          },
+          {
+            "id": "escaped",
+            "passed": false,
+            "reason": "Invalid cross-reference table"
+          },
+          {
+            "id": "empty",
+            "passed": false,
+            "reason": "Invalid cross-reference table"
+          },
+          {
+            "id": "latin1",
+            "passed": false,
+            "reason": "Invalid cross-reference table"
+          },
+          {
+            "id": "many",
+            "passed": false,
+            "reason": "Invalid cross-reference table"
+          },
+          {
+            "id": "nonce",
+            "passed": false,
+            "reason": "Invalid cross-reference table"
+          },
+          {
+            "id": "separate_scope",
+            "passed": false,
+            "reason": "Invalid cross-reference table"
+          }
+        ],
+        "passed": false,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "6bda8b0cdcc45a6af39cfcc23fba1e54d54b7460e69c7f85553caba6a673b0bd",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "missing_rows",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 242.57,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "escaped",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "many",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "nonce",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          },
+          {
+            "id": "separate_scope",
+            "passed": false,
+            "reason": "Export does not contain exactly the supplied scope's text"
+          }
+        ],
+        "passed": false,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "baab05cbd38696e24c0c2e0ab2782ecf12e322e4d7f31822592abe55727e6efa",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "unescaped_text",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 228.52,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": false,
+            "reason": "Unescaped PDF delimiter"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "47dd7d8d9f0414fe8e63f212f05c0ae191655028fdb2e0a06c294a85ec2876cb"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": false,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "ff0de7f8a6edf4eb76a28eeae3ffb64be6811615227bdf9975c324661998d6e4",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "output_flood",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 249.58,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 0,
+        "cases": [],
+        "passed": false,
+        "oracle_error": "Candidate output limit exceeded",
+        "exit_code": -9,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "Candidate output limit exceeded",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "9be62cc4c7fa85ffc3bd350c24411cb14d31c0fb63029ea7d458c0bd96a8dab6",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "cpu_loop",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 8226.92,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 0,
+        "cases": [],
+        "passed": false,
+        "oracle_error": "Candidate failed or exceeded output bounds",
+        "exit_code": -9,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "Candidate failed or exceeded output bounds",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "10e09e0ababacfb3f37fef77254a833a53ee9411972f108991ca984238d19218",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "forbidden_write",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 341.66,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 0,
+        "cases": [],
+        "passed": false,
+        "oracle_error": "Candidate failed or exceeded output bounds",
+        "exit_code": 1,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 103, in <module>\n  File \"candidate.py\", line 1, in <module>\nPermissionError: [Errno 1] Operation not permitted: '/ownstack-forbidden-write'\n",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "b02f988bb4d95b01edcac6fc004a068364352b41fbbe17fa94ebb8b46e8144eb",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "outbound_network",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 308.43,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 0,
+        "cases": [],
+        "passed": false,
+        "oracle_error": "Candidate failed or exceeded output bounds",
+        "exit_code": 1,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 103, in <module>\n  File \"candidate.py\", line 1, in <module>\nModuleNotFoundError: No module named 'socket'\n",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "ef1d4a8d104ccd712b68cb0346d6d572ef24df0f1002bc5c88f673bae854da1d",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "queue_volume_denied",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 313.88,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 0,
+        "cases": [],
+        "passed": false,
+        "oracle_error": "Candidate failed or exceeded output bounds",
+        "exit_code": 1,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 103, in <module>\n  File \"candidate.py\", line 1, in <module>\nPermissionError: [Errno 1] Operation not permitted: '/srv/jobs/heartbeat'\n",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "2b616f5d2170cb69965cd16e9b287247b2a28cbff5475366803b9e08c1ab6ca1",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    },
+    {
+      "case": "escaped_descendant_denied",
+      "expected_pass": false,
+      "candidate_executed": true,
+      "matched_expectation": true,
+      "duration_ms": 327.4,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 0,
+        "cases": [],
+        "passed": false,
+        "oracle_error": "Candidate failed or exceeded output bounds",
+        "exit_code": 1,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 103, in <module>\n  File \"candidate.py\", line 2, in <module>\nPermissionError: [Errno 1] Operation not permitted\n",
+        "runner": "no-network-sidecar-external-oracle",
+        "patch_hash": "69932c4530c64cb6616a1b468cf7cdcc8a2780aad969ecdb1a6e5f85ca66f789",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+        "build_revision": "uncommitted-reference",
+        "isolation_profile": "landlock-seccomp-pdf-v1",
+        "descendants_reaped": true,
+        "signalled_descendants": 0,
+        "remaining_descendants": 0
+      }
+    }
+  ],
+  "passed": true,
+  "limitations": [
+    "This finite authored matrix is not a hostile-code sandbox certification.",
+    "Only this owned, narrow PDF subset is supported; other valid PDF layouts may be rejected.",
+    "Docker uses a shared kernel. Queued runtime reuses its container with a fresh unprivileged process per job.",
+    "No live model quality, real customer benefit, public deployment, or user-study outcome is measured."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "archive": "ownstack-test-build-operations-2026-10-14-r2.zip",
+  "archive_sha256": "8566c97641197ff979dfb3aaf1130a96642d279688caa87b9f263bb6be8f299a",
+  "public_files": 741,
+  "all_inventory_hashes_match": true,
+  "all_members_matched_checked_source_at_verification": true,
+  "forbidden_private_database_backup_members": 0,
+  "configured_credentials_scanned": 2,
+  "configured_credential_member_matches": 0,
+  "fresh_dependency_install": false,
+  "public_url_created": false,
+  "inference_calls": 0,
+  "notes": [
+    "The first same-date archive remains; r2 includes the corrected BUILD_IT_YOURSELF entry point.",
+    "Reference regressions passed before packaging. This check validates the exact archive inventory against that source, not an independent fresh clone.",
+    "This verification file and later handoff note were written after packaging and are outside the immutable archive.",
+    "Private backups, runtime databases, credentials and dependencies are excluded. No publication occurred."
+  ]
+}

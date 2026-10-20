@@ -1,0 +1,393 @@
+{
+  "started_at": "2026-10-13T06:49:04.540340+00:00",
+  "synthetic_provider": true,
+  "live_inference_calls": 0,
+  "database": "synthetic-state.db (ignored local fixture)",
+  "budget_before": 10,
+  "checks": [
+    {
+      "name": "duplicate_saved_run",
+      "passed": true
+    },
+    {
+      "name": "generation_1_exit",
+      "passed": true
+    },
+    {
+      "name": "candidate_durable_before_checks",
+      "passed": true
+    },
+    {
+      "name": "verification_1_exit",
+      "passed": true
+    },
+    {
+      "name": "generation_2_exit",
+      "passed": true
+    },
+    {
+      "name": "verification_2_exit",
+      "passed": true
+    },
+    {
+      "name": "failure_then_pass",
+      "passed": true
+    },
+    {
+      "name": "human_review_only",
+      "passed": true
+    },
+    {
+      "name": "original_patch_not_replaced",
+      "passed": true
+    },
+    {
+      "name": "exit_after_claim_exit",
+      "passed": true
+    },
+    {
+      "name": "claim_survives_process_exit",
+      "passed": true
+    },
+    {
+      "name": "reaper_creates_second_attempt",
+      "passed": true
+    },
+    {
+      "name": "late_first_candidate_discarded",
+      "passed": true
+    },
+    {
+      "name": "late_payload_not_saved",
+      "passed": true
+    },
+    {
+      "name": "takeover_fences_late_candidate",
+      "passed": true
+    },
+    {
+      "name": "exhausted_budget_unchanged",
+      "passed": true
+    },
+    {
+      "name": "no_active_attempts",
+      "passed": true
+    }
+  ],
+  "child_processes": [
+    {
+      "label": "generation_1",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "verification_1",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "generation_2",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "verification_2",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "label": "exit_after_claim",
+      "exit_code": 23,
+      "stderr": ""
+    }
+  ],
+  "runs": [
+    {
+      "id": "8d38822f-1bc2-456c-8fa7-71d0143e3a33",
+      "item_id": "repair-item",
+      "state": "awaiting_review",
+      "max_attempts": 2,
+      "original_patch_hash": "4e1b91868c02c8060192e05b9836c88f72520a2185d9a619165196b49221ed13",
+      "error_code": null,
+      "configuration": {
+        "mode": "fixture",
+        "model": "fixture-not-live",
+        "timeout": 60.0
+      },
+      "provenance": {
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "cb2b0e7ca7fd82a1d7f5cb41400e099fcc98b6b133c804335fb711d5a8ec4075",
+        "driver_hash": "b81174e449c383a79253743acf6d927520154d464b468693aea37ec71cc48763",
+        "build_revision": "uncommitted-reference"
+      },
+      "deadline_at": "2026-10-13T06:54:24.544449+00:00",
+      "release_state": "not_deployed",
+      "remote_cancellation_verified": false,
+      "attempts": [
+        {
+          "id": "75d24562-eddd-44d1-b407-099c08193d62",
+          "number": 1,
+          "state": "failed",
+          "model_id": "fixture-not-live",
+          "candidate": {
+            "edits": [
+              {
+                "path": "sample_app/report.py",
+                "old": "\"\"\"The deliberately missing capability that an engineering proposal may add.\"\"\"\n\n\ndef export_pdf(project_name: str, rows: list[str]) -> bytes:\n    raise NotImplementedError(\"PDF export needs an engineer-reviewed code change\")\n",
+                "new": "def export_pdf(project_name, rows):\n    return b'not pdf'\n"
+              }
+            ]
+          },
+          "candidate_hash": "4e1b91868c02c8060192e05b9836c88f72520a2185d9a619165196b49221ed13",
+          "checks": {
+            "oracle_version": "pdf-external-v1",
+            "checks_expected": 7,
+            "checks_completed": 7,
+            "cases": [
+              {
+                "id": "atlas",
+                "passed": false,
+                "reason": "Expected bounded PDF-1.4 output"
+              },
+              {
+                "id": "escaped",
+                "passed": false,
+                "reason": "Expected bounded PDF-1.4 output"
+              },
+              {
+                "id": "empty",
+                "passed": false,
+                "reason": "Expected bounded PDF-1.4 output"
+              },
+              {
+                "id": "latin1",
+                "passed": false,
+                "reason": "Expected bounded PDF-1.4 output"
+              },
+              {
+                "id": "many",
+                "passed": false,
+                "reason": "Expected bounded PDF-1.4 output"
+              },
+              {
+                "id": "nonce",
+                "passed": false,
+                "reason": "Expected bounded PDF-1.4 output"
+              },
+              {
+                "id": "separate_scope",
+                "passed": false,
+                "reason": "Expected bounded PDF-1.4 output"
+              }
+            ],
+            "passed": false,
+            "oracle_error": "",
+            "exit_code": 0,
+            "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+            "stderr": "",
+            "runner": "docker-external-oracle",
+            "patch_hash": "4e1b91868c02c8060192e05b9836c88f72520a2185d9a619165196b49221ed13",
+            "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+            "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+            "oracle_hash": "cb2b0e7ca7fd82a1d7f5cb41400e099fcc98b6b133c804335fb711d5a8ec4075",
+            "driver_hash": "b81174e449c383a79253743acf6d927520154d464b468693aea37ec71cc48763",
+            "build_revision": "uncommitted-reference",
+            "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f"
+          },
+          "usage": {
+            "live": false,
+            "latency_ms": 0,
+            "input_tokens": null,
+            "output_tokens": null
+          },
+          "error_code": "CHECKS_FAILED",
+          "deadline_at": "2026-10-13T06:50:10.002609+00:00"
+        },
+        {
+          "id": "bb42021b-a196-479e-8a0c-2db578b2a0ab",
+          "number": 2,
+          "state": "passed",
+          "model_id": "fixture-not-live",
+          "candidate": {
+            "edits": [
+              {
+                "path": "sample_app/report.py",
+                "old": "\"\"\"The deliberately missing capability that an engineering proposal may add.\"\"\"\n\n\ndef export_pdf(project_name: str, rows: list[str]) -> bytes:\n    raise NotImplementedError(\"PDF export needs an engineer-reviewed code change\")\n",
+                "new": "\"\"\"A tiny dependency-free PDF encoder for the owned fixture.\"\"\"\n\ndef export_pdf(project_name: str, rows: list[str]) -> bytes:\n    def esc(value: str) -> str:\n        return value.replace(\"\\\\\", \"\\\\\\\\\").replace(\"(\", \"\\\\(\").replace(\")\", \"\\\\)\")\n    lines = [project_name, *rows]\n    commands = [\"BT /F1 12 Tf 50 770 Td\"]\n    for index, line in enumerate(lines):\n        if index:\n            commands.append(\"0 -18 Td\")\n        commands.append(f\"({esc(line)}) Tj\")\n    commands.append(\"ET\")\n    stream = \"\\n\".join(commands).encode(\"latin-1\", errors=\"replace\")\n    objects = [\n        b\"<< /Type /Catalog /Pages 2 0 R >>\",\n        b\"<< /Type /Pages /Kids [3 0 R] /Count 1 >>\",\n        b\"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>\",\n        b\"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\",\n        b\"<< /Length \" + str(len(stream)).encode() + b\" >>\\nstream\\n\" + stream + b\"\\nendstream\",\n    ]\n    output = bytearray(b\"%PDF-1.4\\n\")\n    offsets = [0]\n    for number, obj in enumerate(objects, 1):\n        offsets.append(len(output))\n        output.extend(f\"{number} 0 obj\\n\".encode() + obj + b\"\\nendobj\\n\")\n    xref = len(output)\n    output.extend(f\"xref\\n0 {len(offsets)}\\n0000000000 65535 f \\n\".encode())\n    for offset in offsets[1:]:\n        output.extend(f\"{offset:010d} 00000 n \\n\".encode())\n    output.extend(f\"trailer\\n<< /Size {len(offsets)} /Root 1 0 R >>\\nstartxref\\n{xref}\\n%%EOF\\n\".encode())\n    return bytes(output)\n"
+              }
+            ]
+          },
+          "candidate_hash": "592cf5d6ce001f747993ff22fec99aa886190e75675c0735c54f75956b63d4d6",
+          "checks": {
+            "oracle_version": "pdf-external-v1",
+            "checks_expected": 7,
+            "checks_completed": 7,
+            "cases": [
+              {
+                "id": "atlas",
+                "passed": true,
+                "pdf_sha256": "b925df37e7f55419d7461276b8dd3f7bbee2a1850e6f1cee0ea89080b7c3017c"
+              },
+              {
+                "id": "escaped",
+                "passed": true,
+                "pdf_sha256": "ba1f98691cc99d66b22a202f20cbfdad2f82c617239779498604979224653d5f"
+              },
+              {
+                "id": "empty",
+                "passed": true,
+                "pdf_sha256": "57c9b1cdd3d78cfd6aa6c79e6625b5cce2ea78f3249c6f3a4bb6c4be261fa9ea"
+              },
+              {
+                "id": "latin1",
+                "passed": true,
+                "pdf_sha256": "38cf379b4930f5b422f69a0c855c53263a538a79e7f88c7c30d7e5470ae7cbdb"
+              },
+              {
+                "id": "many",
+                "passed": true,
+                "pdf_sha256": "665b362e4fcc440e8cb31ef79558c1b03c1d9dc3ddffefe5c7d9ccea7c80c04c"
+              },
+              {
+                "id": "nonce",
+                "passed": true,
+                "pdf_sha256": "c223f04c730d46629e91523ca596d698c0c624ad2dd25af7a8268f2a69527ec3"
+              },
+              {
+                "id": "separate_scope",
+                "passed": true,
+                "pdf_sha256": "e7bd114601b617d7a9eab763b4ae0be545fddf4c9a9d965adbac3f5652994481"
+              }
+            ],
+            "passed": true,
+            "oracle_error": "",
+            "exit_code": 0,
+            "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+            "stderr": "",
+            "runner": "docker-external-oracle",
+            "patch_hash": "592cf5d6ce001f747993ff22fec99aa886190e75675c0735c54f75956b63d4d6",
+            "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+            "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+            "oracle_hash": "cb2b0e7ca7fd82a1d7f5cb41400e099fcc98b6b133c804335fb711d5a8ec4075",
+            "driver_hash": "b81174e449c383a79253743acf6d927520154d464b468693aea37ec71cc48763",
+            "build_revision": "uncommitted-reference",
+            "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f"
+          },
+          "usage": {
+            "live": false,
+            "latency_ms": 0,
+            "input_tokens": null,
+            "output_tokens": null
+          },
+          "error_code": null,
+          "deadline_at": "2026-10-13T06:50:10.885633+00:00"
+        }
+      ]
+    },
+    {
+      "id": "859420ed-2f29-4527-8c7f-d76e90f87a8d",
+      "item_id": "crash-item",
+      "state": "taken_over",
+      "max_attempts": 2,
+      "original_patch_hash": "4e1b91868c02c8060192e05b9836c88f72520a2185d9a619165196b49221ed13",
+      "error_code": "HUMAN_TAKEOVER",
+      "configuration": {
+        "mode": "fixture",
+        "model": "fixture-not-live",
+        "timeout": 60.0
+      },
+      "provenance": {
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "cb2b0e7ca7fd82a1d7f5cb41400e099fcc98b6b133c804335fb711d5a8ec4075",
+        "driver_hash": "b81174e449c383a79253743acf6d927520154d464b468693aea37ec71cc48763",
+        "build_revision": "uncommitted-reference"
+      },
+      "deadline_at": "2026-10-13T06:54:26.218648+00:00",
+      "release_state": "not_deployed",
+      "remote_cancellation_verified": false,
+      "attempts": [
+        {
+          "id": "7c857108-b48a-4e90-ba08-b49248b21711",
+          "number": 1,
+          "state": "timed_out",
+          "model_id": "fixture-not-live",
+          "candidate": null,
+          "candidate_hash": null,
+          "checks": null,
+          "usage": null,
+          "error_code": "LOCAL_DEADLINE",
+          "deadline_at": "2026-10-13T06:49:05.428681+00:00"
+        },
+        {
+          "id": "ea1562fc-9336-4dd8-b66a-a5d63c21784d",
+          "number": 2,
+          "state": "discarded",
+          "model_id": "fixture-not-live",
+          "candidate": null,
+          "candidate_hash": null,
+          "checks": null,
+          "usage": null,
+          "error_code": "HUMAN_TAKEOVER",
+          "deadline_at": "2026-10-13T06:50:36.430955+00:00"
+        }
+      ]
+    },
+    {
+      "id": "ba8096e5-6c82-4ca9-95e8-fe62d9ec921b",
+      "item_id": "takeover-item",
+      "state": "taken_over",
+      "max_attempts": 2,
+      "original_patch_hash": "4e1b91868c02c8060192e05b9836c88f72520a2185d9a619165196b49221ed13",
+      "error_code": "HUMAN_TAKEOVER",
+      "configuration": {
+        "mode": "fixture",
+        "model": "fixture-not-live",
+        "timeout": 60.0
+      },
+      "provenance": {
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "cb2b0e7ca7fd82a1d7f5cb41400e099fcc98b6b133c804335fb711d5a8ec4075",
+        "driver_hash": "b81174e449c383a79253743acf6d927520154d464b468693aea37ec71cc48763",
+        "build_revision": "uncommitted-reference"
+      },
+      "deadline_at": "2026-10-13T06:54:26.434600+00:00",
+      "release_state": "not_deployed",
+      "remote_cancellation_verified": false,
+      "attempts": [
+        {
+          "id": "dbbdf678-85ff-4dd8-bf55-77394342b192",
+          "number": 1,
+          "state": "discarded",
+          "model_id": "fixture-not-live",
+          "candidate": null,
+          "candidate_hash": null,
+          "checks": null,
+          "usage": null,
+          "error_code": "HUMAN_TAKEOVER",
+          "deadline_at": "2026-10-13T06:50:11.436380+00:00"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Local SQLite, not PostgreSQL concurrency or production recovery.",
+    "Handwritten synthetic proposals, not model quality or cost measurements.",
+    "Docker output oracle is bounded, not a certified hostile-code sandbox.",
+    "Forced child exit models loss after commit, not hardware failure."
+  ],
+  "budget_after": 10,
+  "passed": true,
+  "finished_at": "2026-10-13T06:49:06.439954+00:00",
+  "source_sha256": {
+    "src/ownstack/repair.py": "5ba1dbb946717eb8a1b0d26dd028d35b6d5a83ccc1c91bc14aef1c196e1add20",
+    "src/ownstack/repair_models.py": "f71fa5c44f270e16e500f40d29b5133aab465419419a2d060b037759b745aa2a",
+    "src/ownstack/repair_api.py": "b16a525caefddcf5b8aab740c72649335ec501d20eb4558e2cd308fbf8cb9bcc",
+    "src/ownstack/patch_agent.py": "647e7b6e612debe41d35b69e1ae0506773502de293bc1a70ec9c35d35853a727",
+    "src/ownstack/runner.py": "fef885901993c671e12441ea761ac44fd5a5ba26d63e14389098532e464eb44c",
+    "src/ownstack/pdf_oracle.py": "7772fcc5e65e6f6a1b61583cd0362112472addbdf9844c09d1e7054b7d5ba054",
+    "scripts/run_repair_lab.py": "dc73b9efbbd9fa788fa13d8c91ccbace11cde1cdc0ffdbde183ff509d2444307"
+  }
+}

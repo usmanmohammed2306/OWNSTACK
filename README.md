@@ -13,8 +13,6 @@ One shared app. Explicit boundaries. Human control.
 
 ---
 
-> **Repository publication status:** this GitHub repository currently contains the project overview only. The Python/React implementation, evidence files and MIT license file have not been uploaded here. Results below describe the local reference build; cloning this repository alone will not run it.
-
 ## It starts with one small request
 
 > “Give this contractor read-only access to Project Atlas until Friday.”
@@ -33,7 +31,7 @@ That is not the same kind of change. A permission can be bounded by an existing 
 
 The idea is simple: the model can suggest a change. It does not get to decide what the application permits.
 
-> **Status · October 19, 2026:** working local reference implementation with synthetic Atlas and Nova tenants. Historical live Nemotron access workflow observed; current rehearsal runs with AI off. Not a hosted product, production-certified sandbox, validated business or completed hackathon submission.
+> **Source release · October 20, 2026:** the Python/React reference implementation is now available on `main`, under the MIT License. Synthetic Atlas and Nova tenants; historical live Nemotron access workflow observed; current rehearsal runs with AI off. Not a hosted product, production-certified sandbox, validated business or completed hackathon submission. See the [release scope and verification limits](docs/SOURCE_RELEASE.md).
 
 ## Two paths. One rule.
 
@@ -135,11 +133,16 @@ The live PDF patch failed independent checks. Its failure remains recorded. A su
 
 Current inference is paused. The original ten-call allowance is exhausted; no counter reset or fresh database grants permission to spend again. Saved evidence and manual workflows remain usable.
 
-The implementation's documentation includes the security methodology, validation ledger, live-usage records, graph comparison and source-revision qualifications. These files will accompany source publication; they are not yet available in this overview-only repository.
+Evidence and methods: [security hardening](docs/SECURITY_HARDENING.md), [validation ledger](docs/VALIDATION.md), [live usage](docs/NVIDIA_NEBIUS_USAGE.md), [graph comparison](docs/LANGGRAPH.md) and [source-revision qualifications](docs/SOURCE_RELEASE.md#historical-evidence).
 
 ## Run it locally with AI off
 
-Use the **complete Python/React reference source**, not the older README-only prototype repository. The following commands are for a first local setup, not an instruction to replace an existing private rehearsal.
+Clone the reference implementation. The following commands are for a first local setup, not an instruction to replace an existing private rehearsal.
+
+```bash
+git clone https://github.com/usmanmohammed2306/OWNSTACK.git
+cd OWNSTACK
+```
 
 Prerequisites: Docker Desktop with Compose and Linux containers. Candidate verification requires Linux x86_64 or aarch64, Landlock ABI 3 or later and libseccomp. The measured security run used aarch64 with ABI 8. Missing support fails closed instead of falling back to unrestricted execution.
 
@@ -207,7 +210,7 @@ scripts/                   Offline evaluations and operating rehearsals
 docs/                      Decisions, methods, limitations and learning
 ```
 
-See **deployment notes** before touching an existing environment, and **the private rehearsal guide** for its separate restricted-role setup. Do not recreate a database to recover an inference allowance.
+See [deployment notes](docs/DEPLOYMENT.md) before touching an existing environment, and [the private rehearsal guide](docs/SECURITY_HARDENING.md) for its separate restricted-role setup. Do not recreate a database to recover an inference allowance.
 
 </details>
 
@@ -219,21 +222,21 @@ The controls are implemented; trust has to come from more than implementation.
 - **Production operation:** real identity-provider integration, live TLS-path testing, sustained capacity and machine-loss recovery are not validated.
 - **Product value:** no customer pilot or willingness-to-pay result yet. Compare against a competent manual/feature-flag workflow, not an artificially weak baseline.
 - **Independent reproducibility:** local rehearsals are not another engineer's fresh clone, observed task study or public CI run.
-- **Publication:** a judge-accessible build, public video, complete source publication and final submission remain separate gates.
+- **Submission:** source is public; a judge-accessible build, public video, independent setup verification and final submission remain separate gates.
 
 OwnStack is the Nebius product. Relief is a separate project. The older shared Amazon/Alexa+ strategy is superseded.
 
 ## Explore, rebuild, contribute
 
-When the implementation is published, start with its architecture and demo guides. Its decision log explains the tradeoffs; its open-questions ledger records what the evidence does not yet support.
+Start with [the architecture](docs/ARCHITECTURE.md), then follow [the demo](docs/DEMO.md). Read [the decisions](docs/DECISIONS.md) for tradeoffs and [the open questions](docs/UNPROVEN.md) for what the evidence does not yet support.
 
-The **learning plan** breaks the implementation into small, testable slices. Reconstruct them in a separate learning repository. An existing reference, passing suite or calendar date does not mark an independently completed exercise.
+The [learning plan](docs/NINETY_DAY_PLAN.md) breaks the implementation into small, testable slices. Reconstruct them in a separate learning repository. An existing reference, passing suite or calendar date does not mark an independently completed exercise.
 
 Useful contributions include a reproducible failure, a stronger negative test, a clearer boundary or a well-designed comparison. Describe expected behavior, observed behavior and the smallest reproduction. Keep credentials, private proof exports and customer data out of commits, screenshots and issues.
 
 ## License
 
-The current Python/React reference implementation uses the MIT License; its license file will accompany source publication. Dependencies, models and external services retain their own terms.
+The current Python/React reference implementation uses the [MIT License](LICENSE). Dependencies, models and external services retain their own terms.
 
 ---
 

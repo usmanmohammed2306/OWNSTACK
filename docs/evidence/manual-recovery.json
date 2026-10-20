@@ -1,0 +1,146 @@
+{
+  "observed_at": "2026-10-07T18:56:07.973406+00:00",
+  "author": "coding-assistant-manual-path",
+  "not_live_model_success": true,
+  "original_failed_item": {
+    "id": "8ccd0801-e8e5-48b5-b55e-2a172a446c18",
+    "request": {
+      "id": "5bff0a71-95d9-41c2-b682-4f25e685bf09",
+      "tenant_id": "atlas",
+      "text": "Add PDF export for Project Atlas",
+      "kind": "feature",
+      "project_id": "atlas-project",
+      "viewer_id": null,
+      "expires_at": null,
+      "status": "engineering",
+      "revision": 1,
+      "current_attempt_id": "bc70399c-039a-4f97-a024-dc9dd2004880",
+      "accepted_proposal_id": "bce7a0a0-10ac-4f93-ad73-490877c8b371"
+    },
+    "status": "checks_failed",
+    "patch": {
+      "edits": [
+        {
+          "path": "sample_app/report.py",
+          "old": "\"\"\"The deliberately missing capability that an engineering proposal may add.\"\"\"\n\n\ndef export_pdf(project_name: str, rows: list[str]) -> bytes:\n    raise NotImplementedError(\"PDF export needs an engineer-reviewed code change\")\n",
+          "new": "\"\"\"\n\"\"\" PDF export implementation using only the standard library.\n\"\"\"\nfrom io import BytesIO\n\ndef _escape_pdf_text(text: str) -> bytes:\n    \"\"\"Escape text for PDF string literal and return as bytes.\"\"\"\n    # Escape backslash, parentheses\n    escaped = text.replace('\\\\', '\\\\\\\\').replace('(', '\\\\(').replace(')', '\\\\)')\n    return b'(' + escaped.encode('latin-1', 'replace') + b')'\n\ndef export_pdf(project_name: str, rows: list[str]) -> bytes:\n    buf = BytesIO()\n    # PDF header\n    buf.write(b'%PDF-1.3\\n')\n    # Store offsets of each object (including object 0)\n    offsets = [0]  # offset for object 0 (unused)\n    \n    def _add_object(obj_num: int, obj_bytes: bytes):\n        \"\"\"Write an object and record its start offset.\"\"\"\n        offsets.append(buf.tell())  # offset before the object header\n        buf.write(f'{obj_num} 0 obj\\n'.encode('ascii'))\n        buf.write(obj_bytes)\n        buf.write(b'\\nendobj\\n')\n    \n    # 1. Catalog\n    catalog = b'<< /Type /Catalog /Pages 2 0 R >>'\n    _add_object(1, catalog)\n    \n    # 2. Pages\n    pages = b'<< /Type /Pages /Kids [3 0 R] /Count 1 >>'\n    _add_object(2, pages)\n    \n    # 3. Page\n    # Content stream will be object 4; Resources reference font object 5\n    page_dict = (\n        b'<< /Type /Page'\n        b' /Parent 2 0 R'\n        b' /MediaBox [0 0 612 792]'\n        b' /Contents 4 0 R'\n        b' /Resources << /F1 5 0 R >>'\n        b' >>'\n    )\n    _add_object(3, page_dict)\n    \n    # 4. Content stream\n    # Build stream data\n    y = 750\n    leading = 20\n    cmds = [b'BF']  # placeholder, will be replaced\n    # Actually need BT ... ET\n    ops = [b'BT']\n    # Set font and size\n    ops.append(b'/F1 12 Tf')\n    # Show project name\n    ops.append(b'70 ' + str(y).encode() + b' Td ' + _escape_pdf_text(project_name) + b' Tj')\n    y -= leading\n    for row in rows:\n        ops.append(b'70 ' + str(y).encode() + b' Td ' + _escape_pdf_text(row) + b' Tj')\n        y -= leading\n    ops.append(b'ET')\n    stream_data = b'\\n'.join(ops)\n    content = b'<< /Length %d >>\\nstream\\n%s\\nendstream' % (len(stream_data), stream_data)\n    _add_object(4, content)\n    \n    # 5. Font (Helvetica)\n    font = b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'\n    _add_object(5, font)\n    \n    # Write xref table\n    xref_start = buf.tell()\n    buf.write(b'xref\\n')\n    buf.write(f'0 {len(offsets)}\\n'.encode('ascii'))\n    for i, off in enumerate(offsets):\n        if i == 0:\n            buf.write(b'0000000000 65535 f\\n')\n        else:\n            buf.write(f'{off:010d} 00000 n\\n'.encode('ascii'))\n    \n    # Trailer\n    trailer = (\n        b'trailer'\n        b'<< /Size %d /Root 1 0 R >>' % len(offsets)\n    )\n    buf.write(b'\\n' + trailer + b'\\n')\n    buf.write(f'startxref\\n{xref_start}\\n'.encode('ascii'))\n    buf.bwrite(b'%%EOF')\n    # Fix typo: buf.bwrite -> buf.write\n    # Let's rewrite correctly.\n    # We'll reconstruct the final part properly.\n    # Instead of fixing inline, we redo the tail.\n    # To avoid complexity, we replace the tail building.\n    # However due to limited tokens, we adjust above lines.\n    # We'll replace the problematic segment.\n    # Let's output corrected version.\n\"\"\"\"\"\"\n# Note: The above contains an error; we need to provide correct final source.\n# Let's output corrected whole source instead.\n\"\"\"\n\"\"\"\n\"\"\" PDF export implementation using only the standard library.\n\"\"\"\nfrom io import BytesIO\n\ndef _escape_pdf_text(text: str) -> bytes:\n    \"\"\"Escape text for PDF string literal and return as bytes.\"\"\"\n    escaped = text.replace('\\\\', '\\\\\\\\').replace('(', '\\\\(').replace(')', '\\\\)')\n    return b'(' + escaped.encode('latin-1', 'replace') + b')'\n\ndef export_pdf(project_name: str, rows: list[str]) -> bytes:\n    buf = BytesIO()\n    buf.write(b'%PDF-1.3\\n')\n    offsets = [0]  # offset for object 0\n    \n    def _add_object(obj_num: int, obj_bytes: bytes):\n        offsets.append(buf.tell())\n        buf.write(f'{obj_num} 0 obj\\n'.encode('ascii'))\n        buf.write(obj_bytes)\n        buf.write(b'\\nendobj\\n')\n    \n    # 1 Catalog\n    _add_object(1, b'<< /Type /Catalog /Pages 2 0 R >>')\n    # 2 Pages\n    _add_object(2, b'<< /Type /Pages /Kids [3 0 R] /Count 1 >>')\n    # 3 Page\n    _add_object(3, b'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /F1 5 0 R >> >>')\n    \n    # 4 Content stream\n    y = 750\n    leading = 20\n    ops = [b'BT']\n    ops.append(b'/F1 12 Tf')\n    ops.append(b'70 ' + str(y).encode() + b' Td ' + _escape_pdf_text(project_name) + b' Tj')\n    y -= leading\n    for row in rows:\n        ops.append(b'70 ' + str(y).encode() + b' Td ' + _escape_pdf_text(row) + b' Tj')\n        y -= leading\n    ops.append(b'ET')\n    stream_data = b'\\n'.join(ops)\n    content = b'<< /Length %d >>\\nstream\\n%s\\nendstream' % (len(stream_data), stream_data)\n    _add_object(4, content)\n    # 5 Font\n    _add_object(5, b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>')\n    \n    # xref\n    xref_start = buf.tell()\n    buf.write(b'xref\\n')\n    buf.write(f'0 {len(offsets)}\\n'.encode('ascii'))\n    for i, off in enumerate(offsets):\n        if i == 0:\n            buf.write(b'0000000000 65535 f\\n')\n        else:\n            buf.write(f'{off:010d} 00000 n\\n'.encode('ascii'))\n    \n    # trailer\n    buf.write(b'trailer\\n')\n    buf.write(f'<< /Size {len(offsets)} /Root 1 0 R >>\\n'.encode('ascii'))\n    buf.write(f'startxref\\n{xref_start}\\n'.encode('ascii'))\n    buf.write(b'%%EOF')\n    return buf.getvalue()\n\"\"\"\"\"\"}\n"
+        }
+      ]
+    },
+    "patch_hash": "b4e08ee7119b6b3e827273b98f5e5f6013f063ccf4ae66a9746c68027e283f4c",
+    "human_decision": null,
+    "operation_deadline": null,
+    "checks": [
+      {
+        "subject_hash": "b4e08ee7119b6b3e827273b98f5e5f6013f063ccf4ae66a9746c68027e283f4c",
+        "result": {
+          "passed": false,
+          "exit_code": 1,
+          "stdout": "",
+          "stderr": "test_report (unittest.loader._FailedTest.test_report) ... ERROR\n\n======================================================================\nERROR: test_report (unittest.loader._FailedTest.test_report)\n----------------------------------------------------------------------\nImportError: Failed to import test module: test_report\nTraceback (most recent call last):\n  File \"/usr/local/lib/python3.12/unittest/loader.py\", line 396, in _find_test_path\n    module = self._get_module_from_name(name)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/unittest/loader.py\", line 339, in _get_module_from_name\n    __import__(name)\n  File \"/tmp/ownstack-queued-check-zt31zjot/checks/test_report.py\", line 2, in <module>\n    from sample_app.report import export_pdf\n  File \"/tmp/ownstack-queued-check-zt31zjot/sample_app/report.py\", line 161\n    \"\"\"\"\"\"}\n       ^\nSyntaxError: unterminated triple-quoted string literal (detected at line 161)\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (errors=1)\n",
+          "runner": "no-network-verifier-sidecar",
+          "patch_hash": "b4e08ee7119b6b3e827273b98f5e5f6013f063ccf4ae66a9746c68027e283f4c",
+          "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+          "checks_hash": "5ac5690e387edbfdbd40fc5f534189b0567907e0dcf084049fd0cfa62a77557d",
+          "build_revision": "uncommitted-reference"
+        },
+        "limitation": "These checks cover only the owned fixture. A pass is not a security guarantee or a release."
+      }
+    ]
+  },
+  "release_state": "not_deployed",
+  "budget_before": {
+    "mode": "nebius",
+    "reserved_calls": 10,
+    "max_live_calls": 10,
+    "remaining_calls": 0,
+    "note": "Reservations are a conservative call cap, not confirmed provider billing."
+  },
+  "correction": {
+    "id": "8ccd0801-e8e5-48b5-b55e-2a172a446c18",
+    "status": "drafted",
+    "patch_hash": "43ed1c37ec9c034619f3675e8a784897332dbfda2b3b495342250f082a3a6760",
+    "ai_call": false
+  },
+  "diff": "--- a/sample_app/report.py\n+++ b/sample_app/report.py\n@@ -1,5 +1,38 @@\n-\"\"\"The deliberately missing capability that an engineering proposal may add.\"\"\"\n+\"\"\"Agent-authored manual-path correction, not a successful Nemotron output.\n+\n+Bounded one-page Latin-1 export for the synthetic sample. Long reports and Unicode\n+layout require further engineering. This source is checked in the verifier only.\n+\"\"\"\n+from io import BytesIO\n \n \n def export_pdf(project_name: str, rows: list[str]) -> bytes:\n-    raise NotImplementedError(\"PDF export needs an engineer-reviewed code change\")\n+    def escape(value: str) -> bytes:\n+        return value.replace(\"\\\\\", \"\\\\\\\\\").replace(\"(\", \"\\\\(\").replace(\")\", \"\\\\)\").encode(\"latin-1\", \"replace\")\n+\n+    commands = [b\"BT /F1 12 Tf 50 770 Td\"]\n+    for index, line in enumerate([project_name, *rows]):\n+        if index:\n+            commands.append(b\"0 -18 Td\")\n+        commands.append(b\"(\" + escape(line) + b\") Tj\")\n+    commands.append(b\"ET\")\n+    stream = b\"\\n\".join(commands)\n+    objects = [\n+        b\"<< /Type /Catalog /Pages 2 0 R >>\",\n+        b\"<< /Type /Pages /Kids [3 0 R] /Count 1 >>\",\n+        b\"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>\",\n+        b\"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\",\n+        b\"<< /Length \" + str(len(stream)).encode() + b\" >>\\nstream\\n\" + stream + b\"\\nendstream\",\n+    ]\n+    output = BytesIO()\n+    output.write(b\"%PDF-1.4\\n\")\n+    offsets = [0]\n+    for number, body in enumerate(objects, 1):\n+        offsets.append(output.tell())\n+        output.write(f\"{number} 0 obj\\n\".encode() + body + b\"\\nendobj\\n\")\n+    startxref = output.tell()\n+    output.write(f\"xref\\n0 {len(offsets)}\\n0000000000 65535 f \\n\".encode())\n+    for offset in offsets[1:]:\n+        output.write(f\"{offset:010d} 00000 n \\n\".encode())\n+    output.write(f\"trailer\\n<< /Size {len(offsets)} /Root 1 0 R >>\\nstartxref\\n{startxref}\\n%%EOF\\n\".encode())\n+    return output.getvalue()\n",
+  "checks": {
+    "passed": true,
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "test_content_is_escaped (test_report.PDFContractTests.test_content_is_escaped) ... ok\ntest_cross_reference_offsets_and_stream_length (test_report.PDFContractTests.test_cross_reference_offsets_and_stream_length) ... ok\ntest_no_unrelated_tenant_data_appears (test_report.PDFContractTests.test_no_unrelated_tenant_data_appears) ... ok\ntest_pdf_has_parseable_structure (test_report.PDFContractTests.test_pdf_has_parseable_structure) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.000s\n\nOK\n",
+    "runner": "no-network-verifier-sidecar",
+    "patch_hash": "43ed1c37ec9c034619f3675e8a784897332dbfda2b3b495342250f082a3a6760",
+    "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+    "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+    "build_revision": "uncommitted-reference"
+  },
+  "final_item": {
+    "id": "8ccd0801-e8e5-48b5-b55e-2a172a446c18",
+    "request": {
+      "id": "5bff0a71-95d9-41c2-b682-4f25e685bf09",
+      "tenant_id": "atlas",
+      "text": "Add PDF export for Project Atlas",
+      "kind": "feature",
+      "project_id": "atlas-project",
+      "viewer_id": null,
+      "expires_at": null,
+      "status": "engineering",
+      "revision": 1,
+      "current_attempt_id": "bc70399c-039a-4f97-a024-dc9dd2004880",
+      "accepted_proposal_id": "bce7a0a0-10ac-4f93-ad73-490877c8b371"
+    },
+    "status": "checks_passed",
+    "patch": {
+      "edits": [
+        {
+          "path": "sample_app/report.py",
+          "old": "\"\"\"The deliberately missing capability that an engineering proposal may add.\"\"\"\n\n\ndef export_pdf(project_name: str, rows: list[str]) -> bytes:\n    raise NotImplementedError(\"PDF export needs an engineer-reviewed code change\")\n",
+          "new": "\"\"\"Agent-authored manual-path correction, not a successful Nemotron output.\n\nBounded one-page Latin-1 export for the synthetic sample. Long reports and Unicode\nlayout require further engineering. This source is checked in the verifier only.\n\"\"\"\nfrom io import BytesIO\n\n\ndef export_pdf(project_name: str, rows: list[str]) -> bytes:\n    def escape(value: str) -> bytes:\n        return value.replace(\"\\\\\", \"\\\\\\\\\").replace(\"(\", \"\\\\(\").replace(\")\", \"\\\\)\").encode(\"latin-1\", \"replace\")\n\n    commands = [b\"BT /F1 12 Tf 50 770 Td\"]\n    for index, line in enumerate([project_name, *rows]):\n        if index:\n            commands.append(b\"0 -18 Td\")\n        commands.append(b\"(\" + escape(line) + b\") Tj\")\n    commands.append(b\"ET\")\n    stream = b\"\\n\".join(commands)\n    objects = [\n        b\"<< /Type /Catalog /Pages 2 0 R >>\",\n        b\"<< /Type /Pages /Kids [3 0 R] /Count 1 >>\",\n        b\"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>\",\n        b\"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\",\n        b\"<< /Length \" + str(len(stream)).encode() + b\" >>\\nstream\\n\" + stream + b\"\\nendstream\",\n    ]\n    output = BytesIO()\n    output.write(b\"%PDF-1.4\\n\")\n    offsets = [0]\n    for number, body in enumerate(objects, 1):\n        offsets.append(output.tell())\n        output.write(f\"{number} 0 obj\\n\".encode() + body + b\"\\nendobj\\n\")\n    startxref = output.tell()\n    output.write(f\"xref\\n0 {len(offsets)}\\n0000000000 65535 f \\n\".encode())\n    for offset in offsets[1:]:\n        output.write(f\"{offset:010d} 00000 n \\n\".encode())\n    output.write(f\"trailer\\n<< /Size {len(offsets)} /Root 1 0 R >>\\nstartxref\\n{startxref}\\n%%EOF\\n\".encode())\n    return output.getvalue()\n"
+        }
+      ]
+    },
+    "patch_hash": "43ed1c37ec9c034619f3675e8a784897332dbfda2b3b495342250f082a3a6760",
+    "human_decision": null,
+    "operation_deadline": null,
+    "checks": [
+      {
+        "subject_hash": "b4e08ee7119b6b3e827273b98f5e5f6013f063ccf4ae66a9746c68027e283f4c",
+        "result": {
+          "passed": false,
+          "exit_code": 1,
+          "stdout": "",
+          "stderr": "test_report (unittest.loader._FailedTest.test_report) ... ERROR\n\n======================================================================\nERROR: test_report (unittest.loader._FailedTest.test_report)\n----------------------------------------------------------------------\nImportError: Failed to import test module: test_report\nTraceback (most recent call last):\n  File \"/usr/local/lib/python3.12/unittest/loader.py\", line 396, in _find_test_path\n    module = self._get_module_from_name(name)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/unittest/loader.py\", line 339, in _get_module_from_name\n    __import__(name)\n  File \"/tmp/ownstack-queued-check-zt31zjot/checks/test_report.py\", line 2, in <module>\n    from sample_app.report import export_pdf\n  File \"/tmp/ownstack-queued-check-zt31zjot/sample_app/report.py\", line 161\n    \"\"\"\"\"\"}\n       ^\nSyntaxError: unterminated triple-quoted string literal (detected at line 161)\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (errors=1)\n",
+          "runner": "no-network-verifier-sidecar",
+          "patch_hash": "b4e08ee7119b6b3e827273b98f5e5f6013f063ccf4ae66a9746c68027e283f4c",
+          "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+          "checks_hash": "5ac5690e387edbfdbd40fc5f534189b0567907e0dcf084049fd0cfa62a77557d",
+          "build_revision": "uncommitted-reference"
+        },
+        "limitation": "These checks cover only the owned fixture. A pass is not a security guarantee or a release."
+      },
+      {
+        "subject_hash": "43ed1c37ec9c034619f3675e8a784897332dbfda2b3b495342250f082a3a6760",
+        "result": {
+          "passed": true,
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": "test_content_is_escaped (test_report.PDFContractTests.test_content_is_escaped) ... ok\ntest_cross_reference_offsets_and_stream_length (test_report.PDFContractTests.test_cross_reference_offsets_and_stream_length) ... ok\ntest_no_unrelated_tenant_data_appears (test_report.PDFContractTests.test_no_unrelated_tenant_data_appears) ... ok\ntest_pdf_has_parseable_structure (test_report.PDFContractTests.test_pdf_has_parseable_structure) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.000s\n\nOK\n",
+          "runner": "no-network-verifier-sidecar",
+          "patch_hash": "43ed1c37ec9c034619f3675e8a784897332dbfda2b3b495342250f082a3a6760",
+          "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+          "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+          "build_revision": "uncommitted-reference"
+        },
+        "limitation": "These checks cover only the owned fixture. A pass is not a security guarantee or a release."
+      }
+    ]
+  },
+  "budget_after": {
+    "mode": "nebius",
+    "reserved_calls": 10,
+    "max_live_calls": 10,
+    "remaining_calls": 0,
+    "note": "Reservations are a conservative call cap, not confirmed provider billing."
+  },
+  "reserved_this_run": 0
+}

@@ -1,0 +1,946 @@
+{
+  "date": "2026-10-19T02:12:47.867144+00:00",
+  "backend": "docker",
+  "policy": "landlock-seccomp-pdf-v1",
+  "probes": [
+    {
+      "probe": "filesystem_read",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "7e9b4c95f80a7bbdac64db90e8ab247d7373b395816b8e18a28517f6dd5ad11f"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "7c80f6a5c83d78e1dc974e4a0b0e5268cb5389d11309515c17a5b5ee8ac3cd06",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "proc_environment",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "5c818e5c6e3645cf0c23c605c3a9093c317bf9df57a071379a1ef70f3cacecce"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "1fb7c46b06b8d5c9a58de46c75e59156a3022d72316ceebaedc744d0cf6d439c",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "filesystem_write",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "ac6e9ff862c0bcbe192bf3d2f94ad27072a1d4151c7b09c9fdcd3a474ca2118b"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "9b7ccec647a110895929560c21405b1c6383526ab9b0926c9e09d07d02f0d95e",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "native_file_open",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "8614a3c515b48dcfd2acba67c795868e39eb7b1b320f63f5620dcefcd7b356a4"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "11524141e67ea6d5b52087e4052d846303083a1226c8c6bcc004de70e222b173",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "unix_socket",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "dd980f0b74ea53e83c0055be9b3bef8ef0660cb3e54c28d18dfaa496ea9a9e77"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "0d476bead34d2c1b571b3f45baa0055d94d5392aad62155d1611e8538d62a54c",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "inet_socket",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "8d61e606f586f4a8286d29ca2de1c672d5d208569fc0a1830741a5a286e28123"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "c9a2f7189257fbdd7b2f278b7b88bc97bb61ad6988945bdfc446eef1f5ac5c78",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "process_creation",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "8c37af7afba3c0f157f1521e7d24f184403b25da5ae6dd3b024eedddd161c506"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "dc995eaf040896904ce74a8f02f9948b2f369b2b4c4a085e8518dafa85e0b8dc",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "exec",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "0eeb805023c6502dbe43703acceade6b0d98d98366166921df356966b71d7d6a"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "fd8475ee94a63c2fbee7548ea43dcf8794140007c4856239789a3ddbaca00f6b",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "ptrace",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "7d6029525347630f38d88f1743011a7765b2141d893e2451ab308103999598b0"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "0a369b92e175df04307e63d5c993023587a555cb97802d473be9e3b531ffd7ff",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "namespace_creation",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "6470870b95a9611ce74340b87e1c2f86bb6a5a2e9bcf044a3552d721843f5d12"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "7e1877d50367619e256105475deba62f03696f47471a907b68a8a8551b729e9f",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "memfd",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "b87ede443a46a551959e328e367f761c85d93ff9746ad2bf18908aa3188f7e83"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "4c8b33534e4e24bc192b91a72f832658b483c29c707670e71735c42bb73838f0",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "executable_mprotect",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "db948fbe65db328846fb57eb60b6199c350053c647d355900b4aac466495287e"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "1c281b8b7a4fb52fc2f01b0b1d5a75cd64a90b66e4becc74c95496d073f2146d",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "executable_mmap",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "0e59526261214201bf90152c2d8b1cb5e18f10f4c0d01cbb7da3f127506c7241"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "05ac4b8946d83b67400520459b0f668a5bb5c6b639a81ab4c20990292d5b633a",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "process_memory_write",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "6e6ab183dab924be1142f61f304be34de82fe3169c34604048f47e78cb5e79c4"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "859f1ae8c3a784d2efdd290480cdd2848741c8662ba793e7f54c9b6ccbd47a95",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    },
+    {
+      "probe": "policy_changes",
+      "denial_asserted_and_pdf_passed": true,
+      "result": {
+        "oracle_version": "pdf-external-v1",
+        "checks_expected": 7,
+        "checks_completed": 7,
+        "cases": [
+          {
+            "id": "atlas",
+            "passed": true,
+            "pdf_sha256": "ca0e35ea96194e73a0904a2835ebfd54d0de329518c30629ce384613f3cf5f4d"
+          },
+          {
+            "id": "escaped",
+            "passed": true,
+            "pdf_sha256": "804e42cc028056852e69f39e0ddf76089b1388f34b43f2cc45e367a1e3d1e678"
+          },
+          {
+            "id": "empty",
+            "passed": true,
+            "pdf_sha256": "eb223dccc9ef6419e4d4fb2484c29ab2ac44df00499faae52633f6fbbd843ff1"
+          },
+          {
+            "id": "latin1",
+            "passed": true,
+            "pdf_sha256": "4211fff1af8c95307740ba6c0dbfb81e19f9881c0e31c742d0f13d90d9dd3f88"
+          },
+          {
+            "id": "many",
+            "passed": true,
+            "pdf_sha256": "854bc9ed1caed2099024e6d9b5a8b7c31c8e656c486d067a32af909f6d9ca3f7"
+          },
+          {
+            "id": "nonce",
+            "passed": true,
+            "pdf_sha256": "bd8934ff2317305aadd861d3f673f663221f1917ea904b0ab73f6afb99d819bd"
+          },
+          {
+            "id": "separate_scope",
+            "passed": true,
+            "pdf_sha256": "007f14d6e053dca6fae3ccb977b11ea2488365d56a09ce82ee9635b6b419de6d"
+          }
+        ],
+        "passed": true,
+        "oracle_error": "",
+        "exit_code": 0,
+        "stdout": "Candidate output judged externally; PDF hashes are in cases.",
+        "stderr": "",
+        "runner": "docker-external-oracle",
+        "patch_hash": "ef5e27f2297cd607588765cb3b4c82d4de8111c5bb9fecfedfc202d6101d13c6",
+        "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+        "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+        "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+        "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+        "execution_policy_hash": "876b816fd348d2c1a9e36d46d8d7bd58869905adbf5ed0b73650a0ea6b140491",
+        "build_revision": "uncommitted-reference",
+        "image_id": "sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+        "isolation_profile": "landlock-seccomp-pdf-v1"
+      }
+    }
+  ],
+  "controls": {
+    "base_container_capabilities": {
+      "filesystem_read": true,
+      "unix_socket": true,
+      "fork": true
+    },
+    "baseline_passed": true,
+    "unsupported_runtime_executed_candidate": false,
+    "unsupported_runtime_failed_closed": true
+  },
+  "new_inference_calls": 0,
+  "source_sha256": {
+    "src/ownstack/candidate_sandbox.py": "c6bf1bfd65ba76ce2a549dc40f19ea25f945b58240fc55bf695a42b0a3c52e2c",
+    "src/ownstack/candidate_driver.py": "fc63706c2fb1250767c7eec57d73b7cbac499ddfeed5171d616bf6eddfc655c3",
+    "src/ownstack/runner.py": "edc66b88a44f05c29de70086ed829a7e9b8bc1aa1d3c15d809c02d641a691aff",
+    "src/ownstack/verifier_service.py": "44770aeef5c02590f3427ebe7f872ca959da5b089fdac7c37ef4592004840580",
+    "scripts/run_security_lab.py": "8be28db171742f449237d5ef297e26d55ec63103e21d31ce39250472a3c1529b"
+  },
+  "passed": true,
+  "limits": [
+    "Fifteen authored controls, not a security certificate or arbitrary-code escape audit.",
+    "Some denials overlap existing container policy; the baseline calibrates only three capabilities.",
+    "Same shared kernel and reused supervisor remain; no microVM, physical failover or independent review."
+  ]
+}

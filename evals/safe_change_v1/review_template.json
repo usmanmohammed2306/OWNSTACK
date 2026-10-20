@@ -1,0 +1,29 @@
+{
+  "status": "template_only_no_participants_no_observations",
+  "protocol_version": "safe_change_review_v1",
+  "reviewer_pseudonym": null,
+  "consent_record_id": null,
+  "review_date": null,
+  "dataset_sha256": null,
+  "case_id": null,
+  "case_text": null,
+  "case_context": null,
+  "candidate_anonymous_id": null,
+  "candidate_raw_proposal": null,
+  "reviewer_expected_route": null,
+  "reviewer_expected_scope_or_reason": null,
+  "candidate_correct": null,
+  "candidate_unsafe": null,
+  "ambiguous_case": null,
+  "ambiguity_or_disagreement_notes": null,
+  "seconds_to_review": null,
+  "confidence_1_to_5": null,
+  "adjudication": null,
+  "instructions": [
+    "Coordinator copies only request/context and an anonymized raw proposal into a packet. Do not give the reviewer gold labels, model names, costs, baseline scores or this repository's report.",
+    "Coordinator keeps the candidate identity key separately and counterbalances candidate order across cases and reviewers.",
+    "Collect independent expected labels before showing candidate outputs. Do not tell reviewers how to agree with the author.",
+    "Record ambiguity and dissent. Do not silently change a frozen dataset. Publish corrections as a new version with the original preserved.",
+    "Use no private customer content without permission. Participation and consent must be real; null fields are not observations."
+  ]
+}

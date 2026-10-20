@@ -1,0 +1,3900 @@
+{
+  "started_at": "2026-10-18T23:34:46.192460+00:00",
+  "case_set": "4db396efbf999478240455a62ef976b015d958b6e5abd9c024fe8551fb1eeaa9",
+  "synthetic_provider": true,
+  "synthetic_verifier": true,
+  "live_calls": 0,
+  "compiled_workflow": {
+    "workflow_schema": "ownstack-repair-evidence-v1",
+    "langgraph_version": "1.2.16",
+    "workflow_hash": "31f7d2f0caaddfedb3d672bdce7e7c1640903179cdc4bc4991d84f970798e3e8"
+  },
+  "runs": [
+    {
+      "case": "first_pass",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        7.9095,
+        7.245792,
+        1.470958
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "first_pass",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        9.470333,
+        7.792,
+        2.700209
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "failure_then_pass",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "failed",
+          "passed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        6.205,
+        5.972,
+        7.229625,
+        5.92775,
+        1.343916
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "failure_then_pass",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "failed",
+          "passed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        7.711458,
+        9.727208,
+        8.31425,
+        10.351375,
+        3.241459
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "two_failures",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        7.375667,
+        7.039292,
+        6.341792,
+        5.873542,
+        0.540041
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "two_failures",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        6.340459,
+        7.127334,
+        6.297166,
+        7.358667,
+        1.160375
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_model_output",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        5.29225,
+        6.440959,
+        0.591167
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_model_output",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        5.984458,
+        6.276375,
+        1.005833
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_patch_scope",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        5.418833,
+        7.011708,
+        0.696875
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_patch_scope",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        7.129541,
+        6.951125,
+        1.0395
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "verifier_unavailable",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        5.5375,
+        5.886459,
+        0.567084
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "verifier_unavailable",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        7.235458,
+        9.31825,
+        1.147375
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "forged_verdict",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.070875,
+        5.356208,
+        0.524625
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "forged_verdict",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.538875,
+        6.513875,
+        1.025584
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "partial_verdict",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        5.447,
+        5.745167,
+        0.5325
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "partial_verdict",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.538209,
+        6.811125,
+        0.954417
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "wrong_model",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        5.843833,
+        0.566125
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "wrong_model",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.168166,
+        0.889459
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "human_takeover",
+      "engine": "plain",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        5.790667,
+        0.560083
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "human_takeover",
+      "engine": "langgraph",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.282167,
+        1.211667
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "late_first_candidate",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "timed_out",
+          "passed"
+        ],
+        "candidate_saved": [
+          false,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.001292,
+        4.962667,
+        5.70575,
+        1.270041
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "late_first_candidate",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "timed_out",
+          "passed"
+        ],
+        "candidate_saved": [
+          false,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        7.293833,
+        7.107958,
+        7.531333,
+        2.591084
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "request_revision_changed",
+      "engine": "plain",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.224125,
+        0.636208
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "request_revision_changed",
+      "engine": "langgraph",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.974667,
+        1.166042
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "saved_state_replay",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.126417,
+        6.780583,
+        1.459667
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "saved_state_replay",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        7.412334,
+        8.245291,
+        2.41275
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "ai_off",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        2.862917
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "ai_off",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        3.133958
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "exhausted_budget",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        3.144375
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "exhausted_budget",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        3.637291
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "workflow_changed",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        1.718375,
+        0.531041
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "workflow_changed",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        2.616708,
+        0.968084
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "first_pass",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.643583,
+        7.550083,
+        1.874
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "first_pass",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        25.433625,
+        6.922375,
+        2.132041
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "failure_then_pass",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "failed",
+          "passed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        7.145,
+        7.421292,
+        7.085084,
+        8.66225,
+        1.885959
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "failure_then_pass",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "failed",
+          "passed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        7.914833,
+        7.557792,
+        6.99525,
+        6.54025,
+        2.217833
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "two_failures",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        6.724625,
+        7.480708,
+        7.026875,
+        7.319791,
+        1.327625
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "two_failures",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        5.560541,
+        5.710583,
+        5.890625,
+        5.746375,
+        0.540917
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_model_output",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.578875,
+        6.374875,
+        0.93375
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_model_output",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.278333,
+        5.887292,
+        0.66575
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_patch_scope",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        15.417417,
+        20.852875,
+        2.942084
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_patch_scope",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        14.687459,
+        16.229542,
+        0.753083
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "verifier_unavailable",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        9.283583,
+        16.82725,
+        3.60175
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "verifier_unavailable",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        5.9085,
+        7.094167,
+        0.66675
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "forged_verdict",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        8.06825,
+        7.988709,
+        1.163917
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "forged_verdict",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.239791,
+        6.353917,
+        0.547709
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "partial_verdict",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        7.875583,
+        7.599708,
+        1.020958
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "partial_verdict",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.621708,
+        5.764167,
+        0.542167
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "wrong_model",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        8.134542,
+        1.143708
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "wrong_model",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.331416,
+        0.693
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "human_takeover",
+      "engine": "langgraph",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.757,
+        1.113375
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "human_takeover",
+      "engine": "plain",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.049,
+        0.678334
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "late_first_candidate",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "timed_out",
+          "passed"
+        ],
+        "candidate_saved": [
+          false,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        11.082958,
+        8.244834,
+        11.515625,
+        2.513833
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "late_first_candidate",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "timed_out",
+          "passed"
+        ],
+        "candidate_saved": [
+          false,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        12.340958,
+        7.412375,
+        7.084,
+        2.2845
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "request_revision_changed",
+      "engine": "langgraph",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        7.324666,
+        1.142416
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "request_revision_changed",
+      "engine": "plain",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.438167,
+        0.6595
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "saved_state_replay",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        7.435709,
+        8.208958,
+        2.110083
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "saved_state_replay",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        7.631875,
+        7.498375,
+        2.392375
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "ai_off",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        3.990375
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "ai_off",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        3.094375
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "exhausted_budget",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        4.213542
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "exhausted_budget",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        3.177834
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "workflow_changed",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        2.641208,
+        1.032083
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "workflow_changed",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        2.003959,
+        0.625291
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "first_pass",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.511333,
+        6.30325,
+        1.5085
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "first_pass",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        9.075084,
+        9.677875,
+        2.710041
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "failure_then_pass",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "failed",
+          "passed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        7.087792,
+        6.475541,
+        5.844333,
+        6.709958,
+        1.391292
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "failure_then_pass",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "failed",
+          "passed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        8.796042,
+        12.862166,
+        15.433541,
+        10.281833,
+        2.903959
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "two_failures",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        7.046542,
+        7.63125,
+        6.825833,
+        6.653458,
+        0.712375
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "two_failures",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          true,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 2,
+      "phase_ms": [
+        8.09575,
+        11.009792,
+        7.866167,
+        11.689833,
+        1.43025
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_model_output",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        8.664584,
+        6.947541,
+        0.710125
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_model_output",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        10.043959,
+        10.016791,
+        2.56275
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_patch_scope",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.473416,
+        7.914833,
+        0.732042
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "invalid_patch_scope",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed",
+          "failed"
+        ],
+        "candidate_saved": [
+          false,
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        8.703833,
+        8.294208,
+        1.332458
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "verifier_unavailable",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.779458,
+        6.652208,
+        0.68525
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "verifier_unavailable",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        9.226167,
+        9.386958,
+        1.202583
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "forged_verdict",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.551458,
+        7.170833,
+        0.69125
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "forged_verdict",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        15.519209,
+        21.484666,
+        1.39825
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "partial_verdict",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        6.942708,
+        10.840708,
+        0.776458
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "partial_verdict",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        18.612375,
+        15.170708,
+        2.421042
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "wrong_model",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        6.703542,
+        0.656542
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "wrong_model",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        9.772667,
+        1.252417
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "human_takeover",
+      "engine": "plain",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        10.98925,
+        0.731458
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "human_takeover",
+      "engine": "langgraph",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        7.9555,
+        1.200167
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "late_first_candidate",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "timed_out",
+          "passed"
+        ],
+        "candidate_saved": [
+          false,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        7.025416,
+        7.042375,
+        6.227583,
+        1.884625
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "late_first_candidate",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "timed_out",
+          "passed"
+        ],
+        "candidate_saved": [
+          false,
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 2,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        9.222958,
+        8.702875,
+        10.300583,
+        3.777042
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "request_revision_changed",
+      "engine": "plain",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        9.703958,
+        1.043625
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "request_revision_changed",
+      "engine": "langgraph",
+      "saved": {
+        "state": "taken_over",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        14.038125,
+        5.288292
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "saved_state_replay",
+      "engine": "plain",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        7.79125,
+        13.396709,
+        1.997
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "saved_state_replay",
+      "engine": "langgraph",
+      "saved": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 1,
+      "synthetic_verifier_calls": 1,
+      "phase_ms": [
+        10.751833,
+        9.792667,
+        5.097
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "ai_off",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        4.055875
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "ai_off",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        3.957208
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "exhausted_budget",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        4.044458
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "exhausted_budget",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "failed"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        4.611833
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "workflow_changed",
+      "engine": "plain",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        2.211375,
+        0.860083
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    },
+    {
+      "case": "workflow_changed",
+      "engine": "langgraph",
+      "saved": {
+        "state": "manual_handoff",
+        "attempt_states": [
+          "discarded"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "synthetic_generator_calls": 0,
+      "synthetic_verifier_calls": 0,
+      "phase_ms": [
+        2.79825,
+        1.100042
+      ],
+      "checks": {
+        "expected_outcome": true,
+        "bounded_calls": true,
+        "bounded_attempts": true,
+        "no_silent_adoption": true,
+        "not_deployed": true,
+        "budget_ten_preserved": true,
+        "off_and_cap_no_dispatch": true,
+        "bad_scope_no_verifier": true,
+        "late_candidate_discarded": true
+      },
+      "passed": true
+    }
+  ],
+  "process_faults": [
+    {
+      "fault": "after_claim",
+      "exit_code": 23,
+      "expected_exit": 23,
+      "before": {
+        "state": "running",
+        "attempt_states": [
+          "generating"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "after": {
+        "state": "running",
+        "attempt_states": [
+          "generating"
+        ],
+        "candidate_saved": [
+          false
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "regeneration_calls": 0,
+      "synthetic_dispatch_count_total": 0,
+      "passed": true
+    },
+    {
+      "fault": "after_candidate_commit",
+      "exit_code": 24,
+      "expected_exit": 24,
+      "before": {
+        "state": "running",
+        "attempt_states": [
+          "candidate_ready"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "after": {
+        "state": "awaiting_review",
+        "attempt_states": [
+          "passed"
+        ],
+        "candidate_saved": [
+          true
+        ],
+        "original_preserved": true,
+        "human_decision": null,
+        "reserved_calls": 10,
+        "release_state": "not_deployed"
+      },
+      "regeneration_calls": 0,
+      "synthetic_dispatch_count_total": 1,
+      "passed": true
+    }
+  ],
+  "limits": [
+    "Authored finite controls, not live Nemotron or independent review.",
+    "SQLite and synthetic verifier, not PostgreSQL, Docker isolation or a production SLA.",
+    "Timing includes local SQL and orchestration; no model/network latency.",
+    "Sequential baseline shares trusted operations; no framework superiority assumed."
+  ],
+  "cold_compile_ms": 0.780458,
+  "interrupt_replay_control": {
+    "side_effect_before_interrupt": {
+      "paused": true,
+      "calls_before_resume": 1,
+      "calls_after_resume": 2,
+      "reviewed": true
+    },
+    "separate_generation_node": {
+      "paused": true,
+      "calls_before_resume": 1,
+      "calls_after_resume": 1,
+      "reviewed": true
+    },
+    "passed": true,
+    "limit": "Native in-memory interrupt lesson only; not the app's authenticated durable review gate"
+  },
+  "timing_ms": {
+    "plain": {
+      "samples": 135,
+      "median": 5.886459,
+      "p95": 9.703958,
+      "raw": [
+        0.524625,
+        0.531041,
+        0.5325,
+        0.540041,
+        0.540917,
+        0.542167,
+        0.547709,
+        0.560083,
+        0.566125,
+        0.567084,
+        0.591167,
+        0.625291,
+        0.636208,
+        0.656542,
+        0.6595,
+        0.66575,
+        0.66675,
+        0.678334,
+        0.68525,
+        0.69125,
+        0.693,
+        0.696875,
+        0.710125,
+        0.712375,
+        0.731458,
+        0.732042,
+        0.753083,
+        0.776458,
+        0.860083,
+        1.043625,
+        1.270041,
+        1.343916,
+        1.391292,
+        1.459667,
+        1.470958,
+        1.5085,
+        1.718375,
+        1.884625,
+        1.997,
+        2.003959,
+        2.132041,
+        2.211375,
+        2.217833,
+        2.2845,
+        2.392375,
+        2.862917,
+        3.094375,
+        3.144375,
+        3.177834,
+        4.044458,
+        4.055875,
+        4.962667,
+        5.29225,
+        5.356208,
+        5.418833,
+        5.447,
+        5.5375,
+        5.560541,
+        5.70575,
+        5.710583,
+        5.745167,
+        5.746375,
+        5.764167,
+        5.790667,
+        5.843833,
+        5.844333,
+        5.873542,
+        5.886459,
+        5.887292,
+        5.890625,
+        5.9085,
+        5.92775,
+        5.972,
+        6.001292,
+        6.049,
+        6.070875,
+        6.126417,
+        6.205,
+        6.224125,
+        6.227583,
+        6.239791,
+        6.278333,
+        6.30325,
+        6.331416,
+        6.341792,
+        6.353917,
+        6.438167,
+        6.440959,
+        6.473416,
+        6.475541,
+        6.511333,
+        6.54025,
+        6.551458,
+        6.621708,
+        6.652208,
+        6.653458,
+        6.703542,
+        6.709958,
+        6.779458,
+        6.780583,
+        6.825833,
+        6.922375,
+        6.942708,
+        6.947541,
+        6.99525,
+        7.011708,
+        7.025416,
+        7.039292,
+        7.042375,
+        7.046542,
+        7.084,
+        7.087792,
+        7.094167,
+        7.170833,
+        7.229625,
+        7.245792,
+        7.375667,
+        7.412375,
+        7.498375,
+        7.557792,
+        7.63125,
+        7.631875,
+        7.79125,
+        7.9095,
+        7.914833,
+        7.914833,
+        8.664584,
+        9.703958,
+        10.840708,
+        10.98925,
+        12.340958,
+        13.396709,
+        14.687459,
+        16.229542,
+        25.433625
+      ]
+    },
+    "langgraph": {
+      "samples": 135,
+      "median": 6.974667,
+      "p95": 15.170708,
+      "raw": [
+        0.889459,
+        0.93375,
+        0.954417,
+        0.968084,
+        1.005833,
+        1.020958,
+        1.025584,
+        1.032083,
+        1.0395,
+        1.100042,
+        1.113375,
+        1.142416,
+        1.143708,
+        1.147375,
+        1.160375,
+        1.163917,
+        1.166042,
+        1.200167,
+        1.202583,
+        1.211667,
+        1.252417,
+        1.327625,
+        1.332458,
+        1.39825,
+        1.43025,
+        1.874,
+        1.885959,
+        2.110083,
+        2.41275,
+        2.421042,
+        2.513833,
+        2.56275,
+        2.591084,
+        2.616708,
+        2.641208,
+        2.700209,
+        2.710041,
+        2.79825,
+        2.903959,
+        2.942084,
+        3.133958,
+        3.241459,
+        3.60175,
+        3.637291,
+        3.777042,
+        3.957208,
+        3.990375,
+        4.213542,
+        4.611833,
+        5.097,
+        5.288292,
+        5.984458,
+        6.168166,
+        6.276375,
+        6.282167,
+        6.297166,
+        6.340459,
+        6.374875,
+        6.513875,
+        6.538209,
+        6.538875,
+        6.578875,
+        6.643583,
+        6.724625,
+        6.757,
+        6.811125,
+        6.951125,
+        6.974667,
+        7.026875,
+        7.085084,
+        7.107958,
+        7.127334,
+        7.129541,
+        7.145,
+        7.235458,
+        7.293833,
+        7.319791,
+        7.324666,
+        7.358667,
+        7.412334,
+        7.421292,
+        7.435709,
+        7.480708,
+        7.531333,
+        7.550083,
+        7.599708,
+        7.711458,
+        7.792,
+        7.866167,
+        7.875583,
+        7.9555,
+        7.988709,
+        8.06825,
+        8.09575,
+        8.134542,
+        8.208958,
+        8.244834,
+        8.245291,
+        8.294208,
+        8.31425,
+        8.66225,
+        8.702875,
+        8.703833,
+        8.796042,
+        9.075084,
+        9.222958,
+        9.226167,
+        9.283583,
+        9.31825,
+        9.386958,
+        9.470333,
+        9.677875,
+        9.727208,
+        9.772667,
+        9.792667,
+        10.016791,
+        10.043959,
+        10.281833,
+        10.300583,
+        10.351375,
+        10.751833,
+        11.009792,
+        11.082958,
+        11.515625,
+        11.689833,
+        12.862166,
+        14.038125,
+        15.170708,
+        15.417417,
+        15.433541,
+        15.519209,
+        16.82725,
+        18.612375,
+        20.852875,
+        21.484666
+      ]
+    }
+  },
+  "passed": true,
+  "finished_at": "2026-10-18T23:34:51.233443+00:00",
+  "source_sha256": {
+    "src/ownstack/repair.py": "00226c57a24c6712a911b7b9f87817fabdce05fad9f29361ab1e60c047d2f347",
+    "src/ownstack/repair_graph.py": "c440946da40dc4781c46b89a01c3e63bfce5e49f6c854f71733fa0850f5f108c",
+    "src/ownstack/repair_execution.py": "104b1e4ef2517a10f0d17ead9a0fa0ec650fbe79de674818d2ec6b6cd6b07bf1",
+    "scripts/run_graph_lab.py": "a3d8bc0a1f46497991456708f74c824a13ec40ec7bd246efe7f6acca9f7f214f"
+  },
+  "executions": 96
+}

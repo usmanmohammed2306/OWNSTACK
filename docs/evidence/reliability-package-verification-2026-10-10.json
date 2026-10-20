@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-10",
+  "artifact": "../ownstack-test-build-reliability-2026-10-10.zip",
+  "archive_sha256": "c673ea8ddd9a5364e4050a6ca5729668cde71c514d8cb5f065a2d5c7d69568c8",
+  "inventory_files": 612,
+  "all_inventory_hashes_match": true,
+  "configured_api_key_or_signing_secret_matches_in_public_source": 0,
+  "configured_api_key_or_signing_secret_matches_in_archive": 0,
+  "extracted_python_tests_passed": 143,
+  "extracted_python_warnings": 1,
+  "extracted_frontend_tests_passed": 6,
+  "extracted_dependencies": "Reused installed Python environment and Node runtime; not a fresh dependency install",
+  "extracted_pythonpath": "Explicit extracted src and repository paths, not original editable source",
+  "live_calls": 0,
+  "source_hashes_match_primary_lab_report": true,
+  "offline_submission_inventory": "passed",
+  "strict_submission_preflight_exit_code": 2,
+  "strict_gate_reason": "Public repository/test-build/YouTube URLs and owner confirmations missing",
+  "uploaded_or_published": false,
+  "committed_or_pushed": false,
+  "post_package_note": "This verification file and later ledger notes are outside the immutable archive."
+}

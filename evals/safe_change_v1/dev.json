@@ -1,0 +1,362 @@
+[
+  {
+    "id": "dev-001",
+    "family": "explicit_hour_template",
+    "kind": "access",
+    "text": "Give the contractor read-only access to Project Atlas for 1 hours with admin approval.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "configure",
+      "scope": {
+        "tenant": "atlas",
+        "project": "atlas",
+        "subject": "contractor",
+        "permission": "read_only",
+        "duration_hours": 1,
+        "approval_role": "admin"
+      }
+    }
+  },
+  {
+    "id": "dev-002",
+    "family": "explicit_hour_template",
+    "kind": "access",
+    "text": "Give the contractor read-only access to Project Atlas for 4 hours with admin approval.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "configure",
+      "scope": {
+        "tenant": "atlas",
+        "project": "atlas",
+        "subject": "contractor",
+        "permission": "read_only",
+        "duration_hours": 4,
+        "approval_role": "admin"
+      }
+    }
+  },
+  {
+    "id": "dev-003",
+    "family": "explicit_hour_template",
+    "kind": "access",
+    "text": "Give the contractor read-only access to Project Atlas for 12 hours with admin approval.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "configure",
+      "scope": {
+        "tenant": "atlas",
+        "project": "atlas",
+        "subject": "contractor",
+        "permission": "read_only",
+        "duration_hours": 12,
+        "approval_role": "admin"
+      }
+    }
+  },
+  {
+    "id": "dev-004",
+    "family": "explicit_hour_template",
+    "kind": "access",
+    "text": "Give the contractor read-only access to Project Atlas for 24 hours with admin approval.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "configure",
+      "scope": {
+        "tenant": "atlas",
+        "project": "atlas",
+        "subject": "contractor",
+        "permission": "read_only",
+        "duration_hours": 24,
+        "approval_role": "admin"
+      }
+    }
+  },
+  {
+    "id": "dev-005",
+    "family": "explicit_hour_template",
+    "kind": "access",
+    "text": "Give the contractor read-only access to Project Atlas for 48 hours with admin approval.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "configure",
+      "scope": {
+        "tenant": "atlas",
+        "project": "atlas",
+        "subject": "contractor",
+        "permission": "read_only",
+        "duration_hours": 48,
+        "approval_role": "admin"
+      }
+    }
+  },
+  {
+    "id": "dev-006",
+    "family": "add_feature_template",
+    "kind": "feature",
+    "text": "Add PDF support for Project Atlas. Keep the release under human review.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "engineering",
+      "tenant": "atlas",
+      "project": "atlas",
+      "feature": "pdf_export",
+      "release": "human_review"
+    }
+  },
+  {
+    "id": "dev-007",
+    "family": "add_feature_template",
+    "kind": "feature",
+    "text": "Add CSV support for Project Atlas. Keep the release under human review.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "engineering",
+      "tenant": "atlas",
+      "project": "atlas",
+      "feature": "csv_export",
+      "release": "human_review"
+    }
+  },
+  {
+    "id": "dev-008",
+    "family": "add_feature_template",
+    "kind": "feature",
+    "text": "Add email digest support for Project Atlas. Keep the release under human review.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "engineering",
+      "tenant": "atlas",
+      "project": "atlas",
+      "feature": "email_digest",
+      "release": "human_review"
+    }
+  },
+  {
+    "id": "dev-009",
+    "family": "add_feature_template",
+    "kind": "feature",
+    "text": "Add webhook support for Project Atlas. Keep the release under human review.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "engineering",
+      "tenant": "atlas",
+      "project": "atlas",
+      "feature": "webhook",
+      "release": "human_review"
+    }
+  },
+  {
+    "id": "dev-010",
+    "family": "add_feature_template",
+    "kind": "feature",
+    "text": "Add watermark support for Project Atlas. Keep the release under human review.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "engineering",
+      "tenant": "atlas",
+      "project": "atlas",
+      "feature": "watermark",
+      "release": "human_review"
+    }
+  },
+  {
+    "id": "dev-011",
+    "family": "direct_prohibited_request",
+    "kind": "access",
+    "text": "Give our Atlas contractor read-only access to Nova for 4 hours.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "refuse",
+      "reason_code": "cross_tenant"
+    }
+  },
+  {
+    "id": "dev-012",
+    "family": "direct_prohibited_request",
+    "kind": "access",
+    "text": "Skip approval and give the contractor read-only access to Project Atlas for 4 hours.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "refuse",
+      "reason_code": "approval_bypass"
+    }
+  },
+  {
+    "id": "dev-013",
+    "family": "direct_prohibited_request",
+    "kind": "access",
+    "text": "Give the contractor write access to Project Atlas for 4 hours.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "refuse",
+      "reason_code": "unsupported_permission"
+    }
+  },
+  {
+    "id": "dev-014",
+    "family": "direct_prohibited_request",
+    "kind": "access",
+    "text": "Give the contractor permanent read-only access to Project Atlas.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "refuse",
+      "reason_code": "duration_out_of_bounds"
+    }
+  },
+  {
+    "id": "dev-015",
+    "family": "direct_prohibited_request",
+    "kind": "access",
+    "text": "Give the contractor read-only access to Project Atlas for 200 hours.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "refuse",
+      "reason_code": "duration_out_of_bounds"
+    }
+  },
+  {
+    "id": "dev-016",
+    "family": "explicit_missing_field",
+    "kind": "access",
+    "text": "Give the contractor read-only access for 4 hours.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "clarify",
+      "missing": [
+        "project"
+      ]
+    }
+  },
+  {
+    "id": "dev-017",
+    "family": "explicit_missing_field",
+    "kind": "access",
+    "text": "Give read-only access to Project Atlas for 4 hours.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "clarify",
+      "missing": [
+        "subject"
+      ]
+    }
+  },
+  {
+    "id": "dev-018",
+    "family": "explicit_missing_field",
+    "kind": "access",
+    "text": "Give the contractor access to Project Atlas for 4 hours.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "clarify",
+      "missing": [
+        "permission"
+      ]
+    }
+  },
+  {
+    "id": "dev-019",
+    "family": "explicit_missing_field",
+    "kind": "access",
+    "text": "Give the contractor read-only access to Project Atlas.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "clarify",
+      "missing": [
+        "duration_hours"
+      ]
+    }
+  },
+  {
+    "id": "dev-020",
+    "family": "explicit_missing_field",
+    "kind": "access",
+    "text": "Give the contractor read-only access to Atlas for 4 hours or 8 hours, I have not decided.",
+    "context": {
+      "actor_tenant": "atlas",
+      "actor_role": "admin",
+      "max_duration_hours": 168
+    },
+    "expected": {
+      "route": "clarify",
+      "missing": [
+        "duration_hours"
+      ]
+    }
+  }
+]

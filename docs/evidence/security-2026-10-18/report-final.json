@@ -1,0 +1,419 @@
+{
+  "provenance": {
+    "source_hash": "2f539989167452631dcd8da61847a67f6c88645d9bbdc1e31a9be6d564f26f33",
+    "checks_hash": "4e05f7e91597bed982e73f7ed9799e33f078f67528454ec80cd4edb8b515c45f",
+    "oracle_hash": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+    "driver_hash": "9e4882d1e82e2c1be4782d046fa27b569dea9b153c61064d1e2cc186269d009e",
+    "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+    "build_revision": "uncommitted-reference"
+  },
+  "source_inventory": {
+    "src/ownstack/__init__.py": "db8891b93d513cf522604bc32bebd72620fde5b12dc7dacf3bf4f55c8ae4ad2b",
+    "src/ownstack/ai.py": "68543691a6d76f3455edcc76bb51cb79b651fc4ee126a9096dd1d2f5d2dd4430",
+    "src/ownstack/api.py": "4394d614099c156777fa8e1e67f5dc8670a24672ed83db5486957a2aaf195418",
+    "src/ownstack/auth.py": "0894075928b76dabee279fc7f4dfdf6120864ff34fe660773888d3e09522a595",
+    "src/ownstack/bounded_process.py": "7846175b9ab21ad6a13c63367aa0f8d624a0ca6384b945b1d3e72a5308fadaee",
+    "src/ownstack/candidate_driver.py": "e8e4f7c983e705e6b0c0ab3a47bcf0afeb2d08dcb4b2e65e2892bbda7d64d3d5",
+    "src/ownstack/candidate_sandbox.py": "0158f42206c62370f7ec3408c8f3f2cff41bc86b7a5cfbb25223a823b9311261",
+    "src/ownstack/change_benchmark.py": "b8e6d8e3ebd8a7162b5be76138c463ad3d10cc3b547c9374c7b4cdf7413d58e4",
+    "src/ownstack/compatibility.py": "5f434ee4929a64e0876ec37f3ee6cd0917182c5920d9965a641f62a2b2544f13",
+    "src/ownstack/config.py": "e8dde139de82a01345c17b71c5d9de3e655996ef39cb26b666afa36730a254d9",
+    "src/ownstack/db.py": "b8cbfd86934b7e001d2c7cdbe487306e72d954b96c2ef09ebc06c5024f4acb79",
+    "src/ownstack/db_security.py": "65180944a1f6039184b37038247e98732170da038008940cb288310aea2e69d5",
+    "src/ownstack/demo.py": "e410022f72295fbf7a0066142889099973a68e57a597f5a8539afdcd42fd6d09",
+    "src/ownstack/evaluate.py": "9c31ad2cac87eb61f28813b52e53cd1cb1cb75b12c5672eceb7513e8d7c5689d",
+    "src/ownstack/evaluate_live.py": "e693887693adf1242ee207bc4bd01227c27f88a528f408d7d687f5c422e0ae9c",
+    "src/ownstack/host_access.py": "c42dc9b24d832132828672d63f3e098722f5dce25e2d0fd2441f3611812f964d",
+    "src/ownstack/http_security.py": "e0575500e291262c43a55f2d3bcb63c48bd481b3cfe813e6160919d599c90124",
+    "src/ownstack/job_files.py": "21162b9f03398a3901e0280001edfea523c64378cbe11c2c321fe5087a2ea5e0",
+    "src/ownstack/members.py": "eb416592fb9fc18147f05af787931c3455e5c781dc0e0c2409eeddbeb66ad2de",
+    "src/ownstack/models.py": "af4d5132aa2e6fcc3623f9458a3f86a90944d99e8838c3856e84ca6a4d9c7d9e",
+    "src/ownstack/operations.py": "5cf2acaac5d3c0cdd0c384df3157562d7c3b3c534c35233fd743aff458ebe650",
+    "src/ownstack/outbox.py": "50f9a6561cdaace5e927bf35efa3303144e44d8f761ac1d67061a3189e213cdc",
+    "src/ownstack/patch_agent.py": "6d800906c64f708fe861145e45c18fb7608dde0f7a03f64d551c25e413ecdd5a",
+    "src/ownstack/pdf_oracle.py": "9afe278228767e1eb984d0199defb1f3e19ee896d7053d083f1bdd6d75dc6df0",
+    "src/ownstack/policy.py": "57e299f2c8fa662af23526d537fc75c639f3036df4a211ae86d01521d2b1d12c",
+    "src/ownstack/process_supervisor.py": "de315e12436a49bfaf56cc9b6ded96b525d8f35c2102e5aad056aa66a7aae1a5",
+    "src/ownstack/proof.py": "97b5fec9b7707f4620c10e48141ddc8dc7a774e481e1e5388e60224bb1f1f5b3",
+    "src/ownstack/queue_init.py": "375dbac25a6401f1050c7fc710e9facd08847db4292cb0324adbdf591b4ee354",
+    "src/ownstack/recovery.py": "b78db03159f07dffd729a67204dbee12e1c59184b0f8eadfc1f9576ed1743c27",
+    "src/ownstack/repair.py": "891b7b55960fe87abd3ea1e8ea84f319168d220c30695ac15cf37af87d16bc44",
+    "src/ownstack/repair_api.py": "c6b4f5b04a523dd2397ce98edc1d23dc9db19763e9a4f2a7344c97929ca074cd",
+    "src/ownstack/repair_execution.py": "9bc2ed3c762b85bd86c7c46404fefad9b5ecf2ba22469c59a1021e77bc66bc57",
+    "src/ownstack/repair_graph.py": "03998cac320856bb570cc26752d1403e0006b59bdba1f5d1cebc50f4ff5b42ad",
+    "src/ownstack/repair_models.py": "2e1ab12d310b9cd4eb389091d1a7ec109195501821095b55b88d84fe69ae903c",
+    "src/ownstack/replay.py": "5d7337d5cdcbb8a02712290a0b33ce880b6071c641b340a6a4203b6b0f91c039",
+    "src/ownstack/runner.py": "6ce3f1c898d66e694ec54391229b4139cb6a2c46d3cba1a5e7bc4b2489e36ded",
+    "src/ownstack/seed.py": "49654ea4bf6d36069f4413fd37361da2bdfa54670c5ae03019df7ccdb9d88a96",
+    "src/ownstack/service.py": "caff75868b0ba3ae6eb77be07c36ea9b9e6923d68a127a7f76ae75997417e050",
+    "src/ownstack/verifier_service.py": "717a240ef8b812c7f4be8459dbf96d3a3c2fbfa5cc4e2934e7142e4ba1114816",
+    "src/ownstack/worker.py": "493bfd40e0c5d4798a482149f95edb67ad47d81694c653add52439cbce78eeb7",
+    "migrations/versions/92ab71f0d614_sessions_and_operations.py": "5eb198651d2fc12f6673b7806dffa1e32d7ddffd375afbe730018ba1e261037f",
+    "migrations/versions/a14d09c7f602_operations.py": "99b2b3939d789ecc80d1162f2244c88a15985b9b9e67bffda21e5ae74475b290",
+    "migrations/versions/bd01c3fe60ce_initial_schema.py": "80ecdfcbc145b443cb8dc692b19582e6643698e362fbf72f371d3ae9dee82987",
+    "migrations/versions/c62e84a910f3_host_observations.py": "f04d96f2afab5543808be57058fed0b7f49c73a8e30db9a506ad8132a091d576",
+    "migrations/versions/d74f109a32be_read_candidate_index.py": "94591b9f2c6bc4d498a190feb6ef0d96486a98bd1f27b8d0147cca3e5b128a82",
+    "migrations/versions/e8c1a7b4d209_bounded_repair.py": "7676735aa227cd0aab50b1a1254c9a26f0f5ed464723d47871b01b7ab8c2448a",
+    "migrations/versions/f4a2d9b71c30_inference_budget.py": "7fc30ea51c2a2449d7348913e7e6c1cc4f4d9bb7303a4e50aa20e2528f8e1919"
+  },
+  "regression": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "416",
+    "time": "27.269",
+    "timestamp": "2026-10-18T19:30:33.220476-07:00"
+  },
+  "journeys": {
+    "http": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "runtime_ai_off",
+          "passed": true
+        },
+        {
+          "name": "exhausted_ledger_and_zero_cap",
+          "passed": true
+        },
+        {
+          "name": "duplicate_request_saved_False",
+          "passed": true
+        },
+        {
+          "name": "ai_off_created_no_attempt_False",
+          "passed": true
+        },
+        {
+          "name": "handoff_idempotent_False",
+          "passed": true
+        },
+        {
+          "name": "manual_not_model_False",
+          "passed": true
+        },
+        {
+          "name": "host_preview_parity_False",
+          "passed": true
+        },
+        {
+          "name": "actual_grant_observed_False",
+          "passed": true
+        },
+        {
+          "name": "revocation_enforced_False",
+          "passed": true
+        },
+        {
+          "name": "proof_digest_fed58542",
+          "passed": true
+        },
+        {
+          "name": "served_source_matches_reference_fed58542",
+          "passed": true
+        },
+        {
+          "name": "duplicate_request_saved_True",
+          "passed": true
+        },
+        {
+          "name": "ai_off_created_no_attempt_True",
+          "passed": true
+        },
+        {
+          "name": "handoff_idempotent_True",
+          "passed": true
+        },
+        {
+          "name": "manual_not_model_True",
+          "passed": true
+        },
+        {
+          "name": "host_preview_parity_True",
+          "passed": true
+        },
+        {
+          "name": "actual_grant_observed_True",
+          "passed": true
+        },
+        {
+          "name": "expiry_denied_without_cleanup",
+          "passed": true
+        },
+        {
+          "name": "revocation_enforced_True",
+          "passed": true
+        },
+        {
+          "name": "proof_digest_3e54bd02",
+          "passed": true
+        },
+        {
+          "name": "served_source_matches_reference_3e54bd02",
+          "passed": true
+        },
+        {
+          "name": "pdf_routes_to_engineering",
+          "passed": true
+        },
+        {
+          "name": "actual_bad_patch_rejected",
+          "passed": true
+        },
+        {
+          "name": "seven_actual_external_oracle_checks",
+          "passed": true
+        },
+        {
+          "name": "exact_artifact_not_deployed",
+          "passed": true
+        },
+        {
+          "name": "proof_digest_faca7f63",
+          "passed": true
+        },
+        {
+          "name": "served_source_matches_reference_faca7f63",
+          "passed": true
+        },
+        {
+          "name": "failed_evidence_preserved",
+          "passed": true
+        },
+        {
+          "name": "failed_source_preserved",
+          "passed": true
+        },
+        {
+          "name": "repeated_need_two_tenants",
+          "passed": true
+        },
+        {
+          "name": "convergence_record_only",
+          "passed": true
+        },
+        {
+          "name": "tenant_cannot_see_cross_tenant_count",
+          "passed": true
+        },
+        {
+          "name": "budget_unchanged",
+          "passed": true
+        }
+      ],
+      "saved_fingerprints": {
+        "fed58542-145b-4bbc-998a-301381ef557a": "7fa08e186d82c20746ccbb5bdd57c2cc9d999b53ffb4e5b8dacb210dac3fcd03",
+        "3e54bd02-42ad-4163-a08d-abc7060f6084": "d0ca1968d2cb4f208bcacb3058c9e9925d17de1837c1089e1bf075ade3544e85",
+        "faca7f63-6a02-420a-ae3b-f19f6be8f29a": "82e52c7379964b0f65d22af8c703ceb437285c67903643c897582d7ea289383f"
+      },
+      "new_inference_calls": 0,
+      "reserved_calls_before": 10,
+      "reserved_calls_after": 10,
+      "started_at": "2026-10-19T02:31:05.421023+00:00",
+      "finished_at": "2026-10-19T02:31:18.395120+00:00",
+      "request_ids": {
+        "access": "fed58542-145b-4bbc-998a-301381ef557a",
+        "expiry": "3e54bd02-42ad-4163-a08d-abc7060f6084",
+        "engineering": "faca7f63-6a02-420a-ae3b-f19f6be8f29a",
+        "nova_feature": "6500ac71-27d7-4d5f-a173-f0392290b356"
+      },
+      "http_requests": 80,
+      "private_report_sha256": "86dd8c0f68eb87834e2ad041ffd3a422f2ed4549388d820dd942dda7a838dee3"
+    },
+    "restart": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "runtime_ai_off",
+          "passed": true
+        },
+        {
+          "name": "exhausted_ledger_and_zero_cap",
+          "passed": true
+        },
+        {
+          "name": "proof_digest_fed58542",
+          "passed": true
+        },
+        {
+          "name": "served_source_matches_reference_fed58542",
+          "passed": true
+        },
+        {
+          "name": "restart_preserved_fed58542",
+          "passed": true
+        },
+        {
+          "name": "proof_digest_3e54bd02",
+          "passed": true
+        },
+        {
+          "name": "served_source_matches_reference_3e54bd02",
+          "passed": true
+        },
+        {
+          "name": "restart_preserved_3e54bd02",
+          "passed": true
+        },
+        {
+          "name": "proof_digest_faca7f63",
+          "passed": true
+        },
+        {
+          "name": "served_source_matches_reference_faca7f63",
+          "passed": true
+        },
+        {
+          "name": "restart_preserved_faca7f63",
+          "passed": true
+        },
+        {
+          "name": "budget_unchanged",
+          "passed": true
+        }
+      ],
+      "saved_fingerprints": {
+        "fed58542-145b-4bbc-998a-301381ef557a": "7fa08e186d82c20746ccbb5bdd57c2cc9d999b53ffb4e5b8dacb210dac3fcd03",
+        "3e54bd02-42ad-4163-a08d-abc7060f6084": "d0ca1968d2cb4f208bcacb3058c9e9925d17de1837c1089e1bf075ade3544e85",
+        "faca7f63-6a02-420a-ae3b-f19f6be8f29a": "82e52c7379964b0f65d22af8c703ceb437285c67903643c897582d7ea289383f"
+      },
+      "new_inference_calls": 0,
+      "reserved_calls_before": 10,
+      "reserved_calls_after": 10,
+      "started_at": "2026-10-19T02:31:55.787414+00:00",
+      "finished_at": "2026-10-19T02:31:57.039552+00:00",
+      "request_ids": {},
+      "http_requests": 18,
+      "private_report_sha256": "0a7757b80eb4bce342216e6d2dd043ad11fb0bfa6ee874d2715c1d77b7c49e68"
+    }
+  },
+  "date": "2026-10-18",
+  "timezone": "America/Phoenix",
+  "kind": "local-ai-off-security-hardening",
+  "passed": true,
+  "kernel": {
+    "policy": "landlock-seccomp-pdf-v1",
+    "landlock_abi": 8,
+    "architecture_executed": "aarch64",
+    "execution_policy_hash": "859431c34187c55b831b66f1dd9e3513fd0b9eacc1e9ce0e3a78edf964e0a674",
+    "missing_support": "fail closed before candidate",
+    "x86_64": "implemented, not executed in this rehearsal"
+  },
+  "verifier_reports": {
+    "kernel_docker": "../security-2026-10-18-docker-r4.json",
+    "kernel_sidecar": "../security-2026-10-18-sidecar-r2.json",
+    "adversarial_docker": "../security-2026-10-18-verifier-docker-r3.json",
+    "adversarial_sidecar": "../security-2026-10-18-verifier-sidecar-r1.json"
+  },
+  "runtime_database": {
+    "target": "ownstack_restore_a557786e5fb34c50a19ba5a192cb17bc",
+    "role": "ownstack_runtime_25614c4112934eeea7c72670484c7df0",
+    "safe_posture": true,
+    "denied": [
+      "schema_ddl",
+      "temporary_table",
+      "truncate_probe",
+      "migration_metadata_write",
+      "admin_role_switch",
+      "source_workflow_read"
+    ],
+    "target_ledger": 10,
+    "source_roles_modified": false,
+    "credentials": "Private 0600 runtime env only, excluded from public artifacts",
+    "ownership_membership_controls": "runtime-role-controls.json"
+  },
+  "production_lifecycle": {
+    "production_defaults_rejected": true,
+    "positive_startup_without_seed_passwords": true,
+    "identity_changes_rolled_back": true,
+    "server_started": false,
+    "inference_calls": 0,
+    "passed": true,
+    "limit": "Rollback-only lifecycle test, not live TLS, production identity or hosted deployment"
+  },
+  "build": {
+    "python_tests": 416,
+    "frontend_tests": 26,
+    "typescript_vite": true,
+    "local_images": [
+      "api",
+      "worker",
+      "verifier",
+      "web"
+    ],
+    "nginx_config": true,
+    "production_compose_config": true,
+    "large_optional_3d_chunk_warning_retained": true,
+    "actual_nginx_peer_path_checks": 6
+  },
+  "source_preservation": {
+    "schema": "e8c1a7b4d209",
+    "requests": 31,
+    "events": 213,
+    "reserved_calls": 10,
+    "existing_worker_heartbeat_may_advance": true,
+    "checked_again_after_final_demo": true
+  },
+  "boundaries": {
+    "ai_mode": "off",
+    "max_live_calls": 0,
+    "provider_credentials_present": false,
+    "new_inference_calls": 0,
+    "committed": false,
+    "pushed": false,
+    "publicly_deployed": false
+  },
+  "limits": [
+    "Fifteen authored caught-denial probes per backend and finite adversarial matrices are not an escape audit or security certification.",
+    "Shared Linux kernel and reused trusted supervisor remain; no microVM or arbitrary-repository execution.",
+    "Runtime role is DML-only across application tables, not row-level tenant security or protection from compromised API credentials.",
+    "No live TLS edge, SSO/MFA, independent penetration test, production capacity/failover, customer validation or submission proof.",
+    "Only the restored rehearsal was migrated/role-hardened. Original app remains historical, not silently upgraded."
+  ],
+  "preserved_failures": [
+    "tests-r2: 412 passed, loopback receiver bind blocked by host sandbox; tests-r3 passes with local test permission.",
+    "docker-r3 and verifier-docker-r2: Docker access blocked by host sandbox; retained, not policy successes.",
+    "Earlier passing snapshots predate final output-capture/hash changes; current reports are the explicit verifier_reports above.",
+    "Queue 0640 group ownership corrected before final HTTP journey; nested restored-URL required guard caught and corrected by tests.",
+    "Unpaced final-web HTTP r2 correctly received 429; failed logout cleanup recorded. Client pacing added, security limits unchanged. Final r4 passes all80 requests."
+  ],
+  "unpaced_http_failure": {
+    "passed": false,
+    "failed_check": "GET /v1/host/projects/atlas-project/documents/atlas-roadmap: expected 200, got 429",
+    "cleanup_errors": [
+      "atlas-admin",
+      "atlas-engineer",
+      "atlas-contractor",
+      "nova-admin",
+      "nova-contractor",
+      "platform-owner"
+    ],
+    "request_ids": {
+      "access": "65361528-2478-46d9-b784-575bcbf74c11",
+      "expiry": "26a85806-238a-4a5a-8174-1093761eaaf2"
+    },
+    "started_at": "2026-10-19T02:28:20.987389+00:00",
+    "finished_at": "2026-10-19T02:28:21.519695+00:00"
+  },
+  "boundary_inventory": {
+    "web/nginx.conf": "57d86673e533009a56af41d9d07aa9a8c0f770ad6da3d72a6f723b048930f678",
+    "compose.production.yaml": "c77974a832c00ad4f4c2ca61fe6536e989bd1d991738b0ca19bd412f1fe38a53",
+    "compose.rehearsal.yaml": "31b88300344481b8bbedc5b489910b79b24760c6ffe7298a0956294660ab4ec9",
+    "scripts/run_offline_demo.py": "421cd5f6686603fda0956f8f1fd36083f9ea1aac40c3dabfb70407d3b0e502bd",
+    "scripts/check_nginx_trust.py": "7e7643a2b504b1fda863941b2d8cb00b2459d66bc8a0ec509a0b77b60875186f",
+    "scripts/check_runtime_role_controls.py": "db3968d48dea9223c54e965664627723c6cf23cfc335b1ecaac2871a2835dfe6"
+  },
+  "intermediate_snapshot": "report.json",
+  "proxy_report": "proxy-r1.json",
+  "browser_screenshot": "cockpit-final.png",
+  "final_runtime_posture": {
+    "ai_mode": "off",
+    "cap": 0,
+    "keys_present": false,
+    "role_safe": true,
+    "ledger": 10,
+    "active_grants": 0
+  },
+  "test_report": "../security-2026-10-18-tests-r6.xml"
+}
