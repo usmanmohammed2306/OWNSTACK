@@ -1,165 +1,254 @@
+<div align="center">
+
 # OwnStack
 
-**Build it. Understand it. Know what happens when it breaks.**
+### Adapt the edge. Keep the core.
 
-You press Run. The screen keeps spinning. An AI response arrives late, a retry begins, and the answer on screen is suddenly the wrong one.
+Customer-specific changes for B2B software.<br>
+One shared app. Explicit boundaries. Human control.
 
-What happened?
+[The story](#it-starts-with-one-small-request) · [How it works](#two-paths-one-rule) · [Run locally](#run-it-locally-with-ai-off) · [Evidence](#show-the-work-not-just-the-interface) · [Architecture](#inside-the-system)
 
-Most tools are eager to write another piece of code for you. OwnStack starts with a different idea: the moment something goes wrong is the moment you can learn how your system actually works. It lets you follow a request through the browser, server, worker, and model; see where reality diverges from expectation; make a change; and check whether that change holds when the timing changes again.
-
-The goal is not just to help you ship an app. It is to help you become the person who understands, changes, and operates that app.
-
-> **Project status:** OwnStack currently has a working, local interactive studio for one simulated failure. The cloud-backed apprenticeship product described below is the direction we are building toward, not a feature we claim to have shipped.
-
-## The problem
-
-AI has made it easier than ever to get a working first version. Understanding that version is another matter.
-
-When a request hangs, a background worker retries, a model returns late, or a cloud bill surprises you, generated code is no substitute for knowing which component owns the decision. A tutorial can explain a concept in isolation. A coding agent can fix a bug for you. Neither automatically proves you can recognize the same failure in *your* project next week.
-
-OwnStack is being built for AI and cloud builders who want both outcomes: useful software today and more capability tomorrow.
-
-## How OwnStack is meant to work
-
-The full product is designed around a short loop:
-
-1. **Build something useful.** Start with a supported app or a clearly bounded part of your own project.
-2. **See the system.** Follow real requests, state changes, and failures, with observed facts kept separate from guesses.
-3. **Understand one decision.** Get an explanation when a concept is unfamiliar, then inspect the relevant code and evidence.
-4. **Make the change.** Edit or approve the critical behavior yourself. Ask for more help when you want it.
-5. **Verify it independently.** Tests check what the software did, including a variation that was not part of the walkthrough.
-6. **Leave with a truthful record.** Know what passed, what help you used, and what remains unproven.
-
-The first supported case is deliberately specific: an asynchronous AI request times out, gets retried, and receives an old answer after the new attempt has taken ownership. It is a small story that reveals a large class of real engineering problems: background work, persistent state, duplicate delivery, cancellation, concurrency, and the difference between a result existing and a result being safe to show.
-
-The long-term ambition is a project-native apprenticeship for software builders. The first prototype is not a universal tutor, arbitrary-repository coding agent, or claim that someone can master every cloud service through one lesson.
-
-## Try the studio that exists today
-
-The current app is a local, interactive simulation. It uses a real state model and deterministic checks, but it does **not** call an AI provider, deploy to AWS, or edit repository code.
-
-From the repository root:
-
-```sh
-pnpm install
-pnpm dev:studio
-```
-
-Open **http://127.0.0.1:5180/**. You need Node.js 22+ and pnpm. No API key or cloud account is required. The development server binds to your local machine.
-
-Then try this:
-
-1. Select **Begin walkthrough** and follow request 482 across the system view.
-2. Jump to **Late arrival**. Notice which attempt produced the visible summary.
-3. Select **Only accept the current attempt**.
-4. Select **Run both checks**. One fixture lets the retry succeed; the other lets it fail. In neither case should the superseded answer become the user's answer.
-5. Open **The code** and **Your evidence**. The code is an illustrative contract. The receipt describes a simulated exercise, not a production guarantee or a mastery score.
-
-You can pause and scrub the replay, inspect components, switch between 3D and 2D, use captions, or ask the scripted guide a small set of supported voice or text commands. Microphone access is off unless you choose to enable it. The lesson works without speech or WebGL.
-
-For every current control and limitation, see the [studio guide](apps/studio/README.md).
-
-## What is implemented, and what is not
-
-| Area | Status today |
-| --- | --- |
-| Interactive request-flow scene and original 3D guide | Implemented locally with React, TypeScript, and Three.js |
-| Retry and late-result behavior | Calculated by a deterministic simulation with success and failure fixtures |
-| Voice and text interaction | Browser speech when available, captions, and bounded scripted commands |
-| Evidence receipt | Local simulation receipt that states its limits |
-| Real learner code change and independent verifier | Not implemented in OwnStack yet |
-| Live NVIDIA Nemotron through Nebius Token Factory | Not implemented in OwnStack yet |
-| AWS deployment and operations | Not implemented in OwnStack yet |
-| OwnStack MCP server or native Alexa+ integration | Not implemented yet |
-| Learning improvement or commercial demand | Not established; these require real users and comparison |
-
-There is no hidden general-purpose AI behind the guide. Mira's explanations are scripted. Her face reacts to speaking state; it is not phoneme-accurate lip sync or NVIDIA Audio2Face. The current scene illustrates a system, not the internal topology of any cloud provider.
-
-These boundaries matter. A persuasive interface should make the underlying work easier to inspect, not make a simulation look like a deployed system.
-
-## The design principle: evidence before confidence
-
-OwnStack separates three statements that are often blurred together:
-
-- **The software did something.** A test, trace, or actual request can support that claim.
-- **A person explained or changed it.** The record should show what they did and what help they received.
-- **They can do it again independently.** That requires a different task or later check; a single guided success does not prove it.
-
-The same care applies to system status. “Our server stopped waiting” does not mean “the model stopped working.” “Cancellation requested” does not mean “cancellation confirmed.” “The worker last contacted us ten seconds ago” is an observation, not a progress percentage.
-
-That is why the first lesson focuses on an old AI response arriving after a retry. It gives us a concrete way to test whether the app tells the truth when several systems disagree about what is happening.
-
-## Where the code lives
-
-| Path | Purpose |
-| --- | --- |
-| [`apps/studio/src/model.ts`](apps/studio/src/model.ts) | Pure replay state, acceptance policies, and fixture checks |
-| [`apps/studio/src/model.test.ts`](apps/studio/src/model.test.ts) | Deterministic behavior tests |
-| [`apps/studio/src/Scene.tsx`](apps/studio/src/Scene.tsx) | 3D system scene and procedural guide |
-| [`apps/studio/src/voice.ts`](apps/studio/src/voice.ts) | Browser speech, interruption, and recognition handling |
-| [`apps/studio/src/main.tsx`](apps/studio/src/main.tsx) | Studio experience and evidence receipt |
-| [`tests/ownstack-studio.test.mjs`](tests/ownstack-studio.test.mjs) | Browser-level checks |
-| [`docs/OWNSTACK_BUILD_IT_YOURSELF.md`](docs/OWNSTACK_BUILD_IT_YOURSELF.md) | Step-by-step build and learning manual |
-
-This workspace also preserves an older, separate Relief prototype in [`legacy/relief`](legacy/relief/package.json). OwnStack Studio does not use it. Its [historical guide](legacy/relief/docs/README.md), package manifest, lockfile, source, and tests remain together; run its commands from that directory. The root workspace and default commands contain only OwnStack. Before publishing an OwnStack-only repository, exclude the legacy directory and unrelated historical documents.
-
-## Tests
-
-The studio has deterministic model tests and browser checks. Run:
-
-```sh
-pnpm test:studio
-pnpm build:studio
-```
-
-For browser checks, keep the studio development server running in another terminal, then run:
-
-```sh
-pnpm test:studio:browser
-```
-
-The browser test uses Playwright. If Playwright's Chromium is not installed, install it according to [Playwright's browser setup guide](https://playwright.dev/docs/browsers), or set `CHROME_PATH` to a locally installed Chrome or Chromium binary. The tests use simulated model behavior and mocked speech adapters. They do not establish real-model quality, cloud reliability, acoustic quality, or learning outcomes.
-
-## What comes next
-
-The next work is not a longer feature list. It is to make the central learning loop real:
-
-1. Build a small local API that saves a request once and returns its already-generated result when the browser asks again.
-2. Add a worker and an atomic ownership rule so an old attempt cannot publish after a retry.
-3. Replace one fixture with a bounded, server-side NVIDIA Nemotron call through Nebius Token Factory.
-4. Let a learner change a real, safe starter and run a verifier outside the editable exercise files.
-5. Deploy the smallest useful AWS slice with scoped access, observable failures, cost limits, and a recovery path.
-6. Expose a useful OwnStack workflow through a self-hosted MCP server and a clearly labeled Alexa+-style experience.
-7. Test whether builders actually finish useful work and understand it better than they would with an ordinary, capable AI assistant.
-
-The [build-it-yourself guide](docs/OWNSTACK_BUILD_IT_YOURSELF.md) breaks this into paced missions with analogies, specific reading links, coding tasks, tests, and submission checks. The [product decision](docs/OWNSTACK_DECISION.md), [learner experience design](docs/OWNSTACK_LEARNER_EXPERIENCE.md), and [AWS/NVIDIA learning program](docs/AWS_NVIDIA_LEARNING_PLAN.md) explain the reasoning and the open questions. They are plans, not claims of completed integrations. The current stack decision is React and TypeScript for the browser, Python for the planned API, worker, model adapter, MCP server, and AWS infrastructure code.
-
-## Hackathon direction
-
-OwnStack is being developed with two tracks in mind:
-
-- [Amazon Alexa+](https://amazonappdev2026.devpost.com/rules): a useful agent workflow exposed through a compliant self-hosted MCP server, with a clearly labeled simulated Alexa+ web experience where appropriate. A documented AWS integration may also support the AWS Builder mini-challenge.
-- [Nebius x NVIDIA Best Apps and Agents](https://nebiusglobalaihackathon.devpost.com/rules): a working builder application powered at runtime by an NVIDIA model through Nebius Token Factory.
-
-The current local studio alone does **not** satisfy either intended final integration. This README will be updated with actual endpoints, model IDs, deployment instructions, demo video, and measured results only when those things exist. Nothing here claims organizer approval, a prize, or a completed submission.
-
-## Privacy and safety
-
-The current studio uses local, synthetic scenarios. It does not require a cloud account or send a prompt to an AI model. Replay position and selected view/policy preferences are stored in the browser's local storage. Microphone use requires an explicit action and browser permission; browser speech recognition may send audio to the browser's provider. The app does not record or persist microphone audio. On-device speech synthesis is used only when a suitable local voice is available, and captions remain available without it.
-
-Do not put API keys, private repositories, personal data, or real customer content into screenshots or public issues. Future code-running exercises must use isolated, bounded environments. We will not treat a learner's repository as permission to execute arbitrary commands or expose its contents.
-
-## Contributing and feedback
-
-OwnStack is early. The most helpful feedback is concrete: where an explanation stopped matching what you saw, which step felt confusing, whether the visual model helped you reason about the failure, and what you could or could not do afterward without the guide.
-
-If you report an issue, include the browser and operating system, the steps to reproduce it, what you expected, and what happened. Please do not include credentials or private project data. Contributions should keep simulation, observed behavior, and unverified claims clearly separated.
-
-## License
-
-Apache License 2.0. See [LICENSE](LICENSE). Check the licenses and permissions for any new assets, example repositories, models, and external services before publishing or redistributing them.
+</div>
 
 ---
 
-*OwnStack is a working name. The vision is ambitious; the current implementation is intentionally labeled. The next milestone is not to make the demo look more certain. It is to make more of its promises true.*
+> **Repository publication status:** this GitHub repository currently contains the project overview only. The Python/React implementation, evidence files and MIT license file have not been uploaded here. Results below describe the local reference build; cloning this repository alone will not run it.
+
+## It starts with one small request
+
+> “Give this contractor read-only access to Project Atlas until Friday.”
+
+It sounds like a permission change. Until someone asks the questions that matter.
+
+Which contractor? Which project? Who approved it? What happens on Saturday? Does another customer inherit the change? Can anyone explain exactly what happened afterward?
+
+Then another request arrives:
+
+> “Can you add PDF export for our workspace?”
+
+That is not the same kind of change. A permission can be bounded by an existing capability. A missing feature needs engineering.
+
+**OwnStack makes that distinction real.** It helps an owned sample application adapt to a customer's needs without turning every request into a permanent fork, an unrestricted model action, or a configuration flag that quietly becomes a new product.
+
+The idea is simple: the model can suggest a change. It does not get to decide what the application permits.
+
+> **Status · October 19, 2026:** working local reference implementation with synthetic Atlas and Nova tenants. Historical live Nemotron access workflow observed; current rehearsal runs with AI off. Not a hosted product, production-certified sandbox, validated business or completed hackathon submission.
+
+## Two paths. One rule.
+
+**The host application remains the final authority.**
+
+```mermaid
+flowchart TD
+    R["A customer needs something different"] --> P["Saved request and bounded proposal"]
+    P --> C{"Fits a versioned Capability Contract?"}
+
+    C -->|"Temporary access"| V["Host-derived preview"]
+    V --> A["Admin approves the exact proposal"]
+    A --> H["Host checks every protected read"]
+    H --> X["Atlas only · expires · can be revoked"]
+
+    C -->|"New PDF capability"| E["Engineer Cockpit"]
+    E --> D["Review the exact candidate diff"]
+    D --> T["Restricted runner + independent PDF oracle"]
+    T --> Q["Human adopts, rejects or takes over"]
+    Q --> N["Checked handoff · not deployed"]
+
+    X -.-> S["Observed use + repeated needs"]
+    N -.-> S
+    S --> K["Convergence Queue · human product decision"]
+
+    classDef input fill:#102638,stroke:#62cad6,color:#eaf7ff;
+    classDef access fill:#103432,stroke:#6bd6b0,color:#ecfff8;
+    classDef engineering fill:#342719,stroke:#dfb46c,color:#fff5e4;
+    classDef decision fill:#202639,stroke:#9faee0,color:#f2f4ff;
+    class R,P input;
+    class V,A,H,X access;
+    class E,D,T,Q,N engineering;
+    class C,S,K decision;
+```
+
+### Path 1: a change the app already knows how to make
+
+The Capability Contract describes one narrow effect: temporary, read-only access for one viewer, in one project, in one tenant, for at most seven days.
+
+The host computes a preview using its authorization logic. An authenticated admin approves the exact proposal, not a paraphrase or an earlier revision. The host then checks tenant, project, viewer, expiry and revocation on each protected read.
+
+Atlas changes. Nova does not. When the grant expires or is revoked, the next read is denied.
+
+### Path 2: a change that really needs code
+
+PDF export cannot be disguised as a permission setting. It becomes an engineering work item with an inspectable request, exact diff, failed and passing evidence, and an explicit human decision.
+
+A bounded repair workflow uses LangGraph to route scope checks and parallel artifact/snapshot reviews. PostgreSQL owns durable state and recovery; the graph does not introduce a second checkpoint authority.
+
+Candidate code runs separately from the trusted PDF oracle. A passing result must cover the exact patch and current verification policy. Even then, acceptance produces a manual-release handoff, **not a merge or deployment**.
+
+### When the same need keeps returning
+
+The Convergence Queue connects repeated needs with recorded variation use. A product owner can promote, keep separate or retire a variation with a rationale. The decision is recorded; it does not automatically release a feature or reveal another tenant's request text.
+
+## Built for the moment something goes wrong
+
+The interesting part is not the happy-path animation. It is what happens when systems disagree.
+
+| When this happens | OwnStack's boundary |
+| --- | --- |
+| The same request is submitted again | Idempotency shares saved work; conflicting intent is rejected. |
+| A page is refreshed | Saved state is read without dispatching another model call. |
+| An attempt times out | The local wait ends honestly; remote cancellation is not claimed. |
+| Attempt 1 answers after attempt 2 takes ownership | Acceptance fences discard the stale answer. |
+| A proposal or checked artifact changes | Exact hashes, revisions and provenance require fresh evidence. |
+| The model is unavailable | Engineers retain evidence and can continue manually. |
+| Candidate code prints “passed” and exits successfully | The external oracle still requires actual, valid PDF output. |
+| A human accepts a checked patch | The release state remains Not deployed. |
+
+A preview is not an observation. A patch is not a release. A test pass is not a security guarantee.
+
+## Inside the system
+
+| Component | What it owns | Implementation |
+| --- | --- | --- |
+| Studio | Requests, scoped review, saved progress, evidence and optional 3D illustration | React 19, TypeScript, Three.js |
+| Control API | Sessions, roles, proposal approval and tenant-scoped routes | Python, FastAPI |
+| Host application | Final authorization on protected reads | Owned Python project-workspace fixture |
+| Durable ledger | Requests, attempts, approvals, variations, evidence, events and outbox | PostgreSQL, SQLAlchemy, Alembic |
+| Repair worker | Bounded phase execution, retries and stale-result fencing | Python, LangGraph |
+| Model adapter | Server-side interpretation and bounded patch proposals | NVIDIA Nemotron through Nebius Token Factory |
+| Verifier | Restricted candidate execution and independent output checks | Linux, Docker, Landlock, seccomp, external PDF oracle |
+| Delivery layer | Local reverse proxy and optional TLS configuration | Nginx, Docker Compose, Caddy configuration |
+
+The optional 3D view explains the architecture. It is not live permission telemetry, an approval control or evidence that a request succeeded.
+
+## Show the work, not just the interface
+
+These are **recorded local results**, not a live CI badge or an independent security audit.
+
+| Checkpoint | Recorded result | What it does not establish |
+| --- | --- | --- |
+| Security revision, Oct 18 | 416 Python tests, 26 frontend tests and web build pass | Production correctness or exhaustive coverage |
+| Kernel-denial controls | 15 authored probes pass on each verifier backend, each also producing a valid seven-case PDF | Fifteen novel escapes, VM-grade isolation or arbitrary-code safety |
+| Adversarial verifier matrix | 13 disposable-container and 15 sidecar expectations match | General PDF correctness or sandbox certification |
+| Hardened HTTP journey | 33 checks across 80 requests, including tenant boundaries, expiry, revoke and manual PDF recovery | Customer adoption or 80 independent attack scenarios |
+| Service restart | 12 checks across 18 requests; three saved histories match | Machine-loss recovery or database failover |
+| Logical PostgreSQL restore | 24 tables and 743 rows match the frozen snapshot | Cluster-role recovery, physical backup or production RPO/RTO |
+| Historical graph comparator | 16 cases × 2 engines × 3 repetitions = 96 executions; 48 paired outcomes match | 96 unique scenarios or improved model quality |
+
+The graph comparator belongs to an earlier source revision. Its local p95 was 8.661 ms versus 7.566 ms for the simpler controller: added orchestration overhead, not a speedup. Later security tests do not silently rebind that benchmark.
+
+### The model did not get a free pass
+
+On October 7, a live NVIDIA Nemotron call through Nebius Token Factory interpreted the access request. Exact approval led to a real Atlas host read, Nova denial and revocation.
+
+The live PDF patch failed independent checks. Its failure remains recorded. A subsequent manual-path correction passed checks, but that is **not** a successful model-only implementation. Later offline demonstrations use handwritten fixtures and identify them accordingly.
+
+Current inference is paused. The original ten-call allowance is exhausted; no counter reset or fresh database grants permission to spend again. Saved evidence and manual workflows remain usable.
+
+Evidence and methods: **security hardening**, **validation ledger**, **live usage**, **graph comparison** and **source-revision qualifications**.
+
+## Run it locally with AI off
+
+Use the **complete Python/React reference source**, not the older README-only prototype repository. The following commands are for a first local setup, not an instruction to replace an existing private rehearsal.
+
+Prerequisites: Docker Desktop with Compose and Linux containers. Candidate verification requires Linux x86_64 or aarch64, Landlock ABI 3 or later and libseccomp. The measured security run used aarch64 with ABI 8. Missing support fails closed instead of falling back to unrestricted execution.
+
+From the source directory containing `compose.full.yaml`, explicitly disable inference in the current shell:
+
+```bash
+export OWNSTACK_AI_MODE=off
+export OWNSTACK_MAX_LIVE_CALLS=0
+export NEBIUS_API_KEY=
+export NEBIUS_MODEL_ID=
+export NEBIUS_PATCH_MODEL_ID=
+
+docker compose -f compose.full.yaml up -d --build
+curl -fsS http://127.0.0.1:8080/health/ready
+```
+
+Wait for startup and migrations. Expected readiness:
+
+```json
+{"status":"ready","ai_mode":"off"}
+```
+
+Open **http://127.0.0.1:8080**. Local synthetic identities are `atlas-admin`, `atlas-engineer`, `atlas-contractor`, `nova-admin`, `nova-contractor` and `platform-owner`. On a new default fixture, their password is `demo-only-pass`.
+
+**Never expose these credentials or this default stack publicly.** Existing environments may use different credentials. Local setup is not a production deployment.
+
+The full stack starts PostgreSQL, migrations, API, worker, web and the no-network verifier. Readiness checks the schema and required worker/verifier signals without making an inference call.
+
+<details>
+<summary><strong>Development checks and source navigation</strong></summary>
+
+For host-side development, use Python 3.12 and Node 24 with pnpm 12.6.0, matching the web container toolchain. Create a virtual environment and install the locked dependencies:
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -c constraints.txt -e '.[dev]'
+pnpm --dir web install --frozen-lockfile
+
+.venv/bin/pytest
+.venv/bin/python -m ownstack.evaluate
+pnpm --dir web test
+pnpm --dir web build
+```
+
+The evaluation scorecard must report `live_nebius_evaluated: false`. Unit tests use offline fixtures; they are not submission proof of live inference. The optional 3D bundle currently triggers Vite's large-chunk warning.
+
+```text
+src/ownstack/
+  policy.py                Versioned contract and pure host policy
+  auth.py                  Sessions, roles and CSRF
+  service.py               Transactions, approval and acceptance fences
+  host_access.py           Protected reads and observed grant use
+  worker.py                Durable work and recovery
+  repair_graph.py          Bounded evidence graph
+  repair.py                Authoritative repair state and human adoption
+  runner.py                Patch scope and source-bound verification
+  candidate_sandbox.py     Mandatory candidate kernel restrictions
+  pdf_oracle.py            Independent PDF output checks
+  proof.py                 Tenant-private evidence snapshots
+
+web/                       Studio and display-state tests
+migrations/                Additive schema changes
+tests/                     Python regression tests
+scripts/                   Offline evaluations and operating rehearsals
+docs/                      Decisions, methods, limitations and learning
+```
+
+See **deployment notes** before touching an existing environment, and **the private rehearsal guide** for its separate restricted-role setup. Do not recreate a database to recover an inference allowance.
+
+</details>
+
+## What is still being earned
+
+The controls are implemented; trust has to come from more than implementation.
+
+- **Stronger isolation:** the verifier still shares a Linux kernel and reuses its supervisor. Independent escape testing, image/supply-chain review and stronger per-job boundaries remain open.
+- **Production operation:** real identity-provider integration, live TLS-path testing, sustained capacity and machine-loss recovery are not validated.
+- **Product value:** no customer pilot or willingness-to-pay result yet. Compare against a competent manual/feature-flag workflow, not an artificially weak baseline.
+- **Independent reproducibility:** local rehearsals are not another engineer's fresh clone, observed task study or public CI run.
+- **Publication:** a judge-accessible build, public video, complete source publication and final submission remain separate gates.
+
+OwnStack is the Nebius product. Relief is a separate project. The older shared Amazon/Alexa+ strategy is superseded.
+
+## Explore, rebuild, contribute
+
+Start with **the architecture**, then follow **the demo**. Read **the decisions** for tradeoffs and **the open questions** for what the evidence does not yet support.
+
+The **learning plan** breaks the implementation into small, testable slices. Reconstruct them in a separate learning repository. An existing reference, passing suite or calendar date does not mark an independently completed exercise.
+
+Useful contributions include a reproducible failure, a stronger negative test, a clearer boundary or a well-designed comparison. Describe expected behavior, observed behavior and the smallest reproduction. Keep credentials, private proof exports and customer data out of commits, screenshots and issues.
+
+## License
+
+The current Python/React reference implementation uses the MIT License; its license file will accompany source publication. Dependencies, models and external services retain their own terms.
+
+---
+
+<div align="center">
+
+**Make room for the customer. Keep ownership of the system.**
+
+</div>
