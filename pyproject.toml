@@ -1,0 +1,8 @@
+[project]
+name = "ownstack-rebuild"
+version = "0.0.1"
+requires-python = ">=3.12"
+description = "Personal reconstruction of OwnStack, one tested behavior per day"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
