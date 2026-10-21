@@ -258,6 +258,32 @@ def list_documents(project_id: str, principal: Principal = Depends(current_princ
     return [{"id": d.id, "title": d.title} for d in rows]
 
 
+@app.get("/v1/host/projects/{project_id}/access-review")
+def access_review(project_id: str, viewer_id: str, response: Response,
+                  principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
+    """Explain a tenant-local policy snapshot without impersonation or read effects."""
+    require_role(principal, "admin", "engineer")
+    project = scoped(db, Project, project_id, principal.tenant_id)
+    viewer = scoped(db, User, viewer_id, principal.tenant_id)
+    at = utcnow()
+    # Authentication rejects disabled users before any host policy evaluation.
+    decision = host_read_decision(db, Principal(viewer.id, viewer.tenant_id, viewer.role),
+                                  project.tenant_id, project.id, at) if viewer.enabled else None
+    allowed = bool(decision and decision.allowed)
+    reason = ("account_disabled" if not viewer.enabled else
+              "role_access" if allowed and decision.basis == "role" else
+              "active_grant" if allowed else "no_current_access")
+    response.headers["Cache-Control"] = "no-store"
+    return {"tenant_id": principal.tenant_id, "project_id": project.id,
+            "project_revision": project.revision, "viewer_id": viewer.id,
+            "viewer_enabled": viewer.enabled, "viewer_role": viewer.role,
+            "allowed": allowed, "basis": decision.basis if decision else "denied",
+            "reason": reason, "variation_id": decision.variation_id if decision else None,
+            "evaluated_at": at.isoformat(), "diagnostic_only": True,
+            "notice": "Read-only policy snapshot, not an observed read or permission token. "
+                      "The host checks identity, scope and time again on every actual read."}
+
+
 @app.get("/v1/host/projects/{project_id}/documents/{document_id}")
 def read_document(project_id: str, document_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
     project = scoped(db, Project, project_id, principal.tenant_id)

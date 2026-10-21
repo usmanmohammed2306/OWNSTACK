@@ -114,6 +114,14 @@ documentation or the application regression suite. Removing them breaks those
 features. Research reports, learning plans, test suites and experiment tooling
 are not in the current runtime-only tree; earlier commits retain them.
 
+## Explain access without impersonation
+
+Admins and engineers can use **Why can they access this?** in Requests to check
+a tenant-local viewer against the host's current policy. The inspector explains
+role access, a matching temporary grant, a disabled account or denial. It does
+not expose document contents, create read observations, grant access or run AI.
+Results are timestamped diagnostic snapshots; actual reads always recheck policy.
+
 ## Boundaries
 
 This is a **local reference implementation**, not a hosted service or certified
