@@ -124,6 +124,13 @@ Results are timestamped diagnostic snapshots; actual reads always recheck policy
 
 ## Boundaries
 
+Studio's **Review revoke** shows the host's predicted before/after access for one
+grant. It warns if another grant or role would still permit access, then requires
+an acknowledgement. Reviewed revokes recheck the snapshot under project/identity
+locks and reject changed state. Retries use an idempotency key. Existing direct
+admin revoke API clients remain supported; this is a Studio review safeguard,
+not a new universal approval requirement or proof of recalling in-flight reads.
+
 This is a **local reference implementation**, not a hosted service or certified
 production sandbox. The verifier shares a Linux kernel and reuses its supervisor.
 Independent security review, production identity/TLS operation, customer validation

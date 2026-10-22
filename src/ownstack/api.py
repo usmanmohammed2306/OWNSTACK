@@ -21,6 +21,7 @@ from ownstack.models import (Attempt, ChangeRequest, ConvergenceDecision, Docume
                              Event, Evidence, HostObservation, Idempotency, InferenceBudget, Project, Proposal, RuntimePulse, User, Variation)
 from ownstack.policy import Principal, aware, digest
 from ownstack.host_access import host_read_decision
+from ownstack.rollback import revoke_preview
 from ownstack.service import (approve, claim_engineering, create_request, host_preview, idempotent, manual_handoff, record,
                               reserve_live_call, scoped, start_attempt, utcnow)
 from ownstack.patch_agent import propose_patch
@@ -100,6 +101,10 @@ class RequestBody(BaseModel):
 
 class ApprovalBody(BaseModel):
     proposal_hash: str = Field(min_length=64, max_length=64)
+
+
+class RevokeBody(BaseModel):
+    preview_hash: str = Field(pattern="^[a-f0-9]{64}$")
 
 
 class DecisionBody(BaseModel):
@@ -465,23 +470,48 @@ def variations(principal: Principal = Depends(current_principal), db: Session = 
 
 
 @app.post("/v1/variations/{variation_id}/revoke")
-def revoke(variation_id: str, idempotency_key: str | None = Header(default=None),
+def revoke(variation_id: str, body: RevokeBody | None = None, idempotency_key: str | None = Header(default=None),
            principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
     require_role(principal, "admin")
     variation = db.scalar(select(Variation).where(Variation.id == variation_id,
                                                  Variation.tenant_id == principal.tenant_id).with_for_update())
     if not variation:
         raise HTTPException(404, "Not found")
+    # All revokes serialize with grant approval on this project. Lock the subject
+    # too so offboarding cannot change the reviewed identity before this commit.
+    db.scalar(select(Project).where(Project.id == variation.project_id,
+        Project.tenant_id == principal.tenant_id).with_for_update())
+    db.scalar(select(User).where(User.id == variation.viewer_id,
+        User.tenant_id == principal.tenant_id).with_for_update().execution_options(populate_existing=True))
     def create():
+        if body:
+            fresh = revoke_preview(db, variation, principal.user_id, utcnow())
+            if not fresh["can_revoke"] or fresh["preview_hash"] != body.preview_hash:
+                raise HTTPException(409, "Rollback preview changed; refresh and review again")
         if variation.state == "active":
             variation.state = "revoked"
             request_id = db.get(Proposal, variation.proposal_id).request_id
             db.get(ChangeRequest, request_id).status = "revoked"
-            record(db, principal.tenant_id, request_id, "variation.revoked", {"variation_id": variation.id})
+            payload = {"variation_id": variation.id}
+            if body:
+                payload["reviewed_preview_hash"] = body.preview_hash
+            record(db, principal.tenant_id, request_id, "variation.revoked", payload)
         return {"id": variation.id, "state": variation.state}
-    response = idempotent(db, principal.tenant_id, "revoke", idempotency_key or "", {"variation_id": variation_id}, create)
+    intent = {"variation_id": variation_id}
+    if body:
+        intent["preview_hash"] = body.preview_hash
+    response = idempotent(db, principal.tenant_id, "revoke", idempotency_key or "", intent, create)
     db.commit()
     return response
+
+
+@app.get("/v1/variations/{variation_id}/revoke-preview")
+def get_revoke_preview(variation_id: str, response: Response,
+                       principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
+    require_role(principal, "admin")
+    variation = scoped(db, Variation, variation_id, principal.tenant_id)
+    response.headers["Cache-Control"] = "no-store"
+    return revoke_preview(db, variation, principal.user_id, utcnow())
 
 
 @app.get("/v1/events")

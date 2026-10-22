@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Activity, ArrowRight, ArrowUpRight, CheckCircle2, Clock3, Code2, FileText, Fingerprint, Layers3, LockKeyhole, RotateCcw, Search, ShieldCheck, XCircle } from 'lucide-react';
+import { Activity, ArrowRight, ArrowUpRight, CheckCircle2, Clock3, Code2, FileText, Fingerprint, Layers3, LockKeyhole, Search, ShieldCheck, XCircle } from 'lucide-react';
 import './style.css';
 import './workbench.css';
 import { ScopeScene } from './ScopeScene';
@@ -13,6 +13,7 @@ import { CommandMenu } from './CommandMenu';
 import { ApprovalReview } from './ApprovalReview';
 import { People } from './People';
 import { AccessInspector } from './AccessInspector';
+import { RevokeReview } from './RevokeReview';
 import { currentPatchCheck, effectiveVariationState, filterRequests, type RequestFilter } from './review';
 import { sameProposal, sameSession, submissionForIntent, type PendingSubmission, type ProposalIdentity } from './responseIdentity';
 import './experience.css';
@@ -294,15 +295,6 @@ function App() {
     });
   }
 
-  async function revokeVariation(id: string) {
-    if (!session) return;
-    const activeSession = session;
-    await action('revoke', async () => {
-      await api(`/v1/variations/${id}/revoke`, activeSession, { method: 'POST', headers: { 'Idempotency-Key': idempotency() } });
-      if (sameSession(activeSession, sessionRef.current)) setNotice('Variation revoked in the host fixture.');
-    });
-  }
-
   async function openEngineering(id: string) {
     if (!session) return;
     const activeSession = session, generation = ++engineeringGeneration.current;
@@ -467,7 +459,7 @@ function App() {
         <section className="panel span-three host-panel"><div className="panel-heading"><div><p className="eyebrow">HOST APP</p><h2>Access & active grants</h2></div><LockKeyhole size={20}/></div><p className="muted">Reads use your signed-in identity: {session.user_id} ({session.role}). An admin or engineer's read does not prove contractor access. Switch to the contractor to check their actual access.</p><button className="secondary" disabled={!!busy} onClick={inspectHost}>Read as {session.user_id}</button>
           {hostDocuments && <ul className="doc-list">{hostDocuments.map(d => <li key={d.id}><FileText size={15}/>{d.title}</li>)}</ul>}
           {['admin', 'engineer'].includes(session.role) && <AccessInspector key={`${session.user_id}:${session.tenant_id}:${session.csrf_token}:${projectId}`} tenant={session.tenant_id} project={projectId} initialViewer={viewer} request={(path, options) => api(path, session, options)}/>}
-          <div className="divider"/><div className="section-label"><h3>Active variations</h3><span className="count-badge">{activeVariations.length}</span></div>{activeVariations.length ? activeVariations.map(v => <div className="variation" key={v.id}><div><strong>{v.viewer_id}</strong><small>{v.project_id}<br/>Until {formatTime(v.expires_at)}</small></div><span className="pill good">active</span>{session.role === 'admin' && <button className="icon-button" disabled={!!busy} aria-label={`Revoke variation ${v.id.slice(0,8)}`} onClick={() => revokeVariation(v.id)}><RotateCcw size={17}/></button>}</div>) : <p className="empty">No currently active variations in the loaded tenant state.</p>}
+          <div className="divider"/><div className="section-label"><h3>Active variations</h3><span className="count-badge">{activeVariations.length}</span></div>{activeVariations.length ? activeVariations.map(v => <div className="variation" key={v.id}><div><strong>{v.viewer_id}</strong><small>{v.project_id}<br/>Until {formatTime(v.expires_at)}</small></div><span className="pill good">active</span>{session.role === 'admin' && <RevokeReview key={`${session.csrf_token}:${v.id}`} variation={v} disabled={!!busy} request={(path, options) => api(path, session, options)} onChanged={async () => { if (sameSession(session, sessionRef.current)) { setNotice('Reviewed grant revoked. Other grants and roles remain unchanged.'); await refresh(session, true); } }}/>}</div>) : <p className="empty">No currently active variations in the loaded tenant state.</p>}
           <details className="variation-history"><summary>Past variations <span>{pastVariations.length}</span></summary><div className="history-scroll">{pastVariations.map(v => <div className="variation" key={v.id}><div><strong>{v.viewer_id}</strong><small>{v.project_id} · {formatTime(v.expires_at)}</small></div><span className={'pill ' + statusClass(v.state)}>{v.state}</span></div>)}</div></details><p className="tiny">Expiry display uses this device's clock. Host time and policy remain authoritative.</p>
         </section>
       </div>}
