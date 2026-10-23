@@ -153,3 +153,9 @@ def expiry_cleanup(ctx):
 @report("scheduled-access", "Scheduled grant starts", "Future active grant records with nonempty intervals, not current permission.", filters=("project_id", "viewer_id"))
 def scheduled_access(ctx):
     return ctx.rows(Variation, "id project_id viewer_id starts_at expires_at", Variation.state == "active", Variation.starts_at > ctx.at, Variation.expires_at > Variation.starts_at)
+
+
+@report("disabled-exposure", "Disabled-account grant review", "Grants retained for disabled subjects. Re-enabling can make these grants relevant again.", filters=("project_id", "viewer_id"))
+def disabled_exposure(ctx):
+    disabled = select(User.id).where(User.tenant_id == ctx.principal.tenant_id, User.enabled.is_(False))
+    return ctx.rows(Variation, "id project_id viewer_id expires_at", Variation.state == "active", Variation.expires_at > ctx.at, Variation.viewer_id.in_(disabled))
