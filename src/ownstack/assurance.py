@@ -251,3 +251,8 @@ def failed_check_review(ctx):
     rows = ctx.rows(Evidence, "id request_id subject_hash result created_at", Evidence.kind == "patch_checks")
     return [{"id": row["id"], "request_id": row["request_id"], "subject_hash": row["subject_hash"], "created_at": row["created_at"], "verdict": "failed" if isinstance(row["result"], dict) and row["result"].get("passed") is False else "unrecognized"}
             for row in rows if not isinstance(row["result"], dict) or row["result"].get("passed") is not True]
+
+
+@report("repair-review", "Repair adoption inbox", "Repair runs waiting for human review. Candidate code is neither exposed nor adopted.", filters=("request_id",))
+def repair_review(ctx):
+    return ctx.rows(RepairRun, "id item_id request_id state original_patch_hash current_attempt_id created_at", RepairRun.state == "awaiting_review")
