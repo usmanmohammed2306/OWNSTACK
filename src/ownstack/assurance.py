@@ -108,3 +108,8 @@ def stale_previews(ctx):
 @report("revision-lineage", "Proposal revision lineage", "Inspect preserved proposal subjects and revision states without exporting request text.", filters=("request_id",), required=("request_id",))
 def revision_lineage(ctx):
     return ctx.rows(Proposal, "id request_id request_revision proposal_hash preview_hash status", Proposal.route == "configure")
+
+
+@report("expired-intent", "Expired approval intent", "Pending requests whose original expiry elapsed; this does not extend them.", filters=("project_id", "viewer_id", "request_id"))
+def expired_intent(ctx):
+    return ctx.rows(ChangeRequest, "id project_id viewer_id revision expires_at", ChangeRequest.status == "awaiting_approval", ChangeRequest.expires_at <= ctx.at)
