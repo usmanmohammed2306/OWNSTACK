@@ -219,3 +219,12 @@ def document_inventory(ctx):
 def contract_integrity(ctx):
     rows = ctx.collect(select(Contract.id, Contract.version, Contract.manifest, Contract.manifest_hash).order_by(Contract.id, Contract.version))
     return [{"id": row["id"], "version": row["version"], "saved_hash": row["manifest_hash"], "computed_hash": digest(row["manifest"]), "matches_manifest": row["manifest_hash"] == digest(row["manifest"])} for row in rows]
+
+
+@report("approval-audit", "Exact approval subject audit", "Join approvals to tenant-local proposal hashes without request text.", filters=("request_id",))
+def approval_audit(ctx):
+    statement = select(Approval.id, Proposal.request_id, Approval.proposal_id, Approval.actor_id, Approval.created_at, Approval.proposal_hash.label("approved_hash"), Proposal.proposal_hash.label("saved_proposal_hash")).join(Proposal, Approval.proposal_id == Proposal.id).where(Approval.tenant_id == ctx.principal.tenant_id, Proposal.tenant_id == ctx.principal.tenant_id)
+    if "request_id" in ctx.scope: statement = statement.where(Proposal.request_id == ctx.scope["request_id"])
+    rows = ctx.collect(statement.order_by(Approval.id))
+    for row in rows: row["exact_subject_matches"] = row["approved_hash"] == row["saved_proposal_hash"]
+    return rows
