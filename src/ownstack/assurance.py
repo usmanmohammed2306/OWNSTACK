@@ -207,3 +207,9 @@ def viewer_access_matrix(ctx):
         decision = host_read_decision(ctx.db, Principal(row["id"], project.tenant_id, row["role"]), project.tenant_id, project.id, ctx.at) if row["enabled"] else None
         row.update(project_id=project.id, allowed=bool(decision and decision.allowed), basis=decision.basis if decision else "account_disabled", variation_id=decision.variation_id if decision else None)
     return rows
+
+
+@report("document-inventory", "Document content inventory", "Identifiers, titles and content digests, never bodies. Digests are not historical execution proof.", filters=("project_id",), required=("project_id",))
+def document_inventory(ctx):
+    rows = ctx.rows(Document, "id project_id title body")
+    return [{"id": row["id"], "project_id": row["project_id"], "title": row["title"], "content_digest": digest(row["body"])} for row in rows]
