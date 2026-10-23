@@ -123,3 +123,8 @@ def pending_work(ctx):
 @report("overdue-work", "Overdue attempt recovery", "Unfinished attempts past their local deadline; not proof remote inference stopped.", filters=("request_id",))
 def overdue_work(ctx):
     return ctx.rows(Attempt, "id request_id request_revision state model_id deadline_at", Attempt.state.in_(("queued", "running")), Attempt.deadline_at <= ctx.at)
+
+
+@report("attempt-failures", "Attempt failure triage", "Terminal failure states and bounded error codes, without prompts or model responses.", filters=("request_id",))
+def attempt_failures(ctx):
+    return ctx.rows(Attempt, "id request_id request_revision state model_id error_code finished_at", Attempt.state.in_(("failed", "timed_out", "canceled", "superseded")))
