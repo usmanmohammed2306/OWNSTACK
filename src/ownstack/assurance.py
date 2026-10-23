@@ -143,3 +143,8 @@ def active_exposure(ctx):
 @report("expiry-docket", "Upcoming expiry docket", "Effective grants expiring within the day window. Overlapping grants can still retain access.", filters=("project_id", "viewer_id"))
 def expiry_docket(ctx):
     return ctx.rows(Variation, "id project_id viewer_id expires_at revision", Variation.state == "active", Variation.starts_at <= ctx.at, Variation.expires_at > ctx.at, Variation.expires_at <= ctx.at + timedelta(days=ctx.days))
+
+
+@report("expiry-cleanup", "Expired grant ledger", "Stored active records whose expiry denies the grant. Enforcement needs no cleanup job.", filters=("project_id", "viewer_id"))
+def expiry_cleanup(ctx):
+    return ctx.rows(Variation, "id project_id viewer_id state expires_at", Variation.state == "active", Variation.expires_at <= ctx.at)
