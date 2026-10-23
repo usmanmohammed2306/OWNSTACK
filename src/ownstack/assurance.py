@@ -103,3 +103,8 @@ def stale_previews(ctx):
         except HTTPException as error:
             findings.append({"proposal_id": row["id"], "request_id": request.id, "finding": "preview_blocked", "status_code": error.status_code})
     return findings
+
+
+@report("revision-lineage", "Proposal revision lineage", "Inspect preserved proposal subjects and revision states without exporting request text.", filters=("request_id",), required=("request_id",))
+def revision_lineage(ctx):
+    return ctx.rows(Proposal, "id request_id request_revision proposal_hash preview_hash status", Proposal.route == "configure")
