@@ -184,3 +184,8 @@ def overlap_analysis(ctx):
 @report("grant-usage", "Grant-attributed observations", "Saved allowed API checks attributed to grants, including retries, not distinct people or delivery.", filters=("project_id", "viewer_id"))
 def grant_usage(ctx):
     return ctx.rows(HostObservation, "id project_id actor_id variation_id action observed_at", HostObservation.allowed.is_(True), HostObservation.basis == "variation", HostObservation.variation_id.is_not(None))
+
+
+@report("denied-read-review", "Denied read review", "Denied host checks without contents. Foreign IDs returning 404 need not create observations.", filters=("project_id", "viewer_id"))
+def denied_read_review(ctx):
+    return ctx.rows(HostObservation, "id project_id actor_id action basis observed_at", HostObservation.allowed.is_(False))
