@@ -148,3 +148,8 @@ def expiry_docket(ctx):
 @report("expiry-cleanup", "Expired grant ledger", "Stored active records whose expiry denies the grant. Enforcement needs no cleanup job.", filters=("project_id", "viewer_id"))
 def expiry_cleanup(ctx):
     return ctx.rows(Variation, "id project_id viewer_id state expires_at", Variation.state == "active", Variation.expires_at <= ctx.at)
+
+
+@report("scheduled-access", "Scheduled grant starts", "Future active grant records with nonempty intervals, not current permission.", filters=("project_id", "viewer_id"))
+def scheduled_access(ctx):
+    return ctx.rows(Variation, "id project_id viewer_id starts_at expires_at", Variation.state == "active", Variation.starts_at > ctx.at, Variation.expires_at > Variation.starts_at)
