@@ -159,3 +159,9 @@ def scheduled_access(ctx):
 def disabled_exposure(ctx):
     disabled = select(User.id).where(User.tenant_id == ctx.principal.tenant_id, User.enabled.is_(False))
     return ctx.rows(Variation, "id project_id viewer_id expires_at", Variation.state == "active", Variation.expires_at > ctx.at, Variation.viewer_id.in_(disabled))
+
+
+@report("unused-grants", "Unobserved grant review", "Grants with no saved allowed variation-attributed check. Absence is not proof of no real-world use.", filters=("project_id", "viewer_id"))
+def unused_grants(ctx):
+    used = select(HostObservation.variation_id).where(HostObservation.tenant_id == ctx.principal.tenant_id, HostObservation.allowed.is_(True), HostObservation.basis == "variation", HostObservation.variation_id.is_not(None))
+    return ctx.rows(Variation, "id project_id viewer_id starts_at expires_at", Variation.state == "active", Variation.expires_at > ctx.at, Variation.id.not_in(used))
