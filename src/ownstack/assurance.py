@@ -213,3 +213,9 @@ def viewer_access_matrix(ctx):
 def document_inventory(ctx):
     rows = ctx.rows(Document, "id project_id title body")
     return [{"id": row["id"], "project_id": row["project_id"], "title": row["title"], "content_digest": digest(row["body"])} for row in rows]
+
+
+@report("contract-integrity", "Capability manifest integrity", "Shared public capability registry: compare saved hashes with recomputed manifest digests.")
+def contract_integrity(ctx):
+    rows = ctx.collect(select(Contract.id, Contract.version, Contract.manifest, Contract.manifest_hash).order_by(Contract.id, Contract.version))
+    return [{"id": row["id"], "version": row["version"], "saved_hash": row["manifest_hash"], "computed_hash": digest(row["manifest"]), "matches_manifest": row["manifest_hash"] == digest(row["manifest"])} for row in rows]
