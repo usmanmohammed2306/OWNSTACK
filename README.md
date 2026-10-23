@@ -131,6 +131,21 @@ forecast instead of trusting a partial schedule. Protected reads are unchanged.
 
 ## Boundaries
 
+## Assurance workbench
+
+Admins and engineers can open **Assurance** to inspect tenant-local saved records
+without running AI or changing permissions. The catalogue lists the implemented
+reports and their supported scope filters. Unsupported filters are rejected, and
+foreign identifiers return not found. Identity audit reports are admin-only.
+
+Reports default to 25 source rows, with a maximum page size of 100. Truncation is
+explicit; empty or partial findings are not a clean bill of health. Nested policy
+checks may inspect additional host records, so this is not a database latency cap.
+Reports do not replace live authorization, independent security review or a release
+decision. Private identifiers and metadata should be reviewed before sharing.
+
+## Boundaries
+
 ### Recover from a changed host snapshot
 
 An old preview can become invalid when host data changes. **Recover changed
