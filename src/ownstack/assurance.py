@@ -261,3 +261,8 @@ def repair_review(ctx):
 @report("repair-failures", "Repair failure triage", "Failed, exhausted or locally timed-out repair runs without patches or generator configuration.", filters=("request_id",))
 def repair_failures(ctx):
     return ctx.rows(RepairRun, "id item_id request_id state error_code max_attempts deadline_at finished_at", RepairRun.state.in_(("failed", "timed_out", "exhausted", "canceled", "taken_over")))
+
+
+@report("dead-letter-review", "Dead-letter delivery review", "Exhausted delivery work, without sending, changing destinations or exposing payloads.")
+def dead_letter_review(ctx):
+    return ctx.rows(Outbox, "id event_id topic attempts last_error available_at", Outbox.state == "dead")
