@@ -256,3 +256,8 @@ def failed_check_review(ctx):
 @report("repair-review", "Repair adoption inbox", "Repair runs waiting for human review. Candidate code is neither exposed nor adopted.", filters=("request_id",))
 def repair_review(ctx):
     return ctx.rows(RepairRun, "id item_id request_id state original_patch_hash current_attempt_id created_at", RepairRun.state == "awaiting_review")
+
+
+@report("repair-failures", "Repair failure triage", "Failed, exhausted or locally timed-out repair runs without patches or generator configuration.", filters=("request_id",))
+def repair_failures(ctx):
+    return ctx.rows(RepairRun, "id item_id request_id state error_code max_attempts deadline_at finished_at", RepairRun.state.in_(("failed", "timed_out", "exhausted", "canceled", "taken_over")))
