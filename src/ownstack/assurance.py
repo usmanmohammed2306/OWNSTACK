@@ -194,3 +194,16 @@ def denied_read_review(ctx):
 @report("role-read-review", "Role-based read review", "Role authorizations that must not count as temporary grant usage.", filters=("project_id", "viewer_id"))
 def role_read_review(ctx):
     return ctx.rows(HostObservation, "id project_id actor_id action observed_at", HostObservation.allowed.is_(True), HostObservation.basis == "role")
+
+
+@report("viewer-access-matrix", "Project access matrix", "Current tenant-local host decisions without document reads or observations.", filters=("project_id", "viewer_id"), required=("project_id",))
+def viewer_access_matrix(ctx):
+    from ownstack.host_access import host_read_decision
+    statement = select(User.id, User.role, User.enabled).where(User.tenant_id == ctx.principal.tenant_id)
+    if "viewer_id" in ctx.scope: statement = statement.where(User.id == ctx.scope["viewer_id"])
+    rows = ctx.collect(statement.order_by(User.id))
+    project = scoped(ctx.db, Project, ctx.scope["project_id"], ctx.principal.tenant_id)
+    for row in rows:
+        decision = host_read_decision(ctx.db, Principal(row["id"], project.tenant_id, row["role"]), project.tenant_id, project.id, ctx.at) if row["enabled"] else None
+        row.update(project_id=project.id, allowed=bool(decision and decision.allowed), basis=decision.basis if decision else "account_disabled", variation_id=decision.variation_id if decision else None)
+    return rows
