@@ -133,3 +133,8 @@ def attempt_failures(ctx):
 @report("discarded-results", "Discarded answer audit", "Late or duplicate answer events. Private event payloads are omitted.", filters=("request_id",))
 def discarded_results(ctx):
     return ctx.rows(Event, "id request_id event_type created_at", Event.event_type.in_(("attempt.late_discarded", "attempt.duplicate_discarded")))
+
+
+@report("active-exposure", "Current grant exposure", "Time-effective grant records, not proof that a disabled account can authenticate.", filters=("project_id", "viewer_id"))
+def active_exposure(ctx):
+    return ctx.rows(Variation, "id project_id viewer_id starts_at expires_at revision", Variation.state == "active", Variation.starts_at <= ctx.at, Variation.expires_at > ctx.at)
