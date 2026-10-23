@@ -189,3 +189,8 @@ def grant_usage(ctx):
 @report("denied-read-review", "Denied read review", "Denied host checks without contents. Foreign IDs returning 404 need not create observations.", filters=("project_id", "viewer_id"))
 def denied_read_review(ctx):
     return ctx.rows(HostObservation, "id project_id actor_id action basis observed_at", HostObservation.allowed.is_(False))
+
+
+@report("role-read-review", "Role-based read review", "Role authorizations that must not count as temporary grant usage.", filters=("project_id", "viewer_id"))
+def role_read_review(ctx):
+    return ctx.rows(HostObservation, "id project_id actor_id action observed_at", HostObservation.allowed.is_(True), HostObservation.basis == "role")
