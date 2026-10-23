@@ -136,6 +136,14 @@ without running AI or changing permissions. The catalogue lists the implemented
 reports and their supported scope filters. Unsupported filters are rejected, and
 foreign identifiers return not found. Identity audit reports are admin-only.
 
+The 30 reports cover approval inbox/drift/lineage/expiry; pending, overdue,
+failed and discarded work; current, expiring, expired, scheduled, disabled,
+unobserved and overlapping grants; grant/denied/role observations; project access
+matrix and document inventory; contract/approval/recovery audit; engineering and
+failed-check review; repair inbox/failures; dead letters, receipts and identity
+audit. These are diagnostic reports within one workbench, not 30 independent
+products or an exhaustive security evaluation.
+
 Reports default to 25 source rows, with a maximum page size of 100. Truncation is
 explicit; empty or partial findings are not a clean bill of health. Nested policy
 checks may inspect additional host records, so this is not a database latency cap.

@@ -78,6 +78,7 @@ def run_report(report_id: str, project_id: str | None = Query(default=None, max_
     items = spec["run"](ctx)
     return {"report": report_id, "tenant_id": principal.tenant_id, "scope": scope,
             "evaluated_at": ctx.at.isoformat(), "items": items, "truncated": ctx.truncated,
+            "source_limit": ctx.limit, "window_days": ctx.days,
             "notice": "Read-only diagnostic snapshot, not a security certification or permission. "
                       "Top-level result pages are bounded, not database latency or nested policy work; "
                       "partial or empty findings do not prove absence of problems. "
@@ -271,3 +272,8 @@ def dead_letter_review(ctx):
 @report("delivery-receipts", "Durable delivery receipts", "Saved tenant-local acknowledgements, not proof of exactly-once remote side effects.")
 def delivery_receipts(ctx):
     return ctx.collect(select(DeliveryReceipt.event_id, DeliveryReceipt.destination_id, DeliveryReceipt.envelope_hash, DeliveryReceipt.received_at).where(DeliveryReceipt.tenant_id == ctx.principal.tenant_id).order_by(DeliveryReceipt.event_id, DeliveryReceipt.destination_id))
+
+
+@report("identity-audit", "Identity lifecycle audit", "Admin-only account/session audit metadata, without tokens, password hashes or contact details.", roles=("admin",))
+def identity_audit(ctx):
+    return ctx.rows(IdentityEvent, "id actor_id subject_id action created_at")
