@@ -113,3 +113,8 @@ def revision_lineage(ctx):
 @report("expired-intent", "Expired approval intent", "Pending requests whose original expiry elapsed; this does not extend them.", filters=("project_id", "viewer_id", "request_id"))
 def expired_intent(ctx):
     return ctx.rows(ChangeRequest, "id project_id viewer_id revision expires_at", ChangeRequest.status == "awaiting_approval", ChangeRequest.expires_at <= ctx.at)
+
+
+@report("pending-work", "Pending attempt queue", "Saved queued or running attempts with unexpired deadlines. Reading cannot dispatch inference.", filters=("request_id",))
+def pending_work(ctx):
+    return ctx.rows(Attempt, "id request_id request_revision number state model_id deadline_at", Attempt.state.in_(("queued", "running")), Attempt.deadline_at > ctx.at)
