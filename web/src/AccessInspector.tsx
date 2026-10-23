@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { boundedResponse, type BoundedResponse } from './responseDeadline';
+import { validAccessForecast, type AccessForecast } from './accessForecast';
 
 type AccessSnapshot = {
   tenant_id: string; project_id: string; viewer_id: string; viewer_role: string;
   allowed: boolean; reason: string; variation_id: string | null; evaluated_at: string;
-  diagnostic_only: boolean; notice: string;
+  diagnostic_only: boolean; notice: string; forecast: AccessForecast;
 };
 const reasons: Record<string, string> = {
   account_disabled: 'The account is disabled. Existing grants cannot bypass sign-in.',
@@ -40,7 +41,8 @@ export function AccessInspector({ tenant, project, initialViewer, request }: {
       const result = await operation.promise;
       if (version !== generation.current) return;
       if (result.tenant_id !== tenant || result.project_id !== project || result.viewer_id !== target
-          || result.diagnostic_only !== true || typeof result.allowed !== 'boolean') {
+          || result.diagnostic_only !== true || typeof result.allowed !== 'boolean'
+          || !validAccessForecast(result.forecast, result.evaluated_at, result.allowed)) {
         throw new Error('Response did not match the inspected identity. Check again.');
       }
       setSnapshot(result);
@@ -65,6 +67,18 @@ export function AccessInspector({ tenant, project, initialViewer, request }: {
       <p className="tiny">{snapshot.viewer_id} · {project} · {new Date(snapshot.evaluated_at).toLocaleString()}
         {snapshot.variation_id ? ` · grant ${snapshot.variation_id}` : ''}</p>
       <p className="tiny">{snapshot.notice} Recheck after changing grants or accounts.</p>
+      <div className="manual-editor" aria-label="Conditional access forecast">
+        <h4>When will access change?</h4>
+        {snapshot.forecast.status === 'predicted_change' && snapshot.forecast.next_change && <p>
+          Predicted to become <strong>{snapshot.forecast.next_change.allowed ? 'allowed' : 'denied'}</strong> at{' '}
+          <time dateTime={snapshot.forecast.next_change.at}>{new Date(snapshot.forecast.next_change.at).toLocaleString()}</time>.
+        </p>}
+        {snapshot.forecast.status === 'no_scheduled_change' && <p>No scheduled access change through{' '}
+          <time dateTime={snapshot.forecast.through}>{new Date(snapshot.forecast.through).toLocaleString()}</time>.
+          {' '}This does not mean access is permanent.</p>}
+        {snapshot.forecast.status === 'unavailable' && <p>Forecast unavailable. Do not infer an expiry from an incomplete schedule.</p>}
+        <p className="tiny">{snapshot.forecast.notice}</p>
+      </div>
     </div>}
   </div>;
 }

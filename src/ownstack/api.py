@@ -21,6 +21,7 @@ from ownstack.models import (Attempt, ChangeRequest, ConvergenceDecision, Docume
                              Event, Evidence, HostObservation, Idempotency, InferenceBudget, Project, Proposal, RuntimePulse, User, Variation)
 from ownstack.policy import Principal, aware, digest
 from ownstack.host_access import host_read_decision
+from ownstack.access_forecast import access_forecast
 from ownstack.rollback import revoke_preview
 from ownstack.service import (approve, claim_engineering, create_request, host_preview, idempotent, manual_handoff, record,
                               reserve_live_call, scoped, start_attempt, utcnow)
@@ -272,8 +273,7 @@ def access_review(project_id: str, viewer_id: str, response: Response,
     viewer = scoped(db, User, viewer_id, principal.tenant_id)
     at = utcnow()
     # Authentication rejects disabled users before any host policy evaluation.
-    decision = host_read_decision(db, Principal(viewer.id, viewer.tenant_id, viewer.role),
-                                  project.tenant_id, project.id, at) if viewer.enabled else None
+    decision, forecast = access_forecast(db, viewer, project, at)
     allowed = bool(decision and decision.allowed)
     reason = ("account_disabled" if not viewer.enabled else
               "role_access" if allowed and decision.basis == "role" else
@@ -284,7 +284,7 @@ def access_review(project_id: str, viewer_id: str, response: Response,
             "viewer_enabled": viewer.enabled, "viewer_role": viewer.role,
             "allowed": allowed, "basis": decision.basis if decision else "denied",
             "reason": reason, "variation_id": decision.variation_id if decision else None,
-            "evaluated_at": at.isoformat(), "diagnostic_only": True,
+            "evaluated_at": at.isoformat(), "diagnostic_only": True, "forecast": forecast,
             "notice": "Read-only policy snapshot, not an observed read or permission token. "
                       "The host checks identity, scope and time again on every actual read."}
 

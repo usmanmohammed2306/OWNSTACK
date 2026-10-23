@@ -122,6 +122,13 @@ role access, a matching temporary grant, a disabled account or denial. It does
 not expose document contents, create read observations, grant access or run AI.
 Results are timestamped diagnostic snapshots; actual reads always recheck policy.
 
+**When will access change?** forecasts the next allowed/denied transition within
+seven days from saved grant start/expiry boundaries, using the same pure host
+policy. Overlapping or back-to-back grants do not create a false access cutoff.
+The forecast assumes account, role and grants stay unchanged; it neither renews
+access nor predicts future approvals. Above 128 matching grants it withholds the
+forecast instead of trusting a partial schedule. Protected reads are unchanged.
+
 ## Boundaries
 
 Studio's **Review revoke** shows the host's predicted before/after access for one
