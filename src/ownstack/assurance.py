@@ -266,3 +266,8 @@ def repair_failures(ctx):
 @report("dead-letter-review", "Dead-letter delivery review", "Exhausted delivery work, without sending, changing destinations or exposing payloads.")
 def dead_letter_review(ctx):
     return ctx.rows(Outbox, "id event_id topic attempts last_error available_at", Outbox.state == "dead")
+
+
+@report("delivery-receipts", "Durable delivery receipts", "Saved tenant-local acknowledgements, not proof of exactly-once remote side effects.")
+def delivery_receipts(ctx):
+    return ctx.collect(select(DeliveryReceipt.event_id, DeliveryReceipt.destination_id, DeliveryReceipt.envelope_hash, DeliveryReceipt.received_at).where(DeliveryReceipt.tenant_id == ctx.principal.tenant_id).order_by(DeliveryReceipt.event_id, DeliveryReceipt.destination_id))
