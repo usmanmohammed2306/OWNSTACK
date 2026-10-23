@@ -179,3 +179,8 @@ def overlap_analysis(ctx):
                 pairs.append({"project_id": left["project_id"], "viewer_id": left["viewer_id"], "first_grant": left["id"], "second_grant": right["id"], "overlap_from": start.isoformat(), "overlap_until": end.isoformat()})
     ctx.truncated |= len(pairs) > ctx.limit
     return pairs[:ctx.limit]
+
+
+@report("grant-usage", "Grant-attributed observations", "Saved allowed API checks attributed to grants, including retries, not distinct people or delivery.", filters=("project_id", "viewer_id"))
+def grant_usage(ctx):
+    return ctx.rows(HostObservation, "id project_id actor_id variation_id action observed_at", HostObservation.allowed.is_(True), HostObservation.basis == "variation", HostObservation.variation_id.is_not(None))
