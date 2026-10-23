@@ -244,3 +244,10 @@ def engineering_review(ctx):
         row["current_checks_usable"] = bool(item.patch_hash and matching_checks(ctx.db, item))
         row["release_state"] = "not_deployed"
     return rows
+
+
+@report("failed-check-review", "Failed verification evidence", "Failed or malformed saved patch-check verdicts, omitting generated code and stdout.", filters=("request_id",))
+def failed_check_review(ctx):
+    rows = ctx.rows(Evidence, "id request_id subject_hash result created_at", Evidence.kind == "patch_checks")
+    return [{"id": row["id"], "request_id": row["request_id"], "subject_hash": row["subject_hash"], "created_at": row["created_at"], "verdict": "failed" if isinstance(row["result"], dict) and row["result"].get("passed") is False else "unrecognized"}
+            for row in rows if not isinstance(row["result"], dict) or row["result"].get("passed") is not True]
