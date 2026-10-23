@@ -138,3 +138,8 @@ def discarded_results(ctx):
 @report("active-exposure", "Current grant exposure", "Time-effective grant records, not proof that a disabled account can authenticate.", filters=("project_id", "viewer_id"))
 def active_exposure(ctx):
     return ctx.rows(Variation, "id project_id viewer_id starts_at expires_at revision", Variation.state == "active", Variation.starts_at <= ctx.at, Variation.expires_at > ctx.at)
+
+
+@report("expiry-docket", "Upcoming expiry docket", "Effective grants expiring within the day window. Overlapping grants can still retain access.", filters=("project_id", "viewer_id"))
+def expiry_docket(ctx):
+    return ctx.rows(Variation, "id project_id viewer_id expires_at revision", Variation.state == "active", Variation.starts_at <= ctx.at, Variation.expires_at > ctx.at, Variation.expires_at <= ctx.at + timedelta(days=ctx.days))
