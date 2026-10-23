@@ -14,6 +14,7 @@ import { ApprovalReview } from './ApprovalReview';
 import { People } from './People';
 import { AccessInspector } from './AccessInspector';
 import { RevokeReview } from './RevokeReview';
+import { ProposalRefresh } from './ProposalRefresh';
 import { currentPatchCheck, effectiveVariationState, filterRequests, type RequestFilter } from './review';
 import { sameProposal, sameSession, submissionForIntent, type PendingSubmission, type ProposalIdentity } from './responseIdentity';
 import './experience.css';
@@ -453,6 +454,14 @@ function App() {
             {!current.accepted_proposal_id && session.role === 'engineer' && ['new','failed','refused'].includes(current.status) && <button className="primary" onClick={manualHandoff} disabled={!!busy}>Prepare without AI <ArrowRight size={16}/></button>}
             {!!attempts.length && <details className="attempts"><summary>Saved attempts ({attempts.length})</summary>{attempts.map(a => <div className="attempt" key={a.id}><Clock3 size={14}/><span>#{a.number} {a.model_id}</span><span className={'pill ' + statusClass(a.state)}>{a.state}</span>{a.error_code && <small>{a.error_code}</small>}</div>)}</details>}
             {proposal && <div className="proposal"><div className="proposal-head"><h4>Proposal</h4><span className={'pill ' + statusClass(proposal.route)}>{proposal.route}</span></div><p>{proposal.reason}</p><div className="hash-line"><span>EXACT PROPOSAL HASH</span><code>{proposal.proposal_hash}</code></div>{proposal.route === 'configure' && <><p className="muted">Contract {proposal.contract_id} v{proposal.contract_version}</p><div className="button-row"><button className="secondary" onClick={previewProposal}>Run host preview</button><ApprovalReview key={`${proposal.proposal_hash}:${preview?.snapshot_hash}`} enabled={!!preview?.matches_saved_proposal && proposal.status === 'ready' && session.role === 'admin'} busy={!!busy} admin={session.user_id} project={current.project_id} viewer={current.viewer_id} proposalHash={proposal.proposal_hash} contract={proposal.contract_id} version={proposal.contract_version} preview={preview} approve={approveProposal}/></div></>}{proposal.route === 'engineering' && <button className="secondary" onClick={() => inspectEngineeringRequest(current.id)}>Open Engineer Cockpit <ArrowRight size={14}/></button>}</div>}
+            {proposal?.route === 'configure' && proposal.status === 'ready' && ['admin', 'engineer'].includes(session.role) &&
+              <ProposalRefresh key={`${session.csrf_token}:${proposal.id}:${current.revision}`} disabled={!!busy} canRefresh={session.role === 'engineer'}
+                identity={{ actor: session.user_id, tenant: session.tenant_id, requestId: current.id, revision: current.revision, proposalId: proposal.id, proposalHash: proposal.proposal_hash }}
+                request={(path, options) => api(path, session, options)} onChanged={async () => {
+                  if (sameSession(session, sessionRef.current) && selectedRef.current === current.id) {
+                    setPreviewRecord(null); setNotice('New proposal revision saved without AI. Fresh admin preview and approval are required.'); await refresh(session, true);
+                  }
+                }}/>}
             {preview && <div className="preview"><h4>Predicted effect, not observation</h4><div className="comparison"><div><small>BEFORE</small><strong>{preview.before ? 'Can read' : 'Denied'}</strong></div><ArrowRight size={18}/><div><small>AFTER</small><strong>{preview.after ? 'Can read' : 'Denied'}</strong></div></div><p>Would reveal {preview.visible_documents.map(d => d.title).join(', ') || 'nothing'} until {formatTime(preview.expires_at)}.</p><div className="replay-stat"><ShieldCheck size={16}/><span>{preview.counterfactual.checks} host-policy comparisons · {preview.counterfactual.unexpected_delta_count} unexpected effects · expiry replayed</span></div><span className={'pill ' + (preview.matches_saved_proposal ? 'good' : 'bad')}>{preview.matches_saved_proposal ? 'Matches saved proposal' : 'Preview changed'}</span><p className="tiny">{preview.limitations}</p></div>}
           </> : <p className="empty">Select a request to inspect its saved state.</p>}</div></div>
         </section>

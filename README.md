@@ -131,6 +131,20 @@ forecast instead of trusting a partial schedule. Protected reads are unchanged.
 
 ## Boundaries
 
+### Recover from a changed host snapshot
+
+An old preview can become invalid when host data changes. **Recover changed
+proposal** lets an engineer review the current snapshot and create a new,
+AI-free proposal revision with an audit reason. It preserves the original and
+keeps the exact request, project, contractor and expiry unchanged. The server
+rechecks the reviewed snapshot before saving, and retries share one saved result.
+Unchanged previews cannot generate pointless revisions. Expired intent, changed
+scope, disabled accounts and contract changes require separate resolution.
+
+Refresh grants no access. A tenant admin must run a fresh preview and approve
+the new exact proposal. The old proposal cannot authorize it. This recovery
+path is separate from engineering-patch acceptance and deployment.
+
 Studio's **Review revoke** shows the host's predicted before/after access for one
 grant. It warns if another grant or role would still permit access, then requires
 an acknowledgement. Reviewed revokes recheck the snapshot under project/identity
