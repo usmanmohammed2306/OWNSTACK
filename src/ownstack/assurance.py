@@ -228,3 +228,8 @@ def approval_audit(ctx):
     rows = ctx.collect(statement.order_by(Approval.id))
     for row in rows: row["exact_subject_matches"] = row["approved_hash"] == row["saved_proposal_hash"]
     return rows
+
+
+@report("refresh-history", "Proposal recovery history", "Saved proposal-refreshed events, without private reasons or arbitrary payloads.", filters=("request_id",))
+def refresh_history(ctx):
+    return ctx.rows(Event, "id request_id event_type created_at", Event.event_type == "proposal.refreshed")
