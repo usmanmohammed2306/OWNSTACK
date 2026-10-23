@@ -89,3 +89,17 @@ def run_report(report_id: str, project_id: str | None = Query(default=None, max_
 def approval_inbox(ctx):
     return ctx.rows(ChangeRequest, "id project_id viewer_id revision created_at expires_at",
                     ChangeRequest.status == "awaiting_approval")
+
+
+@report("stale-previews", "Preview drift monitor", "Recompute pending previews without replacing proposals or granting access.", filters=("request_id",))
+def stale_previews(ctx):
+    findings = []
+    for row in ctx.rows(Proposal, "id request_id preview_hash", Proposal.route == "configure", Proposal.status == "ready"):
+        request = scoped(ctx.db, ChangeRequest, row["request_id"], ctx.principal.tenant_id)
+        try:
+            preview = host_preview(ctx.db, request)
+            if preview["snapshot_hash"] != row["preview_hash"]:
+                findings.append({"proposal_id": row["id"], "request_id": request.id, "finding": "host_snapshot_changed"})
+        except HTTPException as error:
+            findings.append({"proposal_id": row["id"], "request_id": request.id, "finding": "preview_blocked", "status_code": error.status_code})
+    return findings

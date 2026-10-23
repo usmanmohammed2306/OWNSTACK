@@ -129,8 +129,6 @@ The forecast assumes account, role and grants stay unchanged; it neither renews
 access nor predicts future approvals. Above 128 matching grants it withholds the
 forecast instead of trusting a partial schedule. Protected reads are unchanged.
 
-## Boundaries
-
 ## Assurance workbench
 
 Admins and engineers can open **Assurance** to inspect tenant-local saved records
