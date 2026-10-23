@@ -233,3 +233,14 @@ def approval_audit(ctx):
 @report("refresh-history", "Proposal recovery history", "Saved proposal-refreshed events, without private reasons or arbitrary payloads.", filters=("request_id",))
 def refresh_history(ctx):
     return ctx.rows(Event, "id request_id event_type created_at", Event.event_type == "proposal.refreshed")
+
+
+@report("engineering-review", "Engineering release review", "Compare saved passed status with currently usable exact-source evidence. No pass or acceptance deploys.", filters=("request_id",))
+def engineering_review(ctx):
+    from ownstack.api import matching_checks
+    rows = ctx.rows(EngineeringItem, "id request_id status patch_hash human_decision", EngineeringItem.status.in_(("checks_passed", "human_decided")))
+    for row in rows:
+        item = scoped(ctx.db, EngineeringItem, row["id"], ctx.principal.tenant_id)
+        row["current_checks_usable"] = bool(item.patch_hash and matching_checks(ctx.db, item))
+        row["release_state"] = "not_deployed"
+    return rows
