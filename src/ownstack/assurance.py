@@ -165,3 +165,17 @@ def disabled_exposure(ctx):
 def unused_grants(ctx):
     used = select(HostObservation.variation_id).where(HostObservation.tenant_id == ctx.principal.tenant_id, HostObservation.allowed.is_(True), HostObservation.basis == "variation", HostObservation.variation_id.is_not(None))
     return ctx.rows(Variation, "id project_id viewer_id starts_at expires_at", Variation.state == "active", Variation.expires_at > ctx.at, Variation.id.not_in(used))
+
+
+@report("overlap-analysis", "Overlapping grant analysis", "Intersecting intervals for the same project and viewer within bounded source rows.", filters=("project_id", "viewer_id"))
+def overlap_analysis(ctx):
+    rows = ctx.rows(Variation, "id project_id viewer_id starts_at expires_at", Variation.state == "active", Variation.expires_at > ctx.at)
+    pairs = []
+    for i, left in enumerate(rows):
+        for right in rows[i + 1:]:
+            start = max(ctx.at, datetime.fromisoformat(left["starts_at"]), datetime.fromisoformat(right["starts_at"]))
+            end = min(datetime.fromisoformat(left["expires_at"]), datetime.fromisoformat(right["expires_at"]))
+            if (left["project_id"], left["viewer_id"]) == (right["project_id"], right["viewer_id"]) and start < end:
+                pairs.append({"project_id": left["project_id"], "viewer_id": left["viewer_id"], "first_grant": left["id"], "second_grant": right["id"], "overlap_from": start.isoformat(), "overlap_until": end.isoformat()})
+    ctx.truncated |= len(pairs) > ctx.limit
+    return pairs[:ctx.limit]
