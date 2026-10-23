@@ -128,3 +128,8 @@ def overdue_work(ctx):
 @report("attempt-failures", "Attempt failure triage", "Terminal failure states and bounded error codes, without prompts or model responses.", filters=("request_id",))
 def attempt_failures(ctx):
     return ctx.rows(Attempt, "id request_id request_revision state model_id error_code finished_at", Attempt.state.in_(("failed", "timed_out", "canceled", "superseded")))
+
+
+@report("discarded-results", "Discarded answer audit", "Late or duplicate answer events. Private event payloads are omitted.", filters=("request_id",))
+def discarded_results(ctx):
+    return ctx.rows(Event, "id request_id event_type created_at", Event.event_type.in_(("attempt.late_discarded", "attempt.duplicate_discarded")))
