@@ -18,6 +18,7 @@ class Settings:
     nebius_model: str = field(default_factory=lambda: os.getenv("NEBIUS_MODEL_ID", ""))
     nebius_patch_model: str = field(default_factory=lambda: os.getenv("NEBIUS_PATCH_MODEL_ID", ""))
     ai_timeout: float = field(default_factory=lambda: float(os.getenv("OWNSTACK_AI_TIMEOUT_SECONDS", "20")))
+    stream_inference: bool = field(default_factory=lambda: os.getenv("OWNSTACK_STREAM_INFERENCE", "false").lower() == "true")
     max_live_calls: int = field(default_factory=lambda: int(os.getenv("OWNSTACK_MAX_LIVE_CALLS", "0")))
     demo_password: str = field(default_factory=lambda: os.getenv("OWNSTACK_DEMO_PASSWORD", "demo-only-pass"))
     environment: str = field(default_factory=lambda: os.getenv("OWNSTACK_ENV", "local"))

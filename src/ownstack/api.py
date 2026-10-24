@@ -33,6 +33,7 @@ from ownstack.members import router as members_router
 from ownstack.operations import router as operations_router
 from ownstack.proposal_refresh import router as proposal_refresh_router
 from ownstack.assurance import router as assurance_router
+from ownstack.agent_progress import router as progress_router
 from ownstack.runner import ALLOWED_PATH, CHECKS, ROOT, current_provenance, patch_hash, validate_patch, verify_patch as run_verifier
 from ownstack.http_security import SecurityBoundary
 from ownstack.candidate_sandbox import POLICY_ID
@@ -65,6 +66,7 @@ app.include_router(members_router)
 app.include_router(operations_router)
 app.include_router(proposal_refresh_router)
 app.include_router(assurance_router)
+app.include_router(progress_router)
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
                    allow_credentials=True, allow_methods=["GET", "POST"],
                    allow_headers=["Authorization", "Content-Type", "Idempotency-Key", "X-CSRF-Token"])

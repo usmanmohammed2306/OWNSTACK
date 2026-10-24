@@ -129,6 +129,32 @@ The forecast assumes account, role and grants stay unchanged; it neither renews
 access nor predicts future approvals. Above 128 matching grants it withholds the
 forecast instead of trusting a partial schedule. Protected reads are unchanged.
 
+## Agent progress without model authority
+
+Requests now show a scoped **Agent progress** view for admins and engineers.
+Watching or reconnecting reads saved state; it never starts inference or repeats
+an attempt. Local stop/disconnect detaches the viewer, not the durable worker.
+Session revocation and project/request/revision/attempt changes end the feed.
+
+Interpretation has an opt-in native Token Factory streaming adapter, enabled by
+`OWNSTACK_STREAM_INFERENCE=true` only when inference is separately permitted.
+The default is false. This flag does not enable AI, renew the exhausted call
+allowance or authorize spending. Existing deployments are not reconfigured.
+
+The upstream adapter consumes bounded content/function-argument deltas and waits
+for a matching finish reason, `[DONE]` and strict complete schema validation.
+Its only advertised function proposes a route and reason, not permissions,
+commands or deployment. Complete route/replacement responses also reject extra
+fields, wrong types, duplicate keys, invalid Unicode and excessive nesting.
+The host still owns patch paths/anchors, policy and exact human approval.
+
+The browser's separate SSE feed shows saved byte/delta counts and a validated
+final route, **not raw model tokens, partial arguments, private prompts or
+reasoning**. Status streaming alone is not proof of native LLM API streaming.
+Native transport has been tested with offline HTTP mocks, not a live provider.
+PDF/repair generation remains complete-response based. Production stream load,
+proxy/TLS behavior and model-specific compatibility remain unverified.
+
 ## Assurance workbench
 
 Admins and engineers can open **Assurance** to inspect tenant-local saved records

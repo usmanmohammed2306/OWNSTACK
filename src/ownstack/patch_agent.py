@@ -6,6 +6,7 @@ import httpx
 from ownstack.config import Settings
 from ownstack.policy import digest
 from ownstack.runner import ALLOWED_PATH, ROOT, validate_patch
+from ownstack.model_contracts import validate_proposal
 
 GENERATION_PARAMETERS = {"temperature": 1.0, "top_p": 1.0, "max_tokens": 8000}
 PATCH_SYSTEM_PROMPT = """Propose a concise complete Python replacement for sample_app/report.py in an owned sample app.
@@ -108,12 +109,12 @@ def propose_patch(request_text: str, settings: Settings | None = None, *, repair
     data = response.json()
     if data["choices"][0].get("finish_reason") == "length":
         raise ValueError("MODEL_OUTPUT_TRUNCATED")
-    proposed = json.loads(data["choices"][0]["message"]["content"])
-    if not isinstance(proposed, dict) or set(proposed) != {"replacement"} or not isinstance(proposed["replacement"], str):
+    if any(data["choices"][0]["message"].get(key) for key in ("refusal", "tool_calls", "function_call")):
         raise ValueError("INVALID_MODEL_OUTPUT")
+    proposed = validate_proposal(data["choices"][0]["message"]["content"], "propose_replacement")
     # The model cannot choose a path or invent the old-source anchor. The host
     # binds the untrusted replacement to the exact snapshot sent for this call.
-    patch = {"edits": [{"path": ALLOWED_PATH, "old": source, "new": proposed["replacement"]}]}
+    patch = {"edits": [{"path": ALLOWED_PATH, "old": source, "new": proposed.replacement}]}
     validate_patch(patch)
     usage = data.get("usage") or {}
     return patch, model_id, {"live": True, "latency_ms": int((time.monotonic() - started) * 1000),

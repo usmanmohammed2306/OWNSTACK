@@ -16,6 +16,7 @@ import { AccessInspector } from './AccessInspector';
 import { RevokeReview } from './RevokeReview';
 import { ProposalRefresh } from './ProposalRefresh';
 import { Assurance } from './Assurance';
+import { AgentProgress } from './AgentProgress';
 import { currentPatchCheck, effectiveVariationState, filterRequests, type RequestFilter } from './review';
 import { sameProposal, sameSession, submissionForIntent, type PendingSubmission, type ProposalIdentity } from './responseIdentity';
 import './experience.css';
@@ -454,6 +455,11 @@ function App() {
             {!current.accepted_proposal_id && session.ai_mode !== 'off' && <button className="primary" onClick={interpret} disabled={!!busy || inferenceBudget?.remaining_calls === 0 || current.status === 'interpreting'}>{current.status === 'interpreting' ? 'Worker processing…' : inferenceBudget?.remaining_calls === 0 ? 'Approved call limit reached' : 'Start interpretation'} <ArrowRight size={16}/></button>}
             {current.status === 'interpreting' && <button className="secondary" disabled={!!busy} onClick={() => action('cancel local attempt', async () => { await api(`/v1/requests/${current.id}/cancel`, session, { method: 'POST' }); setNotice('Local attempt canceled. Remote inference cancellation is unverified.'); })}>Cancel local attempt</button>}
             {!current.accepted_proposal_id && session.role === 'engineer' && ['new','failed','refused'].includes(current.status) && <button className="primary" onClick={manualHandoff} disabled={!!busy}>Prepare without AI <ArrowRight size={16}/></button>}
+            {current.current_attempt_id && current.project_id && ['admin', 'engineer'].includes(session.role) &&
+              <AgentProgress key={`${session.csrf_token}:${current.id}:${current.revision}:${current.current_attempt_id}`}
+                scope={{ tenant_id: session.tenant_id, request_id: current.id, project_id: current.project_id,
+                  attempt_id: current.current_attempt_id, revision: current.revision }}
+                request={(path, signal) => fetch(path, { signal, credentials: 'same-origin', headers: { Accept: 'text/event-stream' } })}/>}
             {!!attempts.length && <details className="attempts"><summary>Saved attempts ({attempts.length})</summary>{attempts.map(a => <div className="attempt" key={a.id}><Clock3 size={14}/><span>#{a.number} {a.model_id}</span><span className={'pill ' + statusClass(a.state)}>{a.state}</span>{a.error_code && <small>{a.error_code}</small>}</div>)}</details>}
             {proposal && <div className="proposal"><div className="proposal-head"><h4>Proposal</h4><span className={'pill ' + statusClass(proposal.route)}>{proposal.route}</span></div><p>{proposal.reason}</p><div className="hash-line"><span>EXACT PROPOSAL HASH</span><code>{proposal.proposal_hash}</code></div>{proposal.route === 'configure' && <><p className="muted">Contract {proposal.contract_id} v{proposal.contract_version}</p><div className="button-row"><button className="secondary" onClick={previewProposal}>Run host preview</button><ApprovalReview key={`${proposal.proposal_hash}:${preview?.snapshot_hash}`} enabled={!!preview?.matches_saved_proposal && proposal.status === 'ready' && session.role === 'admin'} busy={!!busy} admin={session.user_id} project={current.project_id} viewer={current.viewer_id} proposalHash={proposal.proposal_hash} contract={proposal.contract_id} version={proposal.contract_version} preview={preview} approve={approveProposal}/></div></>}{proposal.route === 'engineering' && <button className="secondary" onClick={() => inspectEngineeringRequest(current.id)}>Open Engineer Cockpit <ArrowRight size={14}/></button>}</div>}
             {proposal?.route === 'configure' && proposal.status === 'ready' && ['admin', 'engineer'].includes(session.role) &&
