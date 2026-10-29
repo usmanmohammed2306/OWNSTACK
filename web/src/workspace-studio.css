@@ -1,0 +1,175 @@
+/* Architectural workspace. This single composition owns geometry and spacing;
+   earlier styles continue to supply the existing product forms and states. */
+:root{background:#f8fafb;color-scheme:light}
+body{background:#f8fafb}
+#root .studio-shell{--space:28px;--panel:clamp(390px,39vw,510px);--bottom:140px;height:100dvh;min-height:0;background:#f8fafb;color:#182938;overflow:hidden}
+#root .studio-shell .app-shell{z-index:30}
+#root .studio-shell .world-atmosphere{display:none}
+#root .studio-shell .brand{top:24px;left:28px;font-size:22px;letter-spacing:-.065em;color:#182938}
+#root .studio-shell .brand-mark{transform:none;border-radius:10px;background:#182938;color:white;border:0;box-shadow:none;width:34px;height:34px}
+#root .studio-shell .brand-mark svg{color:#fff}
+#root .studio-shell .sidebar-bottom{top:20px;right:28px}
+#root .studio-shell .avatar{background:#edf1f5;color:#23384d;border:1px solid #d5dfe7;box-shadow:none}
+#root .studio-shell .account-details>summary{min-height:44px}
+#root .studio-shell .account-details>.account-actions{background:#fff;box-shadow:0 14px 50px #23384d1a;border:1px solid #dce4eb;border-radius:18px;padding:10px;z-index:60}
+#root .studio-shell .main--home{position:fixed;top:88px;left:28px;right:auto;bottom:auto;width:calc(100vw - 380px);max-width:none;min-height:0;height:auto;max-height:none;margin:0;padding:0;background:none;border:0;box-shadow:none;overflow:visible}
+#root .studio-shell .main--home .topbar{display:none}
+#root .studio-shell .spatial-title{display:flex;align-items:center;gap:16px;min-height:48px}
+#root .studio-shell .spatial-title>p{margin:0;padding-right:16px;border-right:1px solid #d8e0e6;font-size:10px;letter-spacing:.12em;color:#75828d;flex-shrink:0}
+#root .studio-shell .spatial-title>p:before{display:none}
+#root .studio-shell .spatial-title h2{font-size:22px;line-height:1.35;letter-spacing:-.035em;font-weight:600;white-space:normal;margin:0;color:#182938;overflow-wrap:anywhere}
+#root .studio-shell .world-canvas,#root .studio-shell .world-hotspots{position:fixed;inset:156px 28px 140px;left:28px;right:28px;top:156px;bottom:140px;height:auto}
+#root .studio-shell .world-canvas{border:1px solid #d8e2e9;border-radius:26px;background:#e6edf1;box-shadow:inset 0 1px 0 #fff;overflow:hidden;z-index:0}
+#root .studio-shell .world-hotspots{z-index:5;pointer-events:none;display:block}
+#root .studio-shell .station-leaders{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+#root .studio-shell .station-leaders line{stroke:#8a9da9;stroke-width:1;opacity:.6;vector-effect:non-scaling-stroke}
+#root .studio-shell[data-level=collection] .station-leaders,#root .studio-shell[data-level=people] .station-leaders{display:none}
+#root .studio-shell[data-level=collection] .world-hotspot,#root .studio-shell[data-level=people] .world-hotspot{display:none}
+#root .studio-shell[data-inspecting=true] .world-hotspot{display:none}
+#root .studio-shell .world-hotspot{pointer-events:auto;display:flex;align-items:center;position:absolute;left:0;top:0;min-height:44px;max-height:none;padding:8px 12px;gap:9px;border-radius:10px;background:#ffffffed;border:1px solid #ffffff;box-shadow:0 3px 12px #23384d10;font-size:12px;font-weight:550;color:#23384d;backdrop-filter:none;transition:background .15s,border-color .15s,box-shadow .15s}
+#root .studio-shell .world-hotspot:after{display:none}
+#root .studio-shell .world-hotspot>svg{display:none}
+#root .studio-shell .world-hotspot .station-number{display:grid;place-items:center;width:24px;min-width:24px;height:24px;max-width:none;border-radius:6px;background:var(--tint);color:var(--category);font-size:10px;font-variant-numeric:tabular-nums;font-weight:650}
+#root .studio-shell .world-hotspot small{font-size:10px;min-width:20px;min-height:20px;background:transparent;color:#73828c}
+#root .studio-shell .world-hotspot:hover,#root .studio-shell .world-hotspot:focus-visible{background:#fff;border-color:var(--category);box-shadow:0 4px 18px #23384d1a}
+#root .studio-shell .world-hotspot[aria-current=page]{border-color:#a4b3bf;background:#fff;color:#182938}
+#root .studio-shell .world-record-hit{width:40px;height:40px;min-height:40px;border-radius:10px;background:white;border:1px solid #d4dee7;color:#23384d;box-shadow:0 4px 14px #23384d14;pointer-events:auto}
+#root .studio-shell .studio-gesture-hint{position:fixed;bottom:157px;left:48px;font-size:10px;color:#667c8a;letter-spacing:.03em;pointer-events:none;z-index:4}
+#root .studio-shell .world-view-controls{position:fixed;left:auto;right:28px;top:88px;bottom:auto;transform:none;display:flex;align-items:center;gap:2px;min-height:48px;padding:4px;border-radius:12px;background:#fff;border:1px solid #dce4eb;box-shadow:none;z-index:10}
+#root .studio-shell .world-view-controls>.zoom-level-label{display:none}
+#root .studio-shell .world-view-controls button{min-width:38px;min-height:38px;width:38px;height:38px;border-radius:8px;color:#536877}
+#root .studio-shell .world-view-controls small{min-width:44px;text-align:center;font-size:10px;font-variant-numeric:tabular-nums;color:#536877}
+#root .studio-shell .world-view-controls button:hover,#root .studio-shell .world-view-controls button[aria-pressed=true]{background:#edf2f7;color:#264fdd}
+#root .studio-shell .agent-command-dock{position:fixed;bottom:24px;left:50%;right:auto;transform:translateX(-50%);width:min(600px,calc(100vw - 56px));z-index:20}
+#root .studio-shell .agent-command-dock>form{min-height:60px;padding:8px 10px 8px 18px;gap:12px;border-radius:16px;background:#fff;border:1px solid #d4dee7;box-shadow:0 8px 24px #23384d0b}
+#root .studio-shell .agent-command-dock input{font-size:14px;color:#23384d;min-width:0}
+#root .studio-shell .agent-command-dock input::placeholder{color:#7a8994}
+#root .studio-shell .agent-command-dock .command-glyph{color:#3159e8;flex-shrink:0}
+#root .studio-shell .agent-command-dock button{width:auto;min-width:40px;min-height:40px;border-radius:10px}
+#root .studio-shell .agent-command-dock .agent-send{background:#223749;border:0;color:#fff}
+#root .studio-shell .agent-command-dock .agent-send:disabled{background:#edf1f4;color:#a5afb8}
+#root .studio-shell .agent-intake-hint{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 4px 10px;min-height:24px}
+#root .studio-shell .agent-intake-hint>span{font-size:10px;color:#536877;letter-spacing:.02em;font-weight:550}
+#root .studio-shell .agent-intake-hint kbd{font-family:inherit;font-size:10px;line-height:1.4;letter-spacing:0;color:#8897a2;background:none}
+#root .studio-shell .command-preview,#root .studio-shell .voice-disclosure,#root .studio-shell .command-error{background:#fff;color:#23384d;border:1px solid #d4dee7;border-radius:16px;box-shadow:0 12px 36px #23384d14;max-height:min(42dvh,350px);overflow:auto;margin-bottom:14px}
+#root .studio-shell .map-peek{z-index:15;background:#182938;color:#fff;border:0;border-radius:12px;padding:12px;gap:4px;box-shadow:0 14px 40px #18293822;line-height:1.5;overflow:hidden;box-sizing:border-box}
+#root .studio-shell .map-peek strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+#root .studio-shell .map-peek>span{font-size:11px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#root .studio-shell .map-peek small{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#root .studio-shell .map-peek>span,#root .studio-shell .map-peek small{color:#c1d0db}
+#root .studio-shell .map-context{position:fixed;left:28px;right:auto;top:88px;bottom:auto;max-width:calc(100vw - 350px);width:auto;min-height:48px;display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:12px 16px;background:#fff;border:1px solid #dce4eb;border-radius:14px;box-shadow:none}
+#root .studio-shell .map-context>strong{font-size:14px;letter-spacing:-.02em}
+#root .studio-shell .map-context>span{font-size:10px;background:#f0f4f7;color:#667986}
+#root .studio-shell .map-context .collection-search{max-width:380px;min-height:40px;flex-basis:100%;background:#f8fafb;border-color:#dce4eb}
+#root .studio-shell .map-context .collection-search input{font-size:13px;color:#23384d}
+#root .studio-shell .map-context button{min-height:36px;min-width:36px}
+#root .studio-shell[data-level=collection] .main--home,#root .studio-shell[data-level=people] .main--home{visibility:hidden}
+#root .studio-shell[data-level=collection] .world-canvas,#root .studio-shell[data-level=collection] .world-hotspots,#root .studio-shell[data-level=people] .world-canvas,#root .studio-shell[data-level=people] .world-hotspots{top:var(--collection-top,224px)}
+/* The map and reading surface sit beside one another, not on top of each other. */
+#root .studio-shell[data-inspecting=true] .world-canvas,#root .studio-shell[data-inspecting=true] .world-hotspots{left:28px;right:calc(var(--panel) + 48px);top:88px;bottom:140px;height:auto}
+#root .studio-shell[data-inspecting=true] .main:not(.main--home),#root .studio-shell .map-person-detail{position:fixed;left:auto;right:28px;top:88px;bottom:140px;width:var(--panel);height:auto;min-height:0;max-height:none;margin:0;padding:28px;overflow:auto;scrollbar-gutter:stable;overscroll-behavior:contain;background:#fff;border:1px solid #dce4eb;border-radius:24px;box-shadow:none}
+#root .studio-shell[data-inspecting=true] .agent-command-dock{left:auto;right:28px;width:var(--panel);transform:none}
+#root .studio-shell[data-inspecting=true] .world-view-controls{left:28px;right:auto;top:auto;bottom:28px}
+#root .studio-shell[data-inspecting=true] .agent-intake-hint{display:none}
+#root .studio-shell .main:not(.main--home) .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px;min-height:44px}
+#root .studio-shell .main:not(.main--home) .topbar{position:sticky;top:0;z-index:8;background:#fff;padding:0 0 12px;box-shadow:0 -40px 0 #fff,0 8px 0 #fff}
+#root .studio-shell .main:not(.main--home) .topbar h1{font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:550;color:#81909b}
+#root .studio-shell .inspection-close{border:1px solid #e0e7ed;background:#f8fafb;color:#536877;border-radius:10px;padding:10px 12px;min-height:42px;flex-shrink:0}
+#root .studio-shell .main:not(.main--home) h2{font-size:25px;letter-spacing:-.04em;line-height:1.25;color:#182938}
+#root .studio-shell .main:not(.main--home) h3{color:#23384d;letter-spacing:-.02em}
+#root .studio-shell .main:not(.main--home) :is(p,label,td,th){line-height:1.65}
+#root .studio-shell .main:not(.main--home) .panel-heading{margin-bottom:24px;gap:16px}
+#root .studio-shell .main:not(.main--home) :is(input,textarea,select){background:#f8fafb;border:1px solid #dce4eb;border-radius:10px;color:#23384d;font-size:14px;padding:12px;min-width:0;max-width:100%}
+#root .studio-shell .main:not(.main--home) .muted,#root .studio-shell .main:not(.main--home) .tiny{color:#728390}
+#root .studio-shell .main:not(.main--home) :is(pre,.patch-diff){background:#f2f5f8;color:#23384d;border-color:#dce4eb;max-width:100%;overflow:auto}
+#root .studio-shell .main:not(.main--home) code{color:#354e66}
+#root .studio-shell .main:not(.main--home) summary{color:#536877}
+#root .studio-shell [aria-label="Release assurance sections"]{gap:4px;background:#f0f4f7;padding:4px;border-radius:12px;width:fit-content;margin:20px 0}
+#root .studio-shell [aria-label="Release assurance sections"] button{border:0;background:none;box-shadow:none;border-radius:8px;padding:10px 14px;font-size:12px}
+#root .studio-shell [aria-label="Release assurance sections"] button[aria-pressed=true]{background:#fff;color:#182938;box-shadow:0 2px 6px #18293810}
+#root .studio-shell .main:not(.main--home) .switch{gap:6px;padding:4px;background:#f1f5f8;border-radius:12px;display:flex;flex-wrap:wrap}
+#root .studio-shell .main:not(.main--home) .switch button{border:0;background:transparent;box-shadow:none;padding:10px 14px;border-radius:8px;color:#728390}
+#root .studio-shell .main:not(.main--home) .switch button[aria-pressed=true],#root .studio-shell .main:not(.main--home) .switch button.chosen{background:#fff;color:#23384d;box-shadow:0 2px 5px #23384d0b}
+#root .studio-shell .primary{background:#3159e8;border-color:#3159e8;color:#fff;border-radius:10px;box-shadow:none}
+#root .studio-shell .secondary{background:#f5f8fa;border-color:#dce4eb;color:#536877;border-radius:10px}
+#root .studio-shell .scene-workshop{position:fixed;left:auto;right:28px;top:88px;bottom:140px;width:340px;height:auto;min-height:0;max-height:none;padding:24px;overflow:auto;background:#fff;border:1px solid #dce4eb;border-radius:24px;box-shadow:none}
+#root .studio-shell[data-editing=true] .world-canvas,#root .studio-shell[data-editing=true] .world-hotspots{left:28px;right:388px;top:88px;bottom:140px;height:auto}
+#root .studio-shell[data-editing=true] .agent-intake-hint{display:none}
+#root .studio-shell[data-editing=true] .world-view-controls{left:28px;right:auto;top:auto;bottom:28px}
+#root .studio-shell[data-editing=true] .agent-command-dock{left:auto;right:28px;transform:none;width:340px}
+#root .studio-shell dialog{background:#fff;color:#23384d;border:1px solid #dce4eb;border-radius:24px;box-shadow:0 30px 100px #18293824;max-height:calc(100dvh - 48px);overflow:auto}
+#root .studio-shell dialog::backdrop{background:#18293866;backdrop-filter:blur(6px)}
+#root .studio-shell :is(button,summary,a,input,select,textarea):focus-visible{outline:3px solid #3159e8;outline-offset:3px}
+#root .studio-shell .world-fallback{color:#536877;z-index:3;pointer-events:none}
+#root .studio-shell.world-unavailable .world-hotspots{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));align-content:end;gap:12px;padding:24px}
+#root .studio-shell.world-unavailable .world-hotspot{position:static;transform:none!important;visibility:visible!important}
+#root .studio-shell.world-unavailable .station-leaders{display:none}
+#root .studio-shell[data-role=guest]{overflow:auto}
+#root .studio-shell[data-role=guest] .world-canvas{left:460px;right:28px;top:28px;bottom:28px;border-radius:26px}
+#root .studio-shell .login-shell{padding:24px 40px;display:flex;align-items:center;min-height:100dvh}
+#root .studio-shell .login-card{background:#fff;border-color:#dce4eb;box-shadow:none;border-radius:24px}
+#root .studio-shell .login-card .brand{color:#182938}
+@media(max-width:900px){
+  #root .studio-shell{--space:16px;--panel:calc(100vw - 32px)}
+  #root .studio-shell .brand{top:20px;left:20px;font-size:20px}
+  #root .studio-shell .sidebar-bottom{top:16px;right:16px}
+  #root .studio-shell .main--home{top:78px;left:20px;width:calc(100vw - 40px)}
+  #root .studio-shell .spatial-title{min-height:46px;gap:12px}
+  #root .studio-shell .spatial-title>p{font-size:9px;padding-right:12px}
+  #root .studio-shell .spatial-title h2{font-size:19px}
+  #root .studio-shell .world-canvas,#root .studio-shell .world-hotspots{inset:140px 16px 168px;left:16px;right:16px;top:140px;bottom:168px;height:auto;border-radius:22px}
+  #root .studio-shell .world-hotspot{font-size:11px;gap:6px;padding:8px 10px}
+  #root .studio-shell .world-hotspot .station-number{width:22px;min-width:22px;height:22px;font-size:9px}
+  #root .studio-shell .station-leaders{display:none}
+  #root .studio-shell[data-editing=true] .world-hotspots{display:none}
+  #root .studio-shell .world-view-controls{left:50%;right:auto;top:auto;bottom:96px;transform:translateX(-50%);height:48px;min-height:48px}
+  #root .studio-shell .world-view-controls button{width:38px;min-width:38px;height:38px;min-height:38px}
+  #root .studio-shell .studio-gesture-hint{display:none}
+  #root .studio-shell .agent-command-dock,#root .studio-shell[data-inspecting=true] .agent-command-dock,#root .studio-shell[data-editing=true] .agent-command-dock{left:16px;right:16px;bottom:16px;width:auto;transform:none}
+  #root .studio-shell .agent-command-dock>form{min-height:56px;padding:7px 8px 7px 14px;gap:8px}
+  #root .studio-shell .agent-command-dock input{font-size:16px}
+  #root .studio-shell .agent-intake-hint{display:none}
+  #root .studio-shell .map-context{left:16px;right:16px;top:80px;max-width:none;padding:12px;gap:10px}
+  #root .studio-shell .map-context .collection-search{max-width:none}
+  #root .studio-shell .map-context .collection-search input{font-size:16px}
+  #root .studio-shell[data-level=collection] .world-canvas,#root .studio-shell[data-level=collection] .world-hotspots,#root .studio-shell[data-level=people] .world-canvas,#root .studio-shell[data-level=people] .world-hotspots{top:var(--collection-top,220px);bottom:168px}
+  #root .studio-shell[data-inspecting=true] .world-canvas,#root .studio-shell[data-inspecting=true] .world-hotspots,#root .studio-shell[data-editing=true] .world-canvas,#root .studio-shell[data-editing=true] .world-hotspots{left:16px;right:16px;top:76px;height:20dvh;bottom:auto}
+  #root .studio-shell[data-inspecting=true] .main:not(.main--home),#root .studio-shell .map-person-detail,#root .studio-shell .scene-workshop{left:16px;right:16px;top:calc(76px + 20dvh + 16px);bottom:168px;width:auto;padding:22px;border-radius:22px}
+  #root .studio-shell[data-inspecting=true] .world-view-controls,#root .studio-shell[data-editing=true] .world-view-controls{left:50%;right:auto;top:auto;bottom:96px;transform:translateX(-50%)}
+  #root .studio-shell .main:not(.main--home) :is(input,select,textarea){font-size:16px}
+  #root .studio-shell[data-role=guest] .world-canvas{display:none}
+  #root .studio-shell .login-shell{padding:24px 16px}
+}
+@media(max-width:900px) and (min-height:601px){
+  #root .studio-shell[data-level=workspace]:not([data-editing=true]) .world-canvas{bottom:292px}
+  #root .studio-shell[data-level=workspace] .world-hotspots{inset:auto 16px 164px;height:112px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-content:end}
+  #root .studio-shell[data-level=workspace] .world-hotspot{position:static;transform:none!important;visibility:visible!important;min-width:0;max-height:48px;min-height:48px;padding:8px;font-size:11px;justify-content:center}
+  #root .studio-shell[data-level=workspace] .world-hotspot .station-number{display:none}
+}
+@media(max-width:700px) and (max-height:650px){
+  #root .studio-shell[data-level=workspace]:not([data-editing=true]) .world-canvas{top:140px;bottom:288px;height:auto}
+  #root .studio-shell[data-level=workspace] .world-hotspots{inset:auto 16px 164px;height:108px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-content:end}
+  #root .studio-shell[data-level=workspace] .world-hotspot{position:static;transform:none!important;visibility:visible!important;min-width:0;max-height:48px;min-height:48px;padding:8px;font-size:10px;justify-content:center}
+  #root .studio-shell[data-level=workspace] .world-hotspot .station-number,#root .studio-shell[data-level=workspace] .world-hotspot small{display:none}
+  #root .studio-shell[data-inspecting=true] .world-view-controls,#root .studio-shell[data-editing=true] .world-view-controls{display:none}
+  #root .studio-shell[data-inspecting=true] .main:not(.main--home),#root .studio-shell .map-person-detail,#root .studio-shell .scene-workshop{bottom:92px}
+}
+@media(min-width:701px) and (max-height:600px){
+  #root .studio-shell{--panel:48vw}
+  #root .studio-shell .main--home{top:72px}
+  #root .studio-shell .world-canvas,#root .studio-shell .world-hotspots{top:130px;bottom:102px}
+  #root .studio-shell .agent-command-dock{left:auto;right:24px;bottom:20px;transform:none;width:calc(100vw - 340px)}
+  #root .studio-shell .agent-intake-hint{display:none}
+  #root .studio-shell .world-view-controls{top:auto;bottom:24px;left:24px;right:auto;transform:none}
+  #root .studio-shell .studio-gesture-hint{display:none}
+  #root .studio-shell[data-inspecting=true] .world-canvas,#root .studio-shell[data-inspecting=true] .world-hotspots,#root .studio-shell[data-editing=true] .world-canvas,#root .studio-shell[data-editing=true] .world-hotspots{left:20px;right:calc(var(--panel) + 40px);top:80px;bottom:102px;height:auto}
+  #root .studio-shell[data-inspecting=true] .main:not(.main--home),#root .studio-shell .map-person-detail,#root .studio-shell .scene-workshop{left:auto;right:20px;top:80px;bottom:102px;width:var(--panel);padding:20px}
+  #root .studio-shell[data-inspecting=true] .agent-command-dock,#root .studio-shell[data-editing=true] .agent-command-dock{left:auto;right:20px;bottom:20px;width:var(--panel);transform:none}
+  #root .studio-shell[data-inspecting=true] .world-view-controls,#root .studio-shell[data-editing=true] .world-view-controls{left:20px;right:auto;top:auto;bottom:24px;transform:none}
+  #root .studio-shell .map-context{top:78px;left:20px;right:auto;max-width:240px;max-height:calc(100dvh - 190px);overflow:auto}
+  #root .studio-shell[data-inspecting=false][data-level=collection] .world-canvas,#root .studio-shell[data-inspecting=false][data-level=collection] .world-hotspots,#root .studio-shell[data-inspecting=false][data-level=people] .world-canvas,#root .studio-shell[data-inspecting=false][data-level=people] .world-hotspots{top:80px;left:284px;right:20px;bottom:102px}
+  #root .studio-shell .station-leaders{display:block}
+}
+@media(prefers-reduced-motion:reduce){#root .studio-shell :is(button,.world-hotspot){transition:none;animation:none}}
+/* The compact navigation grid must never reappear over an open layout editor. */
+@media(max-width:900px){#root .studio-shell[data-level][data-editing=true] .world-hotspots{display:none}}

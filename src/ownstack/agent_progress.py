@@ -31,12 +31,12 @@ class ProgressRecord(BaseModel):
 
 def saved_progress(db, principal, request_id, project_id, attempt_id, revision):
     """Recheck current scope on every poll; never return text/code or dispatch AI."""
-    req = scoped(db, ChangeRequest, request_id, principal.tenant_id)
+    req = scoped(db, ChangeRequest, request_id, principal.tenant_id, actor=principal)
     if req.project_id != project_id:
         raise HTTPException(404, "Not found")
     if req.current_attempt_id != attempt_id or req.revision != revision:
         raise HTTPException(409, "Progress scope changed")
-    attempt = scoped(db, Attempt, attempt_id, principal.tenant_id)
+    attempt = scoped(db, Attempt, attempt_id, principal.tenant_id, actor=principal)
     if attempt.request_id != req.id or attempt.request_revision != revision:
         raise HTTPException(409, "Progress scope changed")
     event = db.scalar(select(Event).where(Event.tenant_id == principal.tenant_id,
@@ -51,7 +51,7 @@ def saved_progress(db, principal, request_id, project_id, attempt_id, revision):
         progress = parsed.model_dump(exclude={"attempt_id"})
     response = None
     if attempt.state == "accepted" and req.accepted_proposal_id:
-        proposal = scoped(db, Proposal, req.accepted_proposal_id, principal.tenant_id)
+        proposal = scoped(db, Proposal, req.accepted_proposal_id, principal.tenant_id, actor=principal)
         if (proposal.attempt_id == attempt.id and proposal.request_revision == revision
                 and proposal.route in {"configure", "engineering", "refuse"}):
             response = {"proposal_id": proposal.id, "route": proposal.route}
@@ -71,7 +71,7 @@ def progress_feed(request_id: str, request: Request, project_id: str = Query(min
                   attempt_id: str = Query(min_length=1, max_length=40), revision: int = Query(ge=1),
                   authorization: str | None = Header(default=None),
                   principal: Principal = Depends(current_principal), db=Depends(db_session)):
-    require_role(principal, "admin", "engineer")
+    require_role(principal, "admin", "engineer","manager")
     saved_progress(db, principal, request_id, project_id, attempt_id, revision)
     factory = sessionmaker(bind=db.get_bind(), expire_on_commit=False)
     # Do not retain a DB transaction/connection throughout a slow browser stream.
@@ -80,7 +80,7 @@ def progress_feed(request_id: str, request: Request, project_id: str = Query(min
     def snapshot():
         with factory() as connection:
             current = current_principal(request, authorization, connection)
-            require_role(current, "admin", "engineer")
+            require_role(current, "admin", "engineer","manager")
             if current != principal:
                 raise HTTPException(401, "Session changed")
             return saved_progress(connection, current, request_id, project_id, attempt_id, revision)

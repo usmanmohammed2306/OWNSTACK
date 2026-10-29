@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from ownstack.models import Project, User, Variation
 from ownstack.policy import Principal, can_read
+from ownstack.governance import authorized_variation
 
 
 def replay_grant(db: Session, tenant_id: str, project_id: str, viewer_id: str,
@@ -16,7 +17,7 @@ def replay_grant(db: Session, tenant_id: str, project_id: str, viewer_id: str,
     """
     users = db.scalars(select(User).order_by(User.id)).all()
     projects = db.scalars(select(Project).order_by(Project.id)).all()
-    variations = db.scalars(select(Variation).where(Variation.state == "active")).all()
+    variations = db.scalars(select(Variation).where(Variation.state == "active",authorized_variation())).all()
     candidate = SimpleNamespace(tenant_id=tenant_id, project_id=project_id, viewer_id=viewer_id,
                                 state="active", starts_at=at, expires_at=expires_at)
     expected = (viewer_id, project_id, "activation")

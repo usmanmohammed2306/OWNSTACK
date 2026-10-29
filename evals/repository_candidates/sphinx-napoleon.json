@@ -1,0 +1,9 @@
+{
+  "edits": [
+    {
+      "path": "sphinx/ext/napoleon/docstring.py",
+      "old": "        for _name, _type, _desc in self._consume_fields():\n            if self._config.napoleon_use_ivar:",
+      "new": "        for _name, _type, _desc in self._consume_fields():\n            if not getattr(self._config, 'strip_signature_backslash', False):\n                _name = _name.replace(r'\\_', '_')\n            if self._config.napoleon_use_ivar:"
+    }
+  ]
+}

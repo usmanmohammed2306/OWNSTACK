@@ -5,6 +5,12 @@ __pycache__/
 *.pyc
 *.db
 *.sqlite3
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db-wal
+*.db-shm
+*.db-journal
 *.dump
 .env
 .env.*
@@ -17,6 +23,7 @@ dist/
 *.tsbuildinfo
 *.egg-info/
 .DS_Store
+artifacts/
 # Private working records are not part of the public source release.
 docs/CAREER_EVIDENCE.md
 docs/JOURNAL.md

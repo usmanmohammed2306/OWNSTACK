@@ -88,8 +88,9 @@ def run_once(jobs: Path) -> bool:
                            "stdout": "", "stderr": "Verifier rejected the job.",
                            "runner": "no-network-verifier-sidecar", "patch_hash": payload.get("patch_hash", "") if isinstance(payload, dict) else ""}
                 write_json(outgoing / path.name, failure)
-        finally:
-            path.unlink(missing_ok=True)
+        # Dequeue only after an outcome has been persisted. A full/read-only
+        # result directory must not erase the sole durable incoming request.
+        path.unlink(missing_ok=True)
         return True
     return False
 

@@ -1,17 +1,20 @@
 """Read-only rollback impact. A digest fences a snapshot; it grants no authority."""
 from sqlalchemy import select
 from ownstack.models import Project, User, Variation
+from ownstack.governance import authorized_variation
+from ownstack.authorization_clock import authorization_time
 from ownstack.policy import Principal, ReadDecision, aware, digest, read_decision
 from ownstack.service import scoped
 
 
 def revoke_preview(db, variation, actor_id, at):
+    at=authorization_time(db,at)
     project = scoped(db, Project, variation.project_id, variation.tenant_id)
     viewer = scoped(db, User, variation.viewer_id, variation.tenant_id)
     candidates = db.scalars(select(Variation).where(
         Variation.tenant_id == variation.tenant_id, Variation.project_id == project.id,
         Variation.viewer_id == viewer.id, Variation.state == "active",
-        Variation.starts_at <= at, Variation.expires_at > at).order_by(Variation.id)).all()
+        Variation.starts_at <= at, Variation.expires_at > at,authorized_variation()).order_by(Variation.id)).all()
     principal = Principal(viewer.id, viewer.tenant_id, viewer.role)
 
     def decision(rows):

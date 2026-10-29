@@ -3,11 +3,12 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from ownstack.models import (Approval, Attempt, ChangeRequest, Contract, EngineeringItem, Event,
-                             Evidence, HostObservation, Proposal, Variation)
+                             Evidence, HostObservation, Investigation, Proposal, Variation, ApprovalWitness, VariationWitness)
 from ownstack.policy import aware, digest
 from ownstack.runner import ROOT, current_provenance
 from ownstack.service import scoped, utcnow
 from ownstack.repair_models import RepairAttempt, RepairRun
+from ownstack.repository_recovery import public_result
 
 # Explicit public-to-this-tenant configuration fields, never arbitrary settings.
 REPAIR_CONFIGURATION_FIELDS = (
@@ -77,16 +78,23 @@ def export_proof(bind, request_id: str, tenant_id: str) -> dict:
                 "attempts": grouped[run.id], "release_state": "not_deployed"})
         payload = {
             "exported_at": utcnow().isoformat(), "tenant_id": tenant_id,
-            "request": fields(request, "id tenant_id requester_id text kind project_id viewer_id expires_at status revision current_attempt_id accepted_proposal_id created_at"),
+            "request": fields(request, "id tenant_id team_id requester_id text kind project_id viewer_id expires_at status revision current_attempt_id accepted_proposal_id created_at"),
             "attempts": [fields(row, "id number request_revision state model_id deadline_at started_at finished_at latency_ms input_tokens output_tokens error_code") for row in related(Attempt)],
             "proposals": [fields(row, "id attempt_id route reason parameters request_revision contract_id contract_version contract_hash preview_hash proposal_hash status") for row in proposals],
             "contracts": contracts,
             "approvals": [fields(row, "id proposal_id proposal_hash actor_id created_at") for row in approvals],
-            "variations": [fields(row, "id project_id viewer_id proposal_id state starts_at expires_at revision") for row in variations],
+            "variations": [fields(row, "id project_id viewer_id proposal_id state starts_at expires_at revision approval_quorum") for row in variations],
+            "approval_witnesses": [fields(row,'id proposal_id proposal_hash actor_id identity_version created_at') for row in db.scalars(
+                select(ApprovalWitness).where(ApprovalWitness.tenant_id==tenant_id,ApprovalWitness.proposal_id.in_(proposal_ids)).order_by(ApprovalWitness.id))],
+            "selected_witnesses": [fields(row,'id variation_id witness_id source') for row in db.scalars(
+                select(VariationWitness).where(VariationWitness.tenant_id==tenant_id,VariationWitness.variation_id.in_([v.id for v in variations])).order_by(VariationWitness.id))],
             "observations": [fields(row, "id actor_id project_id document_id variation_id action allowed basis observed_at") for row in observations],
             "engineering": [fields(row, "id status patch patch_hash human_decision operation_id operation_deadline") for row in related(EngineeringItem)],
             "repair_runs": repair_history,
-            "evidence": [fields(row, "id kind subject_hash result limitation created_at") for row in related(Evidence)],
+            "investigations": [fields(row, "id actor_id snapshot_hash workflow_hash model_id state version memory error_code deadline_at created_at")
+                               for row in related(Investigation)],
+            "evidence": [{**fields(row, "id kind subject_hash limitation created_at"), 'result':public_result(row)}
+                         for row in related(Evidence)],
             "events": [fields(row, "id event_type payload created_at") for row in related(Event)],
             "current_fixture_provenance": current_provenance(),
             "source_hashes_at_export": source_inventory(),
@@ -121,4 +129,5 @@ def saved_state_fingerprint(envelope: dict) -> str:
     names = ("request", "attempts", "proposals", "contracts", "approvals", "variations",
              "observations", "engineering", "evidence", "events")
     return digest({**{name: payload[name] for name in names},
-                   "repair_runs": payload.get("repair_runs", [])})
+                   "repair_runs": payload.get("repair_runs", []),
+                   "investigations": payload.get("investigations", [])})

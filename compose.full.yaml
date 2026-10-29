@@ -19,8 +19,10 @@ services:
     command: ["sh", "-c", "alembic upgrade head && python -m ownstack.seed"]
     environment: &runtime_environment
       OWNSTACK_DATABASE_URL: postgresql+psycopg://ownstack:ownstack@db:5432/ownstack
+      OWNSTACK_DB_IO_TIMEOUT_SECONDS: ${OWNSTACK_DB_IO_TIMEOUT_SECONDS:-15}
       OWNSTACK_ENV: ${OWNSTACK_ENV:-local}
-      OWNSTACK_AI_MODE: ${OWNSTACK_AI_MODE:-fixture}
+      OWNSTACK_PUBLIC_SIGNUP: ${OWNSTACK_PUBLIC_SIGNUP:-false}
+      OWNSTACK_AI_MODE: ${OWNSTACK_AI_MODE:-off}
       OWNSTACK_SIGNING_SECRET: ${OWNSTACK_SIGNING_SECRET:-local-demo-secret-not-for-deployment}
       OWNSTACK_DEMO_PASSWORD: ${OWNSTACK_DEMO_PASSWORD:-demo-only-pass}
       OWNSTACK_MAX_LIVE_CALLS: ${OWNSTACK_MAX_LIVE_CALLS:-0}
@@ -29,6 +31,9 @@ services:
       OWNSTACK_PUBLIC_ORIGIN: ${OWNSTACK_PUBLIC_ORIGIN:-http://127.0.0.1:8080}
       OWNSTACK_BUILD_REVISION: ${OWNSTACK_BUILD_REVISION:-uncommitted-reference}
       OWNSTACK_REQUIRE_BACKGROUND: "true"
+      # These interfaces are deliberately available only in the local fixture.
+      OWNSTACK_RELEASE_ASSURANCE: "true"
+      OWNSTACK_REPOSITORY_COCKPIT: "true"
       NEBIUS_API_KEY: ${NEBIUS_API_KEY:-}
       NEBIUS_MODEL_ID: ${NEBIUS_MODEL_ID:-}
       NEBIUS_PATCH_MODEL_ID: ${NEBIUS_PATCH_MODEL_ID:-}

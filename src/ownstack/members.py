@@ -27,9 +27,9 @@ def members(principal: Principal = Depends(current_principal), db: Session = Dep
 def member_access(user_id: str, body: AccessBody, principal: Principal = Depends(current_principal),
                   db: Session = Depends(db_session)):
     require_role(principal, "admin")
-    user = scoped(db, User, user_id, principal.tenant_id)
+    user = scoped(db, User, user_id, principal.tenant_id, actor=principal, write=True)
     # Keep this slice narrow: no role escalation or administrator lockout.
-    if user.role not in {"contractor", "engineer", "member"}:
+    if user.role not in {"contractor", "engineer", "member","manager"}:
         raise HTTPException(409, "Administrator and platform accounts require a separate owner workflow")
     user = db.scalar(select(User).where(User.id == user.id).with_for_update())
     if user.enabled != body.enabled:

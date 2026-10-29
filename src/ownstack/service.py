@@ -9,11 +9,14 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from ownstack.config import Settings
 from ownstack.ai import AIResult
 from sqlalchemy.orm import Session
-from ownstack.models import (Approval, Attempt, ChangeRequest, Contract, Document, EngineeringItem,
+from ownstack.models import (Approval, ApprovalWitness, Tenant, Attempt, ChangeRequest, Contract, Document, EngineeringItem,
                              Event, Evidence, Idempotency, InferenceBudget, Outbox, Project, Proposal,
                              RateWindow, RuntimePulse, User, Variation, WebSession)
 from ownstack.policy import CONTRACT, Principal, aware, can_read, digest, validate_grant
 from ownstack.replay import replay_grant
+from ownstack.auth import require_workspace_ai
+from ownstack.governance import authorized_variation,current_witnesses
+from ownstack.authorization_clock import authorization_time
 
 
 def uid() -> str:
@@ -31,10 +34,13 @@ def mark_pulse(db: Session, component: str) -> None:
                                                set_={"touched_at": utcnow()}))
 
 
-def scoped(db: Session, model, object_id: str, tenant_id: str):
+def scoped(db: Session, model, object_id: str, tenant_id: str, *, actor: Principal | None=None, write: bool=False):
     obj = db.scalar(select(model).where(model.id == object_id, model.tenant_id == tenant_id))
     if obj is None:
         raise HTTPException(404, "Not found")
+    if actor is not None:
+        from ownstack.team_scope import guard_object
+        guard_object(db,actor,obj,write=write)
     return obj
 
 
@@ -59,8 +65,10 @@ def idempotent(db: Session, tenant_id: str, operation: str, key: str, body: dict
     return response
 
 
-def reserve_live_call(db: Session, settings: Settings) -> None:
+def reserve_live_call(db: Session, settings: Settings, tenant_id: str | None = None) -> None:
     """Reserve before dispatch. A failed or timed-out remote call still consumes one slot."""
+    if tenant_id is not None:
+        require_workspace_ai(db, tenant_id)
     if settings.ai_mode != "nebius":
         return
     changed = db.execute(update(InferenceBudget)
@@ -72,6 +80,8 @@ def reserve_live_call(db: Session, settings: Settings) -> None:
 
 
 def create_request(db: Session, principal: Principal, body: dict, key: str) -> dict:
+    from ownstack.team_scope import require_project,created_response
+    project=require_project(db,principal,body.get('project_id'),write=True)
     def create():
         project_id = body.get("project_id")
         viewer_id = body.get("viewer_id")
@@ -81,12 +91,12 @@ def create_request(db: Session, principal: Principal, body: dict, key: str) -> d
             raise HTTPException(404, "Viewer not found")
         request = ChangeRequest(id=uid(), tenant_id=principal.tenant_id, requester_id=principal.user_id,
                                 text=body["text"], kind=body["kind"], project_id=project_id,
-                                viewer_id=viewer_id, expires_at=body.get("expires_at"), status="new", revision=1)
+                                viewer_id=viewer_id, expires_at=body.get("expires_at"), status="new", revision=1,team_id=project.team_id)
         db.add(request)
         db.flush()
         record(db, request.tenant_id, request.id, "request.created", {"kind": request.kind})
         return {"id": request.id, "status": request.status, "revision": request.revision}
-    return idempotent(db, principal.tenant_id, "create_request", key, body, create)
+    return created_response(db,principal,idempotent(db, principal.tenant_id, "create_request", key, body, create))
 
 
 def start_attempt(db: Session, request: ChangeRequest, model_id: str, timeout_seconds: float,
@@ -99,7 +109,7 @@ def start_attempt(db: Session, request: ChangeRequest, model_id: str, timeout_se
         current.state, current.error_code, current.finished_at = "timed_out", "DEADLINE", at
         record(db, request.tenant_id, request.id, "attempt.timed_out", {"attempt_id": current.id})
     if settings:
-        reserve_live_call(db, settings)
+        reserve_live_call(db, settings, request.tenant_id)
     count = db.scalar(select(func.count(Attempt.id)).where(Attempt.request_id == request.id, Attempt.request_revision == request.revision)) or 0
     attempt = Attempt(id=uid(), tenant_id=request.tenant_id, request_id=request.id,
                       number=count + 1, request_revision=request.revision, state="queued",
@@ -198,32 +208,42 @@ def claim_engineering(db: Session, item: EngineeringItem, action: str, seconds: 
 
 
 def host_preview(db: Session, request: ChangeRequest) -> dict:
+    at=authorization_time(db,utcnow())
     project = scoped(db, Project, request.project_id or "", request.tenant_id)
     viewer = scoped(db, User, request.viewer_id or "", request.tenant_id)
     intent = request.text.lower()
-    forbidden = ("pdf", "export", "write", "edit", "admin", "delete", "bypass", "skip approval", "permanent")
+    project_name=r'(?<!\w)'+re.escape(project.name.lower())+r'(?!\w)'
+    # Match action words, not substrings such as "edit" inside "credit".
+    # The already selected project name is data, not a requested privilege.
+    remaining=re.sub(project_name,' ',intent)
+    forbidden=r'\b(?:pdf|exports?|exporting|write|writes|writing|edits?|editing|admin(?:istrator)?|delete|deletes|deleting|bypass(?:es|ing)?|permanent(?:ly)?|skip\s+approval|modify|modifying|modification|upload|uploads|uploading)\b'
     if (not re.search(r"\bread[- ]only\b", intent) or "access" not in intent
-            or project.name.lower() not in intent or any(word in intent for word in forbidden)):
+            or not re.search(project_name,intent) or re.search(forbidden,remaining)):
         raise HTTPException(422, "Request text does not match the temporary read-only access contract")
     other_project_names = db.scalars(select(Project.name).where(Project.tenant_id != request.tenant_id)).all()
-    if any(name.lower() in intent for name in other_project_names):
+    # Common names such as Payments can exist in different organizations. IDs
+    # and tenant/team authorization own the scope. Remove the authorized name
+    # before looking for a distinct foreign name, using whole-word boundaries.
+    if any(name.lower()!=project.name.lower() and re.search(r'(?<!\w)'+re.escape(name.lower())+r'(?!\w)',remaining) for name in other_project_names):
         raise HTTPException(422, "Request text names another tenant's project")
+    if not viewer.enabled:
+        raise HTTPException(422, "Capability requires an enabled viewer")
     if viewer.role != "contractor":
         raise HTTPException(422, "Capability requires a contractor viewer")
     if request.expires_at is None:
         raise HTTPException(422, "Expiry required")
     try:
-        validate_grant(request.tenant_id, project.tenant_id, viewer.tenant_id, request.expires_at, utcnow())
+        validate_grant(request.tenant_id, project.tenant_id, viewer.tenant_id, request.expires_at, at)
     except ValueError as error:
         raise HTTPException(422, str(error))
     docs = db.scalars(select(Document).where(Document.tenant_id == request.tenant_id, Document.project_id == project.id).order_by(Document.id)).all()
-    variations = db.scalars(select(Variation).where(Variation.tenant_id == request.tenant_id, Variation.project_id == project.id)).all()
+    variations = db.scalars(select(Variation).where(Variation.tenant_id == request.tenant_id, Variation.project_id == project.id,authorized_variation())).all()
     principal = Principal(viewer.id, viewer.tenant_id, viewer.role)
-    before = can_read(principal, project.tenant_id, project.id, variations, utcnow())
+    before = can_read(principal, project.tenant_id, project.id, variations, at)
     candidate = SimpleNamespace(tenant_id=request.tenant_id, project_id=project.id, viewer_id=viewer.id,
-                                state="active", starts_at=utcnow(), expires_at=request.expires_at)
-    after = can_read(principal, project.tenant_id, project.id, [*variations, candidate], utcnow())
-    replay = replay_grant(db, request.tenant_id, project.id, viewer.id, request.expires_at, utcnow())
+                                state="active", starts_at=at, expires_at=request.expires_at)
+    after = can_read(principal, project.tenant_id, project.id, [*variations, candidate], at)
+    replay = replay_grant(db, request.tenant_id, project.id, viewer.id, request.expires_at, at)
     if replay["unexpected_delta_count"]:
         raise HTTPException(409, "Counterfactual replay found an unexpected effect")
     if not replay["intended_delta_observed"]:
@@ -232,8 +252,9 @@ def host_preview(db: Session, request: ChangeRequest) -> dict:
                 "viewer_id": viewer.id, "expires_at": aware(request.expires_at).isoformat(),
                 "document_digests": [(doc.id, digest(doc.body)) for doc in docs],
                 "before": before, "after": after, "visible_document_ids": [doc.id for doc in docs] if after else [],
-                "replay": replay}
+                "replay": replay,"approval_quorum":db.get(Tenant,request.tenant_id).approval_quorum}
     return {"before": before, "after": after, "visible_documents": [{"id": d.id, "title": d.title} for d in docs] if after else [],
+            "approval_quorum":snapshot['approval_quorum'],
             "expires_at": snapshot["expires_at"], "snapshot_hash": digest(snapshot),
             "counterfactual": {"checks": replay["checks"], "intended_delta_observed": replay["intended_delta_observed"],
                                "unexpected_delta_count": replay["unexpected_delta_count"]},
@@ -309,6 +330,8 @@ def manual_handoff(db: Session, request: ChangeRequest, principal: Principal) ->
     """Engineer-controlled, AI-free proposal through the same policy and approval path."""
     if principal.role != "engineer":
         raise HTTPException(403, "Engineer required")
+    from ownstack.team_scope import require_request
+    require_request(db,principal,request.id,write=True)
     if request.status not in {"new", "failed", "refused"}:
         raise HTTPException(409, "Request is already processing or has a current proposal")
     attempt = start_attempt(db, request, "human-ai-off", 30)
@@ -346,9 +369,11 @@ def fail_attempt(db: Session, attempt_id: str, error_code: str) -> None:
 def approve(db: Session, proposal: Proposal, principal: Principal, supplied_hash: str, key: str) -> dict:
     if principal.role != "admin":
         raise HTTPException(403, "Tenant admin required")
+    from ownstack.team_scope import require_request
+    require_request(db,principal,proposal.request_id,write=True)
     body = {"proposal_id": proposal.id, "proposal_hash": supplied_hash, "actor_id": principal.user_id}
     def create():
-        request = scoped(db, ChangeRequest, proposal.request_id, principal.tenant_id)
+        request = scoped(db, ChangeRequest, proposal.request_id, principal.tenant_id, actor=principal)
         if proposal.route != "configure" or proposal.status != "ready" or request.accepted_proposal_id != proposal.id or request.revision != proposal.request_revision:
             raise HTTPException(409, "Stale or nonconfigurable proposal")
         if proposal.proposal_hash != supplied_hash:
@@ -359,16 +384,40 @@ def approve(db: Session, proposal: Proposal, principal: Principal, supplied_hash
         # Serialize grants on the host project, including approvals of different proposals.
         db.scalar(select(Project).where(Project.id == request.project_id,
                                         Project.tenant_id == principal.tenant_id).with_for_update())
+        # Serialize non-key policy updates without blocking the KEY SHARE lock
+        # needed by concurrent membership-audit foreign-key inserts. FOR UPDATE
+        # here can deadlock with a review waiting for that membership row.
+        db.scalar(select(Tenant).where(Tenant.id==principal.tenant_id).with_for_update(key_share=True))
         fresh = host_preview(db, request)
         if fresh["snapshot_hash"] != proposal.preview_hash:
             raise HTTPException(409, "Host preview changed; interpret again")
+        quorum=fresh['approval_quorum']
+        if quorum==2:
+            if principal.user_id==request.requester_id:raise HTTPException(403,'The requester cannot review this two-person proposal')
+            reviews=current_witnesses(db,proposal,request,utcnow())
+            if principal.user_id not in {r.actor_id for r in reviews}:
+                person=db.get(User,principal.user_id)
+                db.add(ApprovalWitness(id=uid(),tenant_id=request.tenant_id,proposal_id=proposal.id,
+                    proposal_hash=proposal.proposal_hash,actor_id=principal.user_id,identity_version=person.token_version))
+                db.flush();reviews=current_witnesses(db,proposal,request,utcnow())
+                record(db,request.tenant_id,request.id,'proposal.reviewed',{'proposal_id':proposal.id,
+                    'actor_id':principal.user_id,'proposal_hash':proposal.proposal_hash})
+            count=len({r.actor_id for r in reviews})
+            if count<quorum:return {'status':'awaiting_second_approval','approvals':count,'required':quorum,'variation_id':None}
         variation = Variation(id=uid(), tenant_id=request.tenant_id, project_id=request.project_id,
                               viewer_id=request.viewer_id, proposal_id=proposal.id, state="active",
-                              starts_at=utcnow(), expires_at=request.expires_at)
+                              starts_at=utcnow(), expires_at=request.expires_at,approval_quorum=quorum)
         db.add(Approval(id=uid(), tenant_id=request.tenant_id, proposal_id=proposal.id,
                         proposal_hash=proposal.proposal_hash, actor_id=principal.user_id))
         db.add(variation)
+        if quorum==2:
+            from ownstack.models import VariationWitness
+            db.flush()
+            for witness in reviews:
+                db.add(VariationWitness(id=uid(),tenant_id=request.tenant_id,
+                    variation_id=variation.id,witness_id=witness.id,source='activation'))
         proposal.status, request.status = "approved", "active"
-        record(db, request.tenant_id, request.id, "variation.activated", {"variation_id": variation.id, "proposal_hash": proposal.proposal_hash})
+        record(db, request.tenant_id, request.id, "variation.activated", {"variation_id": variation.id, "proposal_hash": proposal.proposal_hash,
+            'selected_witness_ids':[r.id for r in reviews] if quorum==2 else []})
         return {"variation_id": variation.id, "status": "active", "host_enforcement": "shared_fixture_database"}
     return idempotent(db, principal.tenant_id, "approve", key, body, create)

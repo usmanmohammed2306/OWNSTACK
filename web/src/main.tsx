@@ -1,34 +1,59 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Activity, ArrowRight, ArrowUpRight, CheckCircle2, Clock3, Code2, FileText, Fingerprint, Layers3, LockKeyhole, Search, ShieldCheck, XCircle } from 'lucide-react';
-import './style.css';
-import './workbench.css';
-import { ScopeScene } from './ScopeScene';
+import { Activity, ArrowLeft, ArrowRight, ArrowUpRight, CheckCircle2, Clock3, Code2, FileText, Fingerprint, Layers3, LockKeyhole, Search, ShieldCheck, XCircle, LayoutDashboard } from 'lucide-react';
+import { ChangeScope } from './ChangeScope';
+import { accessRequestText, changeStatus, changeTitle, personName, projectName } from './changePresentation';
+import { requestLabel, hasApprovalHistory } from './workflowPresentation';
+import { ProductSignals } from './ProductSignals';
 import { WorkspaceHome } from './WorkspaceHome';
+import { SpatialShell } from './SpatialShell';
+import { observedNeedCount } from './spatialWorkspaceModel';
+import type { SpatialRecord } from './spatialRecords';
+import { AccountGate, type CustomerSession } from './AccountGate';
+import { AccountSettings } from './WorkspaceAccounts';
 import { RequestComposer } from './RequestComposer';
 import { BoundaryInspector } from './BoundaryInspector';
 import { PatchDiff } from './PatchDiff';
 import { BoundedRepair } from './BoundedRepair';
-import { CommandMenu } from './CommandMenu';
 import { ApprovalReview } from './ApprovalReview';
 import { People } from './People';
+import {Teams} from './Teams';
 import { AccessInspector } from './AccessInspector';
 import { RevokeReview } from './RevokeReview';
 import { ProposalRefresh } from './ProposalRefresh';
 import { Assurance } from './Assurance';
 import { AgentProgress } from './AgentProgress';
+import { AgentInvestigation } from './AgentInvestigation';
+import {LocalAgentReview} from './LocalAgentReview';
+import {RepositoryCockpit, type RepositoryReview} from './RepositoryCockpit';
+import {ReleaseAssurance} from './ReleaseAssurance';
+import {Organization} from './Organization';
+import {RequestPatterns} from './RequestPatterns';
+import {CodeReview} from './CodeReview';
+import {ChangeAgent} from './ChangeAgent';
+import {CustomerRepositoryRequest} from './CustomerRepositoryRequest';
+import {CustomerPortal} from './CustomerPortal';
+import './customer-workspace.css';
 import { currentPatchCheck, effectiveVariationState, filterRequests, type RequestFilter } from './review';
 import { sameProposal, sameSession, submissionForIntent, type PendingSubmission, type ProposalIdentity } from './responseIdentity';
-import './experience.css';
+import './studio.css';
+import './calm-workspace.css';
+import './agent-workspace.css';
+import './spatial-workspace.css';
+import './arctic-workspace.css';
+import './agent-studio.css';
+import './solid-workspace.css';
+import './workspace-studio.css';
+import './organization-workspace.css';
 
-type Session = { csrf_token: string; user_id: string; tenant_id: string; role: string; ai_mode: string };
-type Request = { id: string; text: string; kind: string; project_id: string | null; viewer_id: string | null; expires_at: string | null; status: string; revision: number; current_attempt_id: string | null; accepted_proposal_id: string | null };
+type Session = CustomerSession;
+type Request = { id: string; requester_id?:string;team_id?:string; text: string; kind: string; project_id: string | null; viewer_id: string | null; expires_at: string | null; status: string; revision: number; current_attempt_id: string | null; accepted_proposal_id: string | null };
 type Proposal = { id: string; route: string; reason: string; proposal_hash: string; preview_hash: string | null; status: string; contract_id: string | null; contract_version: number | null };
-type Preview = { before: boolean; after: boolean; visible_documents: { id: string; title: string }[]; expires_at: string; snapshot_hash: string; matches_saved_proposal: boolean; limitations: string; counterfactual: { checks: number; intended_delta_observed: boolean; unexpected_delta_count: number } };
+type Preview = { before: boolean; after: boolean; approval_quorum?:number; visible_documents: { id: string; title: string }[]; expires_at: string; snapshot_hash: string; matches_saved_proposal: boolean; limitations: string; counterfactual: { checks: number; intended_delta_observed: boolean; unexpected_delta_count: number } };
 type Attempt = { id: string; number: number; state: string; model_id: string; error_code: string | null; latency_ms: number | null };
 type Variation = { id: string; project_id: string; viewer_id: string; state: string; expires_at: string };
-type Engineering = { id: string; request_id: string; status: string; patch_hash: string | null; human_decision: string | null };
-type EngineeringDetail = { id: string; request: Request; status: string; patch: { edits: { path: string; old: string; new: string }[] } | null; patch_hash: string | null; human_decision: string | null; current_checks_usable: boolean; checks: { subject_hash: string; result: { passed: boolean; stdout: string; stderr: string; runner: string }; limitation: string }[] };
+type Engineering = { id: string; request_id: string; status: string; patch_hash: string | null; human_decision: string | null;requested_by?:string;request_text?:string;thumbnail?:{path:string;code:string} };
+type EngineeringDetail = { id: string; request: Request; status: string; patch: { edits: { path: string; old: string; new: string }[] } | null; patch_hash: string | null; human_decision: string | null; current_checks_usable: boolean; repository?: RepositoryReview | null; checks: { subject_hash: string; result: { passed: boolean; stdout: string; stderr: string; runner: string }; limitation: string }[] };
 type Event = { id: string; request_id: string; type: string; payload: Record<string, unknown>; created_at: string };
 type InferenceBudget = { mode: string; reserved_calls: number; max_live_calls: number; remaining_calls: number | null; note: string };
 type Convergence = { need_key: string; your_tenant_request_count: number; affected_tenant_count: number | null; decision: string | null; observed_granted_reads: number | null; usage_scope: string; note: string };
@@ -40,12 +65,15 @@ async function api<T>(path: string, session: Session | null, options: RequestIni
   const response = await fetch(path, { ...options, credentials: 'same-origin', headers: { 'Content-Type': 'application/json', ...(session ? { 'X-CSRF-Token': session.csrf_token } : {}), ...options.headers } });
   if (!response.ok) {
     const body = await response.json().catch(() => ({ detail: response.statusText }));
-    throw new ApiError(response.status, body.detail || response.statusText);
+    const detail = typeof body.detail === 'string' ? body.detail : Array.isArray(body.detail)
+      ? body.detail.map((item: {loc?: string[];msg?: string}) => `${item.loc?.slice(1).join(' ') || 'Request'}: ${item.msg || 'Invalid value'}`).join('. ')
+      : typeof body.detail?.message==='string'?body.detail.message:response.statusText;
+    throw new ApiError(response.status, detail);
   }
   return response.json() as Promise<T>;
 }
 function formatTime(value: string | null) { return value ? new Date(value).toLocaleString() : 'Not set'; }
-function accessPrompt(tenant: string) { return `Give ${tenant}-contractor read-only access to Project ${tenant === 'nova' ? 'Nova' : 'Atlas'} until the selected expiry.`; }
+function accessPrompt(tenant: string) { return ['atlas','nova'].includes(tenant) ? `Give ${tenant}-contractor read-only access to Project ${tenant === 'nova' ? 'Nova' : 'Atlas'} until the selected expiry.` : 'Give a teammate read-only access to this project until the selected expiry.'; }
 function statusClass(value: string) { return ['active', 'accepted', 'checks_passed', 'approved'].includes(value) ? 'good' : ['failed', 'refused', 'checks_failed', 'revoked', 'expired'].includes(value) ? 'bad' : 'neutral'; }
 
 function App() {
@@ -53,9 +81,8 @@ function App() {
   const [restoring, setRestoring] = useState(true);
   const sessionRef = useRef<Session | null>(null);
   sessionRef.current = session;
-  const [username, setUsername] = useState('atlas-admin');
-  const [password, setPassword] = useState('');
-  const [tab, setTab] = useState<'journey' | 'engineering' | 'convergence' | 'ledger' | 'demo' | 'people' | 'assurance'>('journey');
+  const [tab, setTab] = useState<'journey' | 'access' | 'engineering' | 'convergence' | 'ledger' | 'demo' | 'people' | 'assurance' | 'account'>('demo');
+  const [homeReset,setHomeReset]=useState(0),[organizationInitial,setOrganizationInitial]=useState<'people'|'access'>('people'),[engineeringTools,setEngineeringTools]=useState(false);
   const [requests, setRequests] = useState<Request[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const selectedRef = useRef<string | null>(null);
@@ -73,6 +100,8 @@ function App() {
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [variations, setVariations] = useState<Variation[]>([]);
   const [engineering, setEngineering] = useState<Engineering[]>([]);
+  const [organization,setOrganization]=useState<{nodes:SpatialRecord[];as_of:string;truncated:boolean}|null>(null);
+  const [mapSelection,setMapSelection]=useState<SpatialRecord|null>(null);
   const [engineeringDetail, setEngineeringDetail] = useState<EngineeringDetail | null>(null);
   const engineeringIdRef = useRef<string | null>(null);
   const engineeringGeneration = useRef(0);
@@ -89,9 +118,13 @@ function App() {
   const [kind, setKind] = useState<'access' | 'feature'>('access');
   const [requestText, setRequestText] = useState(accessPrompt('atlas'));
   const [requestOpen, setRequestOpen] = useState(false);
+  const [requestProject,setRequestProject]=useState('');
+  const [requestFocused, setRequestFocused] = useState(false);
+  const [repositoryRequest,setRepositoryRequest]=useState<string|null>(null);
   const [viewer, setViewer] = useState('atlas-contractor');
   const [expiry, setExpiry] = useState(() => { const date = new Date(Date.now() + 2 * 86400000); return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16); });
   const [busy, setBusy] = useState('');
+  const [requestAgentState,setRequestAgentState]=useState<'idle'|'working'|'review'|'error'>('idle');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [query, setQuery] = useState('');
@@ -99,36 +132,55 @@ function App() {
   const [lastSync, setLastSync] = useState<number | null>(null);
   const [syncFailed, setSyncFailed] = useState(false);
   const pageHeading = useRef<HTMLHeadingElement>(null);
+  const workspaceElement = useRef<HTMLElement>(null);
+  const detailHeading = useRef<HTMLHeadingElement>(null);
   const current = useMemo(() => requests.find(r => r.id === selected) || null, [requests, selected]);
+  const previewIsHistorical = hasApprovalHistory(current?.status || '', proposal?.status);
   const proposalIdentity: ProposalIdentity | null = session && current && proposal && current.accepted_proposal_id === proposal.id
     ? { session, requestId: current.id, proposalId: proposal.id, proposalHash: proposal.proposal_hash } : null;
   proposalIdentityRef.current = proposalIdentity;
   const preview = sameProposal(previewRecord?.identity || null, proposalIdentity) ? previewRecord!.data : null;
-  const filteredRequests = useMemo(() => filterRequests(requests, query, requestFilter), [requests, query, requestFilter]);
+  const filteredRequests = useMemo(() => filterRequests(requests.map(request => ({ ...request, status: changeStatus(request) })), query, requestFilter), [requests, query, requestFilter]);
   const effectiveVariations = variations.map(v => ({ ...v, state: effectiveVariationState(v.state, v.expires_at, Date.now()) }));
   const activeVariations = effectiveVariations.filter(v => v.state === 'active');
   const pastVariations = effectiveVariations.filter(v => v.state !== 'active');
+  const shownActiveGrants=mapSelection?.station==='access'?activeVariations.filter(v=>'grant:'+v.id===mapSelection.id):activeVariations;
+  const shownPastGrants=mapSelection?.station==='access'?pastVariations.filter(v=>'grant:'+v.id===mapSelection.id):pastVariations;
   const visibleEvents = events.filter(event => !selected || event.request_id === selected);
-  const projectId = session?.tenant_id === 'nova' ? 'nova-project' : 'atlas-project';
+  const projectId = session?.project_id || (session?.tenant_id === 'nova' ? 'nova-project' : session?.tenant_id === 'atlas' ? 'atlas-project' : '');
   const navigation = [
-    { id: 'demo' as const, label: 'Workspace', description: 'Your customer changes, in one place.', icon: ShieldCheck, allowed: true },
-    { id: 'journey' as const, label: session?.role === 'contractor' ? 'Your project' : 'Requests', description: 'From a customer need to a reviewed, scoped change.', icon: Layers3, allowed: session?.role !== 'product_owner' },
-    { id: 'engineering' as const, label: 'Code review', description: 'Inspect the patch. Check the evidence. Make the decision.', icon: Code2, allowed: !['contractor', 'product_owner'].includes(session?.role || '') },
-    { id: 'convergence' as const, label: 'Product signals', description: 'Find repeated needs. Decide what belongs in the product.', icon: Activity, allowed: session?.role !== 'contractor' },
+    { id: 'demo' as const, label: 'New request', description: 'Describe the outcome. Your agent will find the path.', icon: LayoutDashboard, allowed: true },
+    { id: 'journey' as const, label: session?.role === 'contractor' ? 'Your project' : 'Requests', description: session?.role === 'contractor' ? 'Documents available to your account.' : 'Prepare, preview, then approve.', icon: Layers3, allowed: session?.role !== 'product_owner' },
+    { id: 'access' as const, label: 'Access', description: 'Current grants and access checks.', icon: LockKeyhole, allowed: ['admin', 'engineer', 'member','manager'].includes(session?.role || '') },
+    { id: 'engineering' as const, label: 'Code review', description: 'Review code and checks before a human decision.', icon: Code2, allowed: ['admin', 'engineer','manager'].includes(session?.role || '') },
+    { id: 'convergence' as const, label: 'Product signals', description: 'Find repeated needs. Decide what belongs in the product.', icon: Activity, allowed: ['admin', 'engineer', 'product_owner','manager'].includes(session?.role || '') },
     { id: 'ledger' as const, label: 'Activity', description: 'Saved events and actual host checks.', icon: FileText, allowed: !['contractor', 'product_owner'].includes(session?.role || '') },
-    { id: 'people' as const, label: 'People', description: 'Manage workspace access and inspect identity changes.', icon: LockKeyhole, allowed: session?.role === 'admin' },
-    { id: 'assurance' as const, label: 'Assurance', description: 'Read-only diagnostics, not security certification.', icon: ShieldCheck, allowed: ['admin', 'engineer'].includes(session?.role || '') },
+    { id: 'people' as const, label: 'People', description: 'Teams and workspace access.', icon: LockKeyhole, allowed: ['admin','manager','engineer'].includes(session?.role||'') },
+    { id: 'assurance' as const, label: session?.release_assurance_enabled?'Release checks':'Assurance', description: 'Reviewed requirements and saved checks.', icon: ShieldCheck, allowed: ['admin', 'engineer','manager'].includes(session?.role || '') },
+    { id: 'account' as const, label: 'Your account', description: 'Your identity and passphrase.', icon: LockKeyhole, allowed: true },
   ].filter(item => item.allowed);
-  function navigate(target: typeof tab) { setError(''); setNotice(''); setTab(target); }
+  function navigate(target: typeof tab) { setError(''); setNotice('');
+    if(target==='access'||target==='people'){setOrganizationInitial(target==='access'?'access':'people');setTab('people');return;}
+    if(target==='convergence'&&sessionRef.current?.role!=='product_owner')target='journey';
+    setTab(target);if(target==='journey')setRequestFocused(false);
+    if(target==='engineering'){engineeringIdRef.current=null;setEngineeringDetail(null);setEngineeringTools(false);}
+  }
+  function home(){navigate('demo');setHomeReset(n=>n+1);}
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); pageHeading.current?.focus({ preventScroll: true }); }, [tab]);
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const animation = workspaceElement.current?.animate?.([{ opacity: .7, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 220, easing: 'cubic-bezier(.2,.7,.2,1)' });
+    return () => animation?.cancel();
+  }, [tab, requestFocused]);
+  useEffect(() => { if (requestFocused) detailHeading.current?.focus(); }, [requestFocused, current?.id]);
 
   function clearWorkspace() {
     refreshGeneration.current++; requestGeneration.current++; engineeringGeneration.current++; previewGeneration.current++;
     choose(null); engineeringIdRef.current = null; proposalIdentityRef.current = null; pendingSubmission.current = null;
-    setRequests([]); setVariations([]); setEvents([]); setEngineering([]); setEngineeringDetail(null);
+    setRequests([]); setVariations([]); setEvents([]); setEngineering([]); setEngineeringDetail(null);setOrganization(null);setMapSelection(null);
     setConvergence([]); setObservations([]); setInferenceBudget(null); setAttempts([]); setProposal(null);
     setPreviewRecord(null); setHostDocuments(null); setManualBase(null); setManualSource(''); setRationales({}); setRequestOpen(false);
-    setLastSync(null); setSyncFailed(false);
+    setLastSync(null); setSyncFailed(false); setRequestFocused(false);
   }
 
   async function refresh(activeSession = sessionRef.current, force = false) {
@@ -137,6 +189,12 @@ function App() {
     refreshInFlight.current = generation;
     const isCurrent = () => generation === refreshGeneration.current && sameSession(activeSession, sessionRef.current);
     try {
+      const fresh=await api<Session>('/v1/session',activeSession);
+      if(!isCurrent())return;
+      if(!sameSession(fresh,activeSession)){
+        acceptSession(fresh);setNotice('Your team access changed. Saved views were cleared.');
+        void refresh(fresh,true);return;
+      }
       if (activeSession.role === 'contractor') {
         setRequests([]); setVariations([]); setEvents([]); setEngineering([]); setConvergence([]); setObservations([]);
         setInferenceBudget(null); choose(null); setProposal(null); setPreviewRecord(null); setAttempts([]);
@@ -153,12 +211,15 @@ function App() {
         setLastSync(Date.now()); setSyncFailed(false);
         return;
       }
+      // A member can submit requests but cannot read engineering, budget or audit diagnostics.
+      const diagnostics = ['admin', 'engineer','manager'].includes(activeSession.role);
       // Apply a complete refresh together. A failed collection request keeps the saved view intact.
-      const [r, v, ev, eng, conv, budget, observed] = await Promise.all([
+      const [r, v, ev, eng, conv, budget, observed,org] = await Promise.all([
         api<Request[]>('/v1/requests', activeSession), api<Variation[]>('/v1/variations', activeSession),
-        api<Event[]>('/v1/events', activeSession), api<Engineering[]>('/v1/engineering', activeSession),
-        api<Convergence[]>('/v1/convergence', activeSession), api<InferenceBudget>('/v1/inference-budget', activeSession),
-        api<HostObservation[]>('/v1/host-observations', activeSession),
+        api<Event[]>('/v1/events', activeSession), diagnostics ? api<Engineering[]>('/v1/engineering', activeSession) : Promise.resolve([]),
+        diagnostics ? api<Convergence[]>('/v1/convergence', activeSession) : Promise.resolve([]), ['admin','engineer'].includes(activeSession.role) ? api<InferenceBudget>('/v1/inference-budget', activeSession) : Promise.resolve(null),
+        diagnostics ? api<HostObservation[]>('/v1/host-observations', activeSession) : Promise.resolve([]),
+        diagnostics ? api<{nodes:SpatialRecord[];as_of:string;truncated:boolean}>('/v1/workspace-map',activeSession) : Promise.resolve(null),
       ]);
       if (!isCurrent()) return;
       const nextId = r.some(item => item.id === selectedRef.current) ? selectedRef.current : r[0]?.id || null;
@@ -171,7 +232,10 @@ function App() {
         item && ['drafting', 'checking', 'repairing'].includes(item.status) ? api<EngineeringDetail>(`/v1/engineering/${item.id}`, activeSession) : Promise.resolve(null),
       ]);
       if (!isCurrent()) return;
-      setRequests(r); setVariations(v); setEvents(ev); setEngineering(eng); setConvergence(conv);
+      setRequests(r); setVariations(v); setEvents(ev); setEngineering(eng); setConvergence(conv);setOrganization(org);
+      if(engineeringDetailRef.current&&!eng.some(row=>row.id===engineeringDetailRef.current?.id)){
+        engineeringGeneration.current++;engineeringIdRef.current=null;setEngineeringDetail(null);setManualBase(null);setManualSource('');setMapSelection(null);
+      }
       setInferenceBudget(budget); setObservations(observed);
       if (detail && engineeringGeneration.current === itemGeneration && engineeringIdRef.current === detail.id) setEngineeringDetail(detail);
       if (selectedRef.current !== nextId) setPreviewRecord(null);
@@ -182,8 +246,10 @@ function App() {
     } catch (err) {
       if (!isCurrent()) return;
       setSyncFailed(true);
+      if(err instanceof ApiError&&[403,404].includes(err.status))clearWorkspace();
       if (err instanceof ApiError && err.status === 401) { sessionRef.current = null; setSession(null); clearWorkspace(); }
-      setError(String(err));
+      // Retrying connection status clears on refresh success. Mutation/review
+      // errors have their own lifetime and must not be cleared by a poll.
     } finally {
       if (refreshInFlight.current === generation) refreshInFlight.current = null;
     }
@@ -196,12 +262,12 @@ function App() {
       .catch(() => {}).finally(() => { if (mounted) setRestoring(false); });
     return () => { mounted = false; };
   }, []);
-  useEffect(() => { void refresh(session, true); setViewer(`${session?.tenant_id || 'atlas'}-contractor`); setRequestText(accessPrompt(session?.tenant_id || 'atlas')); }, [session?.csrf_token]);
+  useEffect(() => { void refresh(session, true); setViewer(session && ['atlas','nova'].includes(session.tenant_id) ? `${session.tenant_id}-contractor` : ''); setRequestText(accessPrompt(session?.tenant_id || 'atlas')); }, [session?.csrf_token,session?.scope_version]);
   useEffect(() => {
     if (!session || session.role === 'contractor') return;
     const timer = setInterval(() => { void refresh(); }, 3000);
     return () => clearInterval(timer);
-  }, [session?.csrf_token]);
+  }, [session?.csrf_token,session?.scope_version,session?.role]);
 
   async function action(label: string, task: () => Promise<void>) {
     const generation = ++actionGeneration.current;
@@ -216,19 +282,15 @@ function App() {
     } finally { if (generation === actionGeneration.current) setBusy(''); }
   }
 
-  async function signIn() {
-    await action('sign in', async () => {
-      const next = await api<Session>('/v1/session', null, { method: 'POST', body: JSON.stringify({ username, password }) });
-      setPassword('');
-      clearWorkspace(); sessionRef.current = next; setSession(next); setTab('demo'); setQuery(''); setRequestFilter('all');
-    });
+  function acceptSession(next: Session) {
+    clearWorkspace(); setError(''); setNotice(''); sessionRef.current = next; setSession(next);setRequestProject(next.project_id||''); setTab('demo'); setQuery(''); setRequestFilter('all');
   }
 
   async function createRequest() {
     if (!session || !sameSession(session, sessionRef.current)) return;
     const activeSession = session;
     await action('create request', async () => {
-      const body = { text: requestText, kind, project_id: projectId, viewer_id: kind === 'access' ? viewer : null,
+      const body = { text: requestText, kind, project_id: requestProject||projectId, viewer_id: kind === 'access' ? viewer : null,
         expires_at: kind === 'access' ? new Date(expiry).toISOString() : null };
       const intent = JSON.stringify(body);
       const submission = submissionForIntent(pendingSubmission.current, intent, idempotency);
@@ -237,8 +299,8 @@ function App() {
       if (!sameSession(activeSession, sessionRef.current)) return;
       if (pendingSubmission.current === submission) pendingSubmission.current = null;
       requestGeneration.current++; previewGeneration.current++;
-      choose(result.id); setProposal(null); setPreviewRecord(null); setRequestOpen(false); navigate('journey');
-      setNotice('Request saved. Interpretation has not started yet.');
+      choose(result.id); setProposal(null); setPreviewRecord(null); setRequestOpen(false); navigate('journey'); setRequestFocused(true);
+      setNotice('Request saved. Start the agent when you’re ready.');
     });
   }
 
@@ -247,7 +309,7 @@ function App() {
     const activeSession = session, requestId = current.id;
     await action('interpret', async () => {
       const result = await api<{ status: string; attempt_id: string }>(`/v1/requests/${requestId}/interpret`, activeSession, { method: 'POST' });
-      if (sameSession(activeSession, sessionRef.current) && selectedRef.current === requestId) setNotice(`Saved attempt ${result.attempt_id}. The worker will process it.`);
+      if (sameSession(activeSession, sessionRef.current) && selectedRef.current === requestId) setNotice(result.status === 'accepted' ? 'Your proposal is saved.' : 'The agent is preparing your proposal. You can leave and return.');
     });
   }
 
@@ -283,8 +345,8 @@ function App() {
       return;
     }
     await action('approve', async () => {
-      await api(`/v1/proposals/${identity.proposalId}/approve`, session, { method: 'POST', headers: { 'Idempotency-Key': idempotency() }, body: JSON.stringify({ proposal_hash: identity.proposalHash }) });
-      if (sameSession(identity.session, sessionRef.current) && selectedRef.current === identity.requestId) setNotice('Exact proposal approved. The owned host fixture now enforces it.');
+      const outcome=await api<{status:string}>(`/v1/proposals/${identity.proposalId}/approve`, session, { method: 'POST', headers: { 'Idempotency-Key': idempotency() }, body: JSON.stringify({ proposal_hash: identity.proposalHash }) });
+      if (sameSession(identity.session, sessionRef.current) && selectedRef.current === identity.requestId) setNotice(outcome.status==='awaiting_second_approval'?'Your review is saved. A different administrator must approve before access changes.':'Access approved for this person, project and end time.');
     });
   }
 
@@ -315,6 +377,7 @@ function App() {
     const item = engineering.find(work => work.request_id === requestId);
     if (!item) { setError('No saved engineering item found yet. Refresh the request before continuing.'); return; }
     navigate('engineering');
+    setEngineeringTools(!item.patch_hash);
     void openEngineering(item.id);
   }
 
@@ -354,6 +417,8 @@ function App() {
   }
 
   async function selectRequest(id: string) {
+    setRequestFocused(true);
+    setNotice(''); setError('');
     if (!session) return;
     const activeSession = session, generation = ++requestGeneration.current;
     refreshGeneration.current++; previewGeneration.current++;
@@ -413,92 +478,137 @@ function App() {
     });
   }
 
-  if (!session) return <div className="login-shell"><div className="brand-mark">O<span>·</span></div><div className="login-card">
-    <p className="eyebrow">WELCOME TO OWNSTACK</p><h1>Make change.<br /><em>Keep control.</em></h1>
-    <p className="muted">Your customer needs something different.<br/>Your app can make room for it.</p>
-    <label>Identity<select value={username} onChange={e => setUsername(e.target.value)}>
-      {['atlas-admin', 'atlas-contractor', 'atlas-engineer', 'nova-admin', 'nova-contractor', 'platform-owner'].map(name => <option key={name}>{name}</option>)}
-    </select></label><label>Password<input value={password} type="password" autoComplete="current-password" onChange={e => setPassword(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !busy && !restoring) void signIn(); }} /></label>
-    <button className="primary wide" onClick={signIn} disabled={!!busy || restoring}>{restoring ? 'Restoring session…' : 'Enter workbench'} <ArrowRight size={16} /></button>
-    {error && <p className="alert error" role="alert">{error}</p>}
-    <p className="tiny">Synthetic Atlas and Nova workspaces. Judge access instructions are supplied with the demo.</p>
-  </div><div className="login-aside"><div className="login-architecture"><ScopeScene compact/><p className="tiny">Explore the architecture, then enter your workspace.<br/>Local reference build. Synthetic tenants. Real approval boundaries.</p></div></div></div>;
+  const agentPanel = session && current && ['admin', 'engineer'].includes(session.role) ? session.ai_mode==='off'?<LocalAgentReview key={`local:${session.csrf_token}:${current.id}:${current.revision}`} id={current.id} revision={current.revision} onState={setRequestAgentState} request={(path,options)=>api(path,session,options)} prepared={async()=>{await refresh(session,true);await selectRequest(current.id);}}/>:<AgentInvestigation key={`investigate:${session.csrf_token}:${current.id}:${current.revision}`} scope={{ tenant: session.tenant_id, request: current.id, revision: current.revision }} mode={session.ai_mode} remainingCalls={inferenceBudget?.remaining_calls} request={(path, options) => api(path, session, options)} onPrepare={() => void interpret()} preparing={!!busy || current.status === 'interpreting'} allowPrepare={!current.accepted_proposal_id} prepared={!!current.accepted_proposal_id} feature={current.kind === 'feature'}/> : null;
 
-  return <div className="app-shell"><a className="skip-link" href="#workspace-main">Skip to workspace</a>
-    <aside className="sidebar"><div className="brand"><span className="brand-mark small">O<span>·</span></span><span>OwnStack<small>CONTROL ROOM</small></span></div>
-      <div className="sidebar-label">WORKSPACE <span>{String(navigation.findIndex(item => item.id === tab) + 1).padStart(2,'0')} / {String(navigation.length).padStart(2,'0')}</span></div>
-      <nav aria-label="Main navigation">
-        {navigation.map(item => <button key={item.id} aria-current={tab === item.id ? 'page' : undefined} className={tab === item.id ? 'active' : ''} onClick={() => navigate(item.id)}><item.icon size={18}/>{item.label}{tab === item.id && <span className="nav-indicator"/>}</button>)}
-      </nav>
-      <div className="sidebar-principle"><div className="principle-orbit"><LockKeyhole size={22}/></div><p>Adapt the edge.<br/><strong>Keep the core.</strong></p><small>MODEL PROPOSES<br/>HOST ENFORCES</small></div>
-      <div className="sidebar-bottom"><div className="identity"><div className="avatar">{session.user_id.slice(0,1).toUpperCase()}</div><span>{session.user_id}<small>{session.tenant_id} · {session.role}</small></span></div>
-        <button className="text-button" disabled={!!busy} onClick={signOut}>Sign out / switch identity</button></div>
+  if (!session) return <SpatialShell key="signed-out" role="guest" tenant="platform" focus="demo" counts={{}} navigate={() => {}}>
+    <AccountGate ready={!restoring} request={(path, options) => api(path, null, options)} signedIn={acceptSession}/>
+  </SpatialShell>;
+
+  const spatialItems:SpatialRecord[]=[...(organization?.nodes||[
+    {id:'role:'+session.role,station:'demo' as const,title:session.role.replaceAll('_',' '),description:'Your workspace role',status:'role',kind:'role',parent:'organization'},
+    {id:'person:'+session.user_id,station:'demo' as const,title:session.display_name||session.user_id,description:session.role.replaceAll('_',' '),status:'signed in',kind:'person',parent:'role:'+session.role}]),
+    ...navigation.filter(n=>['ledger','assurance'].includes(n.id)).map(n=>({id:'action:'+n.id,station:(n.id==='assurance'?'engineering':'journey') as 'engineering'|'journey',title:n.id==='assurance'?'Checks & evidence':n.label,description:n.description,status:'Tool',kind:'action'})),
+    ...(session.role==='contractor'?[{id:'action:journey',station:'journey' as const,title:session.project_name||'Your project',description:'Open the documents your account can access',status:'Protected read',kind:'action'}]:[]),
+    ...requests.map(r=>({id:'request:'+r.id,station:'journey' as const,title:r.text.slice(0,60),description:r.text,status:changeStatus(r),by:r.requester_id?`Requested by ${personName(r.requester_id)}`:undefined,related:r.requester_id?['person:'+r.requester_id]:[]})),
+    ...engineering.map(w=>({id:'code:'+w.id,station:'engineering' as const,title:w.thumbnail?.path.split('/').pop()||'Feature request',description:w.request_text||'Saved engineering work',status:w.status,by:w.requested_by?`Requested by ${personName(w.requested_by)}`:undefined,code:w.thumbnail?.code,path:w.thumbnail?.path,related:['request:'+w.request_id]})),
+    ...variations.map(v=>({id:'grant:'+v.id,station:'access' as const,title:personName(v.viewer_id),description:`${projectName(v.project_id)} · ${formatTime(v.expires_at)}`,status:effectiveVariationState(v.state,v.expires_at,Date.now()),related:['person:'+v.viewer_id]})),
+    ...convergence.filter(r=>(r.your_tenant_request_count||r.affected_tenant_count||0)>0).map(r=>({id:'pattern:'+r.need_key,station:'convergence' as const,title:r.need_key==='pdf-export'?'PDF export':'Temporary access',description:`${session.role==='product_owner'?r.affected_tenant_count:r.your_tenant_request_count} ${session.role==='product_owner'?'workspaces':'saved requests'}`,status:r.decision||'Review needed',related:requests.filter(q=>r.need_key==='pdf-export'?q.kind==='feature'&&q.text.toLowerCase().includes('pdf'):q.kind==='access').map(q=>'request:'+q.id)})),
+  ];
+
+  return <SpatialShell key={`${session.user_id}:${session.csrf_token}:${session.scope_version}`} role={session.role} user={session.user_id} tenant={session.tenant_id} workspaceName={session.workspace_name} focus={tab}
+    homeReset={homeReset}
+    requestAgentState={requestAgentState}
+    planCommand={session.role==='manager'?undefined:{start:(text,key,signal)=>api('/v1/agent/planner',session,{method:'POST',body:JSON.stringify({text}),headers:{'Idempotency-Key':key},signal}),
+      read:(key,signal)=>api('/v1/agent/planner/saved/'+encodeURIComponent(key),session,{signal}),
+      retry:(id,generation,signal)=>api(`/v1/agent/planner/${id}/retry`,session,{method:'POST',body:JSON.stringify({generation}),signal}),
+      cancel:(text,key,generation)=>api('/v1/agent/planner/cancel-command',session,{method:'POST',body:JSON.stringify({text,generation}),headers:{'Idempotency-Key':key}})}}
+    draftRequest={(preset,text)=>{setKind(preset);setRequestProject(projectId);setRequestText(text);setRequestOpen(true);}}
+    items={spatialItems} mapAsOf={organization?.as_of} mapTruncated={organization?.truncated}
+    refreshMap={()=>refresh(session,true)}
+    openTeams={['admin','engineer','manager'].includes(session.role)?()=>navigate('people'):undefined}
+    inspectItem={item=>{setMapSelection(item);if(item.kind==='action'){const dest=navigation.find(n=>n.id===item.id.slice(7));if(dest)navigate(dest.id);}else if(item.station==='engineering'){navigate('engineering');void openEngineering(item.id.slice(5));}else if(item.station==='journey'){setQuery('');setRequestFilter('all');navigate('journey');void selectRequest(item.id.slice(8));}else navigate(item.station);}}
+    counts={{ journey: lastSync && !['contractor', 'product_owner'].includes(session.role) ? requests.length : null,
+      access: lastSync && ['admin', 'engineer', 'member'].includes(session.role) ? activeVariations.length : null,
+      engineering: lastSync && ['admin', 'engineer'].includes(session.role) ? engineering.length : null,
+      convergence: lastSync && ['admin', 'engineer', 'product_owner'].includes(session.role) ? observedNeedCount(session.role, convergence) : null }} navigate={navigate}>
+    <div className="app-shell"><a className="skip-link" href="#workspace-main">Skip to workspace</a>
+    <aside className="sidebar"><button className="brand" aria-label="OwnStack home" onClick={home}><span className="brand-mark"><Layers3 size={22}/></span><span>OwnStack</span></button>
+      <div className="workspace-switch"><span className="avatar">{session.tenant_id.slice(0,1).toUpperCase()}</span><span>{session.tenant_id === 'platform' ? 'Platform' : session.tenant_id[0].toUpperCase() + session.tenant_id.slice(1)}<small>Workspace</small></span></div>
+      <div className="sidebar-bottom"><details className="account-details" onKeyDown={event=>{if(event.key==='Escape'){event.currentTarget.open=false;event.currentTarget.querySelector('summary')?.focus();}}}><summary aria-label={`Account menu for ${personName(session.display_name || session.user_id)}`}><span className="avatar">{(session.display_name || session.user_id).slice(0,1).toUpperCase()}</span><span>{personName(session.display_name || session.user_id)}<small>{session.role === 'admin' ? 'Administrator' : session.role.replaceAll('_', ' ')}</small></span></summary><div className="account-actions"><button className="text-button" aria-label="Account settings" onClick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');navigate('account');}}>Account settings</button><button className="text-button" aria-label="Sign out" disabled={!!busy} onClick={signOut}>Sign out</button><details><summary>Service details</summary><p className="tiny">Account: {session.user_id}</p><p className="tiny">{session.ai_mode === 'nebius' ? 'Request provider: Nebius · NVIDIA Nemotron' : session.ai_mode === 'off' ? 'Remote request generation is paused. The local trained planner is separate.' : 'Synthetic test environment, not live provider AI.'}</p>{inferenceBudget && <p className="tiny">{inferenceBudget.remaining_calls ?? 0} approved provider calls remaining.</p>}</details></div></details></div>
     </aside>
-    <main className={tab === 'demo' ? 'main main--home' : 'main'} id="workspace-main"><header className="topbar"><div><span className="breadcrumb">OWNSTACK <span className="breadcrumb-slash">/</span> {session.tenant_id.toUpperCase()}</span><h1 ref={pageHeading} tabIndex={-1}>{tab === 'demo' ? 'Workspace' : tab === 'journey' ? session.role === 'contractor' ? 'Your project' : 'Requests' : tab === 'engineering' ? 'Code review' : tab === 'convergence' ? 'Product signals' : tab === 'people' ? 'People' : tab === 'assurance' ? 'Assurance' : 'Activity'}</h1></div>
-      <div className="top-tags"><span className="tag"><span className="dot"/> {session.tenant_id.toUpperCase()}</span><span className={'tag ' + (session.ai_mode === 'nebius' ? 'live' : 'fixture')}>{session.ai_mode === 'nebius' ? 'LIVE NEBIUS' : session.ai_mode === 'off' ? 'AI OFF' : 'SYNTHETIC MODEL'}</span>{session.ai_mode === 'nebius' && inferenceBudget && <span className="tag" title={inferenceBudget.note}>{inferenceBudget.remaining_calls} live calls left</span>}</div></header>
-      <div className="workspace-toolbar"><p>{navigation.find(item => item.id === tab)?.description}</p><CommandMenu items={[...navigation.map(item => ({ ...item, run: () => navigate(item.id) })), ...requests.map(request => ({ id: request.id, label: request.text, description: `${request.id} · ${request.status}`, run: () => { setQuery(''); setRequestFilter('all'); navigate('journey'); void selectRequest(request.id); } }))]}/></div>
-      <div className="runtime-strip"><span><i className={syncFailed ? 'sync-dot warning' : 'sync-dot'}/>{session.role === 'contractor' ? 'Access checked on every read' : syncFailed ? 'Refresh failed · saved view may be stale' : lastSync ? `Synced ${new Date(lastSync).toLocaleTimeString()}` : 'Reading saved state…'}</span><span>{session.ai_mode === 'off' ? 'AI paused · manual paths available' : session.ai_mode === 'fixture' ? 'Synthetic model · not live evidence' : 'Runtime inference enabled'}{session.ai_mode === 'nebius' && inferenceBudget && ` · ${inferenceBudget.reserved_calls}/${inferenceBudget.max_live_calls} call slots reserved`}</span></div>
+    <main ref={workspaceElement} className={tab === 'demo' ? 'main main--home' : 'main'} id="workspace-main"><header className="topbar"><h1 ref={pageHeading} tabIndex={-1}>{tab==='people'?'Organization':tab==='journey'||tab==='convergence'?'Requests':tab==='engineering'?'Code review':tab==='account'?'Your account':tab==='assurance'?'Release checks':tab==='ledger'?'Activity':'Workspace'}</h1>
+        {tab!=='demo'&&<button className="inspection-close" aria-label={tab==='journey'&&requestFocused?'Back to requests':tab==='engineering'&&engineeringDetail?'Back to code reviews':'Back to home'} onClick={()=>{if(tab==='journey'&&requestFocused)setRequestFocused(false);else if(tab==='engineering'&&engineeringDetail){engineeringIdRef.current=null;setEngineeringDetail(null);setEngineeringTools(false);}else home();}}><ArrowLeft size={16}/><span>Back</span></button>}
+      </header>
+      {syncFailed && <div className="alert error" role="status">Could not refresh. Displayed records may be out of date.</div>}
       {error && <div className="alert error" role="alert"><XCircle size={16}/>{error}<button onClick={() => setError('')}>Dismiss</button></div>}
       {notice && <div className="alert notice" role="status"><CheckCircle2 size={16}/>{notice}<button onClick={() => setNotice('')}>Dismiss</button></div>}
       {busy && <div className="alert notice" role="status"><Clock3 size={16}/>Working on {busy}…</div>}
-      <RequestComposer open={requestOpen} close={() => setRequestOpen(false)} kind={kind} setKind={value => { setKind(value); setRequestText(value === 'access' ? accessPrompt(session.tenant_id) : 'Add PDF export for this project.'); }} text={requestText} setText={setRequestText} project={projectId} viewer={viewer} setViewer={setViewer} expiry={expiry} setExpiry={setExpiry} busy={!!busy} error={error} save={createRequest}/>
-      {tab === 'demo' && <WorkspaceHome tenant={session.tenant_id} role={session.role} mode={session.ai_mode} requests={requests} activeCount={activeVariations.length} engineeringCount={engineering.length} loaded={!!lastSync} navigate={navigate} newRequest={() => { setError(''); setRequestOpen(true); }} selectRequest={id => { setQuery(''); setRequestFilter('all'); navigate('journey'); void selectRequest(id); }}/>}
-      {tab === 'journey' && session.role === 'contractor' && <div className="content-grid"><section className="panel span-three"><div className="panel-heading"><div><p className="eyebrow">HOST APP / CONTRACTOR</p><h2>Project documents</h2></div><LockKeyhole size={20}/></div><p className="muted">Your access is decided on every read by the host API. It can expire or be revoked without refreshing a browser flag.</p><button className="secondary" onClick={inspectHost}>Test protected read</button>{hostDocuments && <ul className="doc-list">{hostDocuments.map(d => <li key={d.id}><FileText size={15}/>{d.title}</li>)}</ul>}</section></div>}
+      <RequestComposer open={requestOpen} close={() => setRequestOpen(false)} kind={kind} setKind={setKind} text={requestText} setText={setRequestText} project={requestProject||projectId} projectLabel={session.projects?.find(p=>p.id===(requestProject||projectId))?.name||session.project_name} projects={session.projects} setProject={setRequestProject} viewer={viewer} setViewer={setViewer} expiry={expiry} setExpiry={setExpiry} busy={!!busy} error={error} save={createRequest}/>
+      <div hidden={tab !== 'demo'}><WorkspaceHome tenant={session.tenant_id} workspaceName={session.workspace_name} role={session.role} requests={requests} loaded={!!lastSync} navigate={navigate} newRequest={(preset, text) => { setError(''); if (preset) { setKind(preset); setRequestText(text || (preset === 'access' ? accessPrompt(session.tenant_id) : 'Add PDF export for this project.')); } setRequestOpen(true); }} selectRequest={id => { setQuery(''); setRequestFilter('all'); navigate('journey'); void selectRequest(id); }}/></div>
+      {tab === 'journey' && session.role === 'contractor' && <div className="content-grid"><section className="panel span-three"><div className="panel-heading"><div><p className="eyebrow">YOUR PROJECT</p><h2>Project documents</h2></div><LockKeyhole size={20}/></div><p className="muted">Open the documents your account can access.</p><button className="secondary" onClick={inspectHost}>Open documents</button>{hostDocuments && <ul className="doc-list">{hostDocuments.map(d => <li key={d.id}><FileText size={15}/>{d.title}</li>)}</ul>}</section></div>}
       {tab === 'journey' && session.role !== 'contractor' && session.role !== 'product_owner' && <div className="content-grid">
-        <section className="panel span-three request-launch"><div><h2>A small change starts here.</h2><p className="muted">Create a request, review its scope, then decide.</p></div><button className="primary" disabled={!!busy} onClick={() => setRequestOpen(true)}>New request <ArrowRight size={16}/></button></section>
-        <section className="panel span-three request-workspace"><div className="panel-heading"><div><p className="eyebrow">SAVED WORK</p><h2>Your requests</h2></div><Fingerprint size={20}/></div>
-          <div className="request-tools"><label className="request-search"><Search size={16}/><input aria-label="Search requests" placeholder="Search intent, ID or status…" value={query} onChange={e => setQuery(e.target.value)}/></label><label className="filter-label">Show<select aria-label="Filter requests" value={requestFilter} onChange={e => setRequestFilter(e.target.value as RequestFilter)}><option value="all">All requests</option><option value="attention">Needs attention</option><option value="active">Active</option><option value="closed">Closed / refused</option></select></label><span className="tiny">{filteredRequests.length} of {requests.length} requests</span></div>
-          <div className="request-layout"><div className="request-list">{filteredRequests.length ? filteredRequests.map(r => <button key={r.id} aria-pressed={selected === r.id} className={selected === r.id ? 'request-item selected' : 'request-item'} onClick={() => { void selectRequest(r.id); }}><span className={'pill ' + statusClass(r.status)}>{r.status.replaceAll('_', ' ')}</span><strong>{r.text}</strong><small>{r.id.slice(0,8)} · revision {r.revision} <ArrowUpRight size={12}/></small></button>) : <p className="empty">{requests.length ? 'No matching requests. Clear your search or change the filter.' : 'No requests yet. Start with New request.'}</p>}</div>
-          <div className="request-detail">{current ? <><div className="detail-top"><span className="mono">{current.id}</span><span className={'pill ' + statusClass(current.status)}>{current.status}</span></div><h3>{current.text}</h3><div className="facts"><div><small>PROJECT</small><strong>{current.project_id || 'none'}</strong></div><div><small>VIEWER</small><strong>{current.viewer_id || 'none'}</strong></div><div><small>EXPIRES</small><strong>{formatTime(current.expires_at)}</strong></div></div>
-            <details className="boundary-disclosure"><summary>Inspect this request's evidence</summary><BoundaryInspector request={current} proposal={proposal} preview={preview} events={events} observations={observations} openLedger={() => navigate('ledger')}/></details>
-            {!current.accepted_proposal_id && session.ai_mode === 'off' && <div className="manual-guidance"><Code2 size={18}/><p><strong>Inference is paused. Work can continue.</strong>{session.role === 'engineer' ? ' Use the manual engineer path below. Approval still belongs to a tenant admin.' : ' An engineer can prepare this request without AI. Sign in as your tenant engineer, then return as admin for exact approval.'}</p></div>}
-            {!current.accepted_proposal_id && session.ai_mode !== 'off' && <button className="primary" onClick={interpret} disabled={!!busy || inferenceBudget?.remaining_calls === 0 || current.status === 'interpreting'}>{current.status === 'interpreting' ? 'Worker processing…' : inferenceBudget?.remaining_calls === 0 ? 'Approved call limit reached' : 'Start interpretation'} <ArrowRight size={16}/></button>}
+        <section className="panel span-three request-workspace">{!requestFocused && <><div className="panel-heading"><h2>Your requests</h2><button className="primary" disabled={!!busy} onClick={() => setRequestOpen(true)}>New request <ArrowRight size={16}/></button></div>
+          <div className="request-tools"><label className="request-search"><Search size={16}/><input aria-label="Search requests" placeholder="Find a request…" value={query} onChange={e => setQuery(e.target.value)}/></label><label className="filter-label">Show<select aria-label="Filter requests" value={requestFilter} onChange={e => setRequestFilter(e.target.value as RequestFilter)}><option value="all">All requests</option><option value="attention">Needs attention</option><option value="active">Active</option><option value="closed">Closed / refused</option></select></label><span className="tiny">{filteredRequests.length} of {requests.length} requests</span></div>
+          <div className="request-list request-gallery">{filteredRequests.length ? filteredRequests.map(r => <button key={r.id} title={r.text} aria-label={`Open request: ${r.text}`} className={selected === r.id ? 'request-item selected' : 'request-item'} onClick={() => { void selectRequest(r.id); }}><span className={`mini-object ${r.kind === 'feature' ? 'mini-code' : 'mini-key'}`}>{r.kind === 'feature' ? <Code2 size={22}/> : <LockKeyhole size={22}/>}</span><span className={'pill ' + statusClass(changeStatus(r))}>{session.release_assurance_enabled&&r.kind==='feature'?'Customer change':requestLabel(changeStatus(r))}</span><strong>{changeTitle(r.kind)}</strong><small>{r.text} <ArrowUpRight size={12}/></small></button>) : <p className="empty">{requests.length ? 'No matching requests.' : 'No requests yet. Create your first request.'}</p>}</div></>}
+          {requestFocused && <div className="request-detail">{current ? <><div className="detail-top"><span className="eyebrow">{projectName(current.project_id)}</span><span className={'pill ' + statusClass(changeStatus(current))}>{session.release_assurance_enabled&&current.kind==='feature'?'Customer change':requestLabel(changeStatus(current))}</span></div><h3 ref={detailHeading} tabIndex={-1}>{changeTitle(current.kind)}</h3>
+            <p className="customer-request">{current.text}</p>
+            <RequestPatterns key={`${session.csrf_token}:${current.id}:${current.revision}`} id={current.id} revision={current.revision} role={session.role} request={(path,options)=>api(path,session,options)} changed={async()=>{if(sameSession(session,sessionRef.current)&&selectedRef.current===current.id){setPreviewRecord(null);await refresh(session,true);await selectRequest(current.id);}}}/>
+            {session.release_assurance_enabled&&current.kind==='feature'&&['admin','engineer','manager'].includes(session.role)&&<CustomerRepositoryRequest key={`agent:${session.csrf_token}:${current.id}:${current.revision}`} requestId={current.id} projectId={current.project_id||''} role={session.role} aiMode={session.ai_mode} request={(path,options)=>api(path,session,options)} onConnected={connected=>setRepositoryRequest(old=>connected?current.id:old===current.id?null:old)} openReview={id=>{navigate('engineering');void openEngineering(id);}}/>}
+            {current.kind === 'access' && <ChangeScope project={current.project_id} viewer={current.viewer_id} expiry={current.expires_at}/>}
+            {!(session.release_assurance_enabled&&current.kind==='feature')&&(agentPanel ? current.accepted_proposal_id ? <details className="request-advanced agent-archive"><summary>Agent activity</summary>{agentPanel}</details> : agentPanel
+              : !current.accepted_proposal_id && <p className="muted">Your workspace admin or engineer can investigate this request.</p>)}
+            {proposal && !(proposal.route==='engineering'&&repositoryRequest===current.id) && <div className="proposal"><div className="proposal-head"><h4>{proposal.route === 'configure' ? proposal.status === 'ready' ? 'Ready for your review' : changeStatus(current) === 'expired' ? 'This access has ended' : current.status === 'revoked' ? 'This access was revoked' : 'Access approved' : proposal.route === 'engineering' ? 'This change needs code' : 'This request needs a different approach'}</h4><ShieldCheck size={19}/></div>
+              {proposal.route === 'refuse' && <p>{proposal.reason}</p>}
+              {session.role === 'member' && (proposal.status === 'ready' || proposal.route === 'engineering') && <p className="muted">{proposal.route === 'engineering' ? 'Your engineering team reviews this change.' : 'Your workspace administrator reviews this access.'}</p>}
+              {proposal.route === 'configure' && proposal.status === 'ready' && ['admin', 'engineer'].includes(session.role) && <div className="button-row">{!preview ? <button className="primary" disabled={!!busy} onClick={previewProposal}>Preview access <ArrowRight size={15}/></button> : <ApprovalReview key={`${proposal.proposal_hash}:${preview?.snapshot_hash}`} enabled={!!preview?.matches_saved_proposal && proposal.status === 'ready' && session.role === 'admin'} busy={!!busy} admin={session.user_id} project={current.project_id} viewer={current.viewer_id} proposalHash={proposal.proposal_hash} contract={proposal.contract_id} version={proposal.contract_version} preview={preview} approve={approveProposal}/>}</div>}
+              {proposal.route === 'configure' && proposal.status !== 'ready' && <button className="secondary" onClick={() => navigate('access')}>View access<ArrowRight size={15}/></button>}
+              {proposal.route === 'engineering' && ['admin', 'engineer'].includes(session.role) && <button className="primary" onClick={() => inspectEngineeringRequest(current.id)}>Review code <ArrowRight size={14}/></button>}</div>}
+            {preview && <div className="preview"><h4>{previewIsHistorical ? 'Saved access preview' : 'Access preview'} <span className="tiny">{previewIsHistorical ? 'Snapshot, not current access' : 'Not active yet'}</span></h4><div className="comparison"><div><small>NOW</small><strong>{preview.before ? 'Can read' : 'No access'}</strong></div><ArrowRight size={18}/><div><small>IF APPROVED</small><strong>{preview.after ? 'Can read' : 'No access'}</strong></div></div><p>{preview.visible_documents.map(d => d.title).join(', ') || 'No documents'} · until {formatTime(preview.expires_at)}</p>{!preview.matches_saved_proposal && <p className="alert error">The preview has changed. Refresh before approval.</p>}<details><summary>Checks & limitations</summary><p className="tiny">{preview.counterfactual.checks} comparisons · {preview.counterfactual.unexpected_delta_count} unexpected effects.</p><p className="tiny">{preview.limitations}</p></details>{!previewIsHistorical && <button className="text-button" disabled={!!busy} onClick={previewProposal}>Refresh preview</button>}</div>}
+            <details className="request-advanced"><summary>Details & recovery</summary>
+            {!current.accepted_proposal_id && <details className="technical-disclosure"><summary>Other ways to prepare</summary>
+            {!current.accepted_proposal_id && session.ai_mode === 'off' && <div className="manual-guidance"><Code2 size={18}/><p>{session.role === 'engineer' ? current.kind === 'feature' ? 'Prepare this code change manually, then check and review the exact patch.' : 'Prepare this access proposal manually. Admin approval is still required.' : 'An engineer can take over if the agent cannot prepare this change.'}</p></div>}
+            {!current.accepted_proposal_id && ['admin', 'engineer'].includes(session.role) && session.ai_mode !== 'off' && <button className="primary" onClick={interpret} disabled={!!busy || inferenceBudget?.remaining_calls === 0 || current.status === 'interpreting'}>{current.status === 'interpreting' ? 'Worker processing…' : inferenceBudget?.remaining_calls === 0 ? 'Approved call limit reached' : 'Prepare proposal with AI'} <ArrowRight size={16}/></button>}
             {current.status === 'interpreting' && <button className="secondary" disabled={!!busy} onClick={() => action('cancel local attempt', async () => { await api(`/v1/requests/${current.id}/cancel`, session, { method: 'POST' }); setNotice('Local attempt canceled. Remote inference cancellation is unverified.'); })}>Cancel local attempt</button>}
             {!current.accepted_proposal_id && session.role === 'engineer' && ['new','failed','refused'].includes(current.status) && <button className="primary" onClick={manualHandoff} disabled={!!busy}>Prepare without AI <ArrowRight size={16}/></button>}
+            </details>}
+            <details className="technical-disclosure" key={`technical:${current.id}:${current.revision}`}><summary><Fingerprint size={15}/> Evidence & technical details</summary>
+            <div className="hash-line"><span>Request · revision {current.revision}</span><code>{current.id}</code></div>
+            {['admin', 'engineer'].includes(session.role) && <BoundaryInspector request={current} proposal={proposal} preview={preview} events={events} observations={observations} openLedger={() => navigate('ledger')}/>}
             {current.current_attempt_id && current.project_id && ['admin', 'engineer'].includes(session.role) &&
               <AgentProgress key={`${session.csrf_token}:${current.id}:${current.revision}:${current.current_attempt_id}`}
                 scope={{ tenant_id: session.tenant_id, request_id: current.id, project_id: current.project_id,
                   attempt_id: current.current_attempt_id, revision: current.revision }}
                 request={(path, signal) => fetch(path, { signal, credentials: 'same-origin', headers: { Accept: 'text/event-stream' } })}/>}
             {!!attempts.length && <details className="attempts"><summary>Saved attempts ({attempts.length})</summary>{attempts.map(a => <div className="attempt" key={a.id}><Clock3 size={14}/><span>#{a.number} {a.model_id}</span><span className={'pill ' + statusClass(a.state)}>{a.state}</span>{a.error_code && <small>{a.error_code}</small>}</div>)}</details>}
-            {proposal && <div className="proposal"><div className="proposal-head"><h4>Proposal</h4><span className={'pill ' + statusClass(proposal.route)}>{proposal.route}</span></div><p>{proposal.reason}</p><div className="hash-line"><span>EXACT PROPOSAL HASH</span><code>{proposal.proposal_hash}</code></div>{proposal.route === 'configure' && <><p className="muted">Contract {proposal.contract_id} v{proposal.contract_version}</p><div className="button-row"><button className="secondary" onClick={previewProposal}>Run host preview</button><ApprovalReview key={`${proposal.proposal_hash}:${preview?.snapshot_hash}`} enabled={!!preview?.matches_saved_proposal && proposal.status === 'ready' && session.role === 'admin'} busy={!!busy} admin={session.user_id} project={current.project_id} viewer={current.viewer_id} proposalHash={proposal.proposal_hash} contract={proposal.contract_id} version={proposal.contract_version} preview={preview} approve={approveProposal}/></div></>}{proposal.route === 'engineering' && <button className="secondary" onClick={() => inspectEngineeringRequest(current.id)}>Open Engineer Cockpit <ArrowRight size={14}/></button>}</div>}
+            {proposal && <div className="hash-line"><span>Exact proposal · {proposal.contract_id || proposal.route} {proposal.contract_version ? `v${proposal.contract_version}` : ''}</span><code>{proposal.proposal_hash}</code><p>{proposal.reason}</p></div>}
+            </details>
             {proposal?.route === 'configure' && proposal.status === 'ready' && ['admin', 'engineer'].includes(session.role) &&
-              <ProposalRefresh key={`${session.csrf_token}:${proposal.id}:${current.revision}`} disabled={!!busy} canRefresh={session.role === 'engineer'}
+              <details className="technical-disclosure"><summary>Host data changed?</summary><ProposalRefresh key={`${session.csrf_token}:${proposal.id}:${current.revision}`} disabled={!!busy} canRefresh={session.role === 'engineer'}
                 identity={{ actor: session.user_id, tenant: session.tenant_id, requestId: current.id, revision: current.revision, proposalId: proposal.id, proposalHash: proposal.proposal_hash }}
                 request={(path, options) => api(path, session, options)} onChanged={async () => {
                   if (sameSession(session, sessionRef.current) && selectedRef.current === current.id) {
                     setPreviewRecord(null); setNotice('New proposal revision saved without AI. Fresh admin preview and approval are required.'); await refresh(session, true);
                   }
-                }}/>}
-            {preview && <div className="preview"><h4>Predicted effect, not observation</h4><div className="comparison"><div><small>BEFORE</small><strong>{preview.before ? 'Can read' : 'Denied'}</strong></div><ArrowRight size={18}/><div><small>AFTER</small><strong>{preview.after ? 'Can read' : 'Denied'}</strong></div></div><p>Would reveal {preview.visible_documents.map(d => d.title).join(', ') || 'nothing'} until {formatTime(preview.expires_at)}.</p><div className="replay-stat"><ShieldCheck size={16}/><span>{preview.counterfactual.checks} host-policy comparisons · {preview.counterfactual.unexpected_delta_count} unexpected effects · expiry replayed</span></div><span className={'pill ' + (preview.matches_saved_proposal ? 'good' : 'bad')}>{preview.matches_saved_proposal ? 'Matches saved proposal' : 'Preview changed'}</span><p className="tiny">{preview.limitations}</p></div>}
-          </> : <p className="empty">Select a request to inspect its saved state.</p>}</div></div>
-        </section>
-        <section className="panel span-three host-panel"><div className="panel-heading"><div><p className="eyebrow">HOST APP</p><h2>Access & active grants</h2></div><LockKeyhole size={20}/></div><p className="muted">Reads use your signed-in identity: {session.user_id} ({session.role}). An admin or engineer's read does not prove contractor access. Switch to the contractor to check their actual access.</p><button className="secondary" disabled={!!busy} onClick={inspectHost}>Read as {session.user_id}</button>
-          {hostDocuments && <ul className="doc-list">{hostDocuments.map(d => <li key={d.id}><FileText size={15}/>{d.title}</li>)}</ul>}
-          {['admin', 'engineer'].includes(session.role) && <AccessInspector key={`${session.user_id}:${session.tenant_id}:${session.csrf_token}:${projectId}`} tenant={session.tenant_id} project={projectId} initialViewer={viewer} request={(path, options) => api(path, session, options)}/>}
-          <div className="divider"/><div className="section-label"><h3>Active variations</h3><span className="count-badge">{activeVariations.length}</span></div>{activeVariations.length ? activeVariations.map(v => <div className="variation" key={v.id}><div><strong>{v.viewer_id}</strong><small>{v.project_id}<br/>Until {formatTime(v.expires_at)}</small></div><span className="pill good">active</span>{session.role === 'admin' && <RevokeReview key={`${session.csrf_token}:${v.id}`} variation={v} disabled={!!busy} request={(path, options) => api(path, session, options)} onChanged={async () => { if (sameSession(session, sessionRef.current)) { setNotice('Reviewed grant revoked. Other grants and roles remain unchanged.'); await refresh(session, true); } }}/>}</div>) : <p className="empty">No currently active variations in the loaded tenant state.</p>}
-          <details className="variation-history"><summary>Past variations <span>{pastVariations.length}</span></summary><div className="history-scroll">{pastVariations.map(v => <div className="variation" key={v.id}><div><strong>{v.viewer_id}</strong><small>{v.project_id} · {formatTime(v.expires_at)}</small></div><span className={'pill ' + statusClass(v.state)}>{v.state}</span></div>)}</div></details><p className="tiny">Expiry display uses this device's clock. Host time and policy remain authoritative.</p>
+                }}/></details>}
+            </details>
+          </> : <p className="empty">Loading this request…</p>}</div>}
         </section>
       </div>}
-      {tab === 'engineering' && <div className="content-grid"><section className="panel span-one"><div className="panel-heading"><div><p className="eyebrow">BOUNDED CHANGE</p><h2>Work items</h2></div><Code2 size={20}/></div><div className="work-list">{engineering.length ? engineering.map(w => <button className={'work-item' + (engineeringDetail?.id === w.id ? ' selected' : '')} aria-pressed={engineeringDetail?.id === w.id} key={w.id} onClick={() => openEngineering(w.id)}><span className={'pill ' + statusClass(w.status)}>{w.status}</span><strong>PDF export request</strong><small>{w.request_id.slice(0,8)}</small></button>) : <p className="empty">A new feature request creates a work item here.</p>}</div></section>
-        <section className="panel span-two"><div className="panel-heading"><div><p className="eyebrow">ENGINEER COCKPIT</p><h2>Patch, checks, decision</h2></div><ShieldCheck size={20}/></div>{engineeringDetail ? <><p>{engineeringDetail.request.text}</p><div className="facts"><div><small>STATE</small><strong>{engineeringDetail.status}</strong></div><div><small>PATCH HASH</small><strong className="hash-short">{engineeringDetail.patch_hash?.slice(0,16) || 'Not drafted'}</strong></div><div><small>RELEASE</small><strong>Not deployed</strong></div></div>
-          {session.role !== 'engineer' && <p className="tiny">Read-only cockpit. Sign in as an engineer to edit, check or record a release decision.</p>}
-          <div className="review-verdict"><span className={'pill ' + (engineeringDetail.current_checks_usable ? 'good' : 'neutral')}>{engineeringDetail.current_checks_usable ? 'Current external checks verified' : 'Current verification required'}</span><p>Saved hash checks: {currentPatchCheck(engineeringDetail.patch_hash, engineeringDetail.checks)}. Historical passes do not cover a changed patch, oracle or supervisor. The server must verify current provenance before acceptance.</p></div>
-          <div className="button-row"><button className="secondary" disabled={session.role !== 'engineer' || !!busy || session.ai_mode === 'off' || inferenceBudget?.remaining_calls === 0 || !['needs_engineer','draft_failed'].includes(engineeringDetail.status)} onClick={() => engineeringAction('draft')}>Draft bounded patch</button><button className="secondary" disabled={session.role !== 'engineer' || !!busy || !['needs_engineer','draft_failed','drafting','checks_failed'].includes(engineeringDetail.status)} onClick={loadManualSource}>Write patch without AI</button><button className="secondary" disabled={session.role !== 'engineer' || !!busy || !['drafted','checks_failed','checks_passed'].includes(engineeringDetail.status)} onClick={() => engineeringAction('verify')}>Run isolated checks</button></div>
+      {tab === 'access' && ['admin', 'engineer', 'member'].includes(session.role) && <div className="content-grid">
+        <section className="panel span-three host-panel"><div className="panel-heading"><h2>Workspace access</h2><LockKeyhole size={20}/></div>
+          <details className="technical-disclosure"><summary>Test a protected read</summary><p className="muted">Reads use {session.user_id}, not the contractor. Sign in as the contractor to test their actual access.</p><button className="secondary" disabled={!!busy} onClick={inspectHost}>Read as {session.user_id}</button>
+          {hostDocuments && <ul className="doc-list">{hostDocuments.map(d => <li key={d.id}><FileText size={15}/>{d.title}</li>)}</ul>}
+          </details>
+          {['admin', 'engineer'].includes(session.role) && <details className="technical-disclosure"><summary>Check someone’s access</summary><AccessInspector key={`${session.user_id}:${session.tenant_id}:${session.csrf_token}:${projectId}`} tenant={session.tenant_id} project={projectId} initialViewer={viewer} request={(path, options) => api(path, session, options)}/></details>}
+          <div className="divider"/><div className="section-label"><h3>Active grants</h3><span className="count-badge">{shownActiveGrants.length}</span></div>{shownActiveGrants.length ? shownActiveGrants.map(v => <div className="variation" key={v.id}><div><strong>{v.viewer_id}</strong><small>{v.project_id}<br/>Until {formatTime(v.expires_at)}</small></div><span className="pill good">active</span>{session.role === 'admin' && <RevokeReview key={`${session.csrf_token}:${v.id}`} variation={v} disabled={!!busy} request={(path, options) => api(path, session, options)} onChanged={async () => { if (sameSession(session, sessionRef.current)) { setNotice('Reviewed grant revoked. Other grants and roles remain unchanged.'); await refresh(session, true); } }}/>}</div>) : <div className="empty-state"><div className="empty-stack"><ShieldCheck size={28}/></div><h3>No active temporary grant</h3></div>}
+          <details className="variation-history"><summary>Past grants <span>{shownPastGrants.length}</span></summary><div className="history-scroll">{shownPastGrants.map(v => <div className="variation" key={v.id}><div><strong>{v.viewer_id}</strong><small>{v.project_id} · {formatTime(v.expires_at)}</small></div><span className={'pill ' + statusClass(v.state)}>{v.state}</span></div>)}</div></details><p className="tiny">Expiry display uses this device's clock. The host checks actual access.</p>
+        </section>
+      </div>}
+      {tab==='engineering'&&!engineeringTools&&<CodeReview items={engineering} detail={engineeringDetail} role={session.role} changed={async()=>{if(engineeringIdRef.current)await refreshAfterRepair(engineeringIdRef.current,new AbortController().signal);}} open={id=>void openEngineering(id)} back={()=>{engineeringIdRef.current=null;setEngineeringDetail(null);}} request={(path,options)=>api(path,session,options)}/>}
+      {tab === 'engineering' && engineeringTools && <div className="content-grid"><section className="panel span-one"><div className="panel-heading"><h2>Work items</h2><Code2 size={20}/></div><div className="work-list">{engineering.length ? engineering.map(w => <button className={'work-item' + (engineeringDetail?.id === w.id ? ' selected' : '')} aria-pressed={engineeringDetail?.id === w.id} key={w.id} onClick={() => openEngineering(w.id)}><span className={'pill ' + statusClass(w.status)}>{w.status.replaceAll('_', ' ')}</span><strong>{w.request_text||'Customer change'}</strong><small>{w.request_id.slice(0,8)}</small></button>) : <p className="empty">New features appear here after preparation.</p>}</div></section>
+        <section className="panel span-two"><div className="panel-heading"><h2>Review this change</h2><ShieldCheck size={20}/></div>{engineeringDetail ? <><p>{engineeringDetail.request.text}</p><div className="code-journey" aria-label="Code review progress"><div className={engineeringDetail.patch?.edits.length ? 'observed' : ''}><Code2 size={22}/><strong>{engineeringDetail.patch?.edits.length ? `${new Set(engineeringDetail.patch.edits.map(edit => edit.path)).size} file(s) changed` : 'No draft yet'}</strong></div><ArrowRight size={15}/><div className={engineeringDetail.current_checks_usable ? 'observed' : ''}><ShieldCheck size={22}/><strong>{engineeringDetail.current_checks_usable ? 'Checks passed' : 'Checks needed'}</strong></div><ArrowRight size={15}/><div><LockKeyhole size={22}/><strong>Not released</strong></div></div>
+          {session.role !== 'engineer' && <p className="tiny">Read-only. An engineer prepares and checks the code.</p>}
+          <div className="review-verdict"><span className={'pill ' + (engineeringDetail.current_checks_usable ? 'good' : 'neutral')}>{engineeringDetail.current_checks_usable ? 'Current checks verified' : 'Verification needed'}</span>{!engineeringDetail.repository && <details><summary>Verification details</summary><p>Saved hash checks: {currentPatchCheck(engineeringDetail.patch_hash, engineeringDetail.checks)}. Historical passes do not cover changed code or verification policy. The server rechecks provenance.</p></details>}</div>
+          <RepositoryCockpit key={`${session.csrf_token}:${engineeringDetail.id}`} item={engineeringDetail} engineer={session.role === 'engineer'} request={(path, options) => api(path, session, options)} refresh={refreshAfterRepair}/>
+          {!engineeringDetail.repository && session.role === 'engineer' && <div className="button-row">{['needs_engineer','draft_failed'].includes(engineeringDetail.status) && <button className="primary" disabled={!!busy || session.ai_mode === 'off' || inferenceBudget?.remaining_calls === 0} onClick={() => engineeringAction('draft')}>Draft change <ArrowRight size={15}/></button>}{['drafted','checks_failed'].includes(engineeringDetail.status) && <button className="primary" disabled={!!busy} onClick={() => engineeringAction('verify')}>Run checks <ArrowRight size={15}/></button>}</div>}
+          {!engineeringDetail.repository && session.role === 'engineer' && <details className="technical-disclosure"><summary>Engineer tools</summary><div className="button-row"><button className="secondary" disabled={!!busy || !['needs_engineer','draft_failed','drafting','checks_failed'].includes(engineeringDetail.status)} onClick={loadManualSource}>Edit manually</button><button className="secondary" disabled={!!busy || !['drafted','checks_failed','checks_passed'].includes(engineeringDetail.status)} onClick={() => engineeringAction('verify')}>Recheck current code</button></div><p className="tiny">{engineeringDetail.status.replaceAll('_', ' ')} · {engineeringDetail.patch_hash || 'No patch saved'}</p></details>}
           {manualBase && <div className="manual-editor"><p className="tiny">Only {manualBase.path} can change. This source replaces the owned fixture in a disposable check environment, not the live app.</p><label>Complete replacement source<textarea value={manualSource} onChange={e => setManualSource(e.target.value)} rows={14} spellCheck={false}/></label><button className="primary" onClick={submitManualPatch} disabled={!!busy || manualSource === manualBase.source}>Save manual patch</button></div>}
-          {engineeringDetail.patch && <PatchDiff key={engineeringDetail.patch_hash} path={engineeringDetail.patch.edits[0].path} before={engineeringDetail.patch.edits[0].old} after={engineeringDetail.patch.edits[0].new}/>}
-          {engineeringDetail.checks.map((check, index) => <div className="check-result" key={index}><span className={'pill ' + (check.result.passed ? 'good' : 'bad')}>{check.result.passed ? 'checks passed' : 'checks failed'}</span><span className="tiny">{check.result.runner} · {check.subject_hash === engineeringDetail.patch_hash ? 'Current patch' : 'Historical patch, not the current candidate'} · {check.subject_hash.slice(0,16)}</span><details><summary>View check output</summary><pre>{check.result.stderr || check.result.stdout}</pre></details><p className="tiny">{check.limitation}</p></div>)}
-          <BoundedRepair key={`${session.user_id}:${session.tenant_id}:${session.csrf_token}:${engineeringDetail.id}`} session={session} item={engineeringDetail} remainingCalls={inferenceBudget?.remaining_calls} parentBusy={!!busy} request={(path, options) => api(path, session, options)} onChanged={refreshAfterRepair}/>
-          {!engineeringDetail.human_decision && <div className="button-row decision-row"><button className="primary" disabled={session.role !== 'engineer' || !!busy || engineeringDetail.status !== 'checks_passed' || !engineeringDetail.current_checks_usable} onClick={() => engineeringAction('decide', { decision: 'accept_for_manual_release', patch_hash: engineeringDetail.patch_hash })}>Accept for manual release</button><button className="secondary" disabled={session.role !== 'engineer' || !!busy} onClick={() => engineeringAction('decide', { decision: 'reject' })}>Reject</button><button className="secondary" disabled={session.role !== 'engineer' || !!busy} onClick={() => engineeringAction('decide', { decision: 'take_over' })}>Take over without AI</button></div>}
-          {engineeringDetail.human_decision === 'accept_for_manual_release' && <button className="secondary" disabled={!!busy} onClick={downloadArtifact}>Download checked release handoff</button>}
+          {!engineeringDetail.repository && !!engineeringDetail.patch?.edits.length && <details className="code-disclosure"><summary>Review code changes</summary>{engineeringDetail.patch.edits.map((edit,index) => <PatchDiff key={`${engineeringDetail.patch_hash}:${index}`} path={edit.path} before={edit.old} after={edit.new}/>)}</details>}
+          {!engineeringDetail.repository && <><details className="technical-disclosure"><summary>Check history ({engineeringDetail.checks.length})</summary>{engineeringDetail.checks.map((check, index) => <div className="check-result" key={index}><span className={'pill ' + (check.result.passed ? 'good' : 'bad')}>{check.result.passed ? 'checks passed' : 'checks failed'}</span><span className="tiny">{check.result.runner} · {check.subject_hash === engineeringDetail.patch_hash ? 'Current patch' : 'Historical patch, not the current candidate'} · {check.subject_hash.slice(0,16)}</span><details><summary>View check output</summary><pre>{check.result.stderr || check.result.stdout}</pre></details><p className="tiny">{check.limitation}</p></div>)}</details></>}
+          {!engineeringDetail.repository && <details className="technical-disclosure"><summary>Repair workflow</summary><BoundedRepair key={`${session.user_id}:${session.tenant_id}:${session.csrf_token}:${engineeringDetail.id}`} session={session} item={engineeringDetail} remainingCalls={inferenceBudget?.remaining_calls} parentBusy={!!busy} request={(path, options) => api(path, session, options)} onChanged={refreshAfterRepair}/></details>}
+          {!engineeringDetail.human_decision && session.role === 'engineer' && <div className="decision-row"><button className="primary" disabled={!!busy || engineeringDetail.status !== 'checks_passed' || !engineeringDetail.current_checks_usable} onClick={() => engineeringAction('decide', { decision: 'accept_for_manual_release', patch_hash: engineeringDetail.patch_hash, verification_id: engineeringDetail.repository?.verification_id, context_hash: engineeringDetail.repository?.context_hash })}>Accept for release review <ArrowRight size={15}/></button><details className="technical-disclosure"><summary>Other decisions</summary><div className="button-row"><button className="secondary" disabled={!!busy} onClick={() => engineeringAction('decide', { decision: 'reject' })}>Reject</button><button className="secondary" disabled={!!busy} onClick={() => engineeringAction('decide', { decision: 'take_over' })}>Take over</button></div></details></div>}
+          {engineeringDetail.human_decision === 'accept_for_manual_release' && <button className="secondary" disabled={!!busy||!engineeringDetail.current_checks_usable} onClick={downloadArtifact}>Download release handoff</button>}
           <p className="tiny">Acceptance records a decision. It does not merge or deploy code.</p></> : <div className="empty large">Choose a work item to inspect the real request, exact candidate code, independent checks, and limitations.</div>}</section></div>}
-      {tab === 'convergence' && <div className="content-grid"><section className="panel span-three"><div className="panel-heading"><div><p className="eyebrow">PRODUCT DECISION</p><h2>Repeated needs, human choice</h2></div><Activity size={20}/></div><p className="muted">A convergence signal is not permission to change the shared product. Cross-tenant details are never shown here.</p>{convergence.map(c => <div className="convergence-card" key={c.need_key}><div><span className="pill neutral">CANDIDATE</span><h3>{c.need_key === 'pdf-export' ? 'PDF export' : 'Temporary project access'}</h3><p>{c.affected_tenant_count === null ? `${c.your_tenant_request_count} request(s) in your tenant` : `${c.affected_tenant_count} tenant(s) with this request`}. Current decision: {c.decision || 'none'}.</p>{c.observed_granted_reads !== null && <p>{c.observed_granted_reads} observed granted API read(s), {c.usage_scope === 'all_tenants' ? 'aggregate across tenants' : 'your tenant only'}.</p>}<p>{c.note}</p></div>{session.role === 'product_owner' && <div><label>Decision rationale<textarea maxLength={2000} value={rationales[c.need_key] || ''} onChange={e => setRationales({ ...rationales, [c.need_key]: e.target.value })}/></label><div className="button-row">{['promote','keep_separate','retire'].map(choice => <button className="secondary" disabled={!!busy || (rationales[c.need_key] || '').trim().length < 10} key={choice} onClick={() => decideConvergence(c.need_key, choice)}>{choice.replace('_',' ')}</button>)}</div></div>}</div>)}</section></div>}
-      {tab === 'ledger' && <div className="content-grid"><section className="panel span-three"><div className="panel-heading"><div><p className="eyebrow">DURABLE EVENTS</p><h2>What actually happened</h2></div><FileText size={20}/></div>{['admin','engineer'].includes(session.role) && selected && <a className="secondary" href={`/v1/requests/${selected}/proof`} download>Export selected request proof</a>}<p className="tiny">Events for selected request: {selected || 'none'}. Export may contain private tenant text; review before sharing. Verify its digest offline; this is not a signed attestation or release.</p><div className="timeline">{visibleEvents.length ? visibleEvents.map(e => <div className="timeline-item" key={e.id}><div className="timeline-node"/><div><small>{formatTime(e.created_at)} · {e.request_id.slice(0,8)}</small><h3>{e.type}</h3><code>{JSON.stringify(e.payload)}</code></div></div>) : <p className="empty">No events yet.</p>}</div><h2>Observed host authorization</h2><p className="muted">Latest 500 tenant-local API checks. No previews. An allowed check is not proof a person received or used the response.</p><div className="timeline">{observations.map(o => <div className="timeline-item" key={o.id}><div className="timeline-node"/><small>{formatTime(o.observed_at)} · {o.actor_id}</small><h3>{o.allowed ? 'Allowed' : 'Denied'}: {o.action}</h3><code>{o.project_id} · {o.basis} · {o.variation_id || 'no variation'}</code></div>)}</div></section></div>}
-      {tab === 'people' && session.role === 'admin' && <People key={`${session.user_id}:${session.csrf_token}`} request={(path, options) => api(path, session, options)}/>}
-      {tab === 'assurance' && ['admin', 'engineer'].includes(session.role) && <Assurance key={`${session.user_id}:${session.csrf_token}`} tenant={session.tenant_id} request={(path, options) => api(path, session, options)}/>}
-      <footer>OwnStack reference build · Synthetic customer data · Preview is not observation · A patch is not a release</footer>
+      {tab === 'convergence' && <ProductSignals rows={mapSelection?.station==='convergence'?convergence.filter(r=>'pattern:'+r.need_key===mapSelection.id):convergence} canDecide={session.role === 'product_owner'} busy={!!busy} rationales={rationales} setRationale={(key, value) => setRationales(previous => ({ ...previous, [key]: value }))} decide={(key, decision) => void decideConvergence(key, decision)}/>}
+      {tab === 'ledger' && <div className="content-grid"><section className="panel span-three"><div className="panel-heading"><h2>Request history</h2><FileText size={20}/></div>{['admin','engineer'].includes(session.role) && selected && <a className="secondary" href={`/v1/requests/${selected}/proof`} download>Export selected request proof</a>}<p className="tiny">Exports can contain private request text and code. Review before sharing.</p><div className="timeline">{visibleEvents.length ? visibleEvents.map(e => <div className="timeline-item" key={e.id}><div className="timeline-node"/><div><small>{formatTime(e.created_at)}</small><h3>{e.type.replaceAll('.', ' · ').replaceAll('_', ' ')}</h3><details><summary>Event data</summary><code>{JSON.stringify(e.payload)}</code><small>{e.request_id}</small></details></div></div>) : <p className="empty">No events yet.</p>}</div><details><summary>Host access checks ({observations.length})</summary><p className="tiny">Latest 500 tenant-local API checks, not previews or confirmed delivery.</p><div className="timeline">{observations.map(o => <div className="timeline-item" key={o.id}><div className="timeline-node"/><small>{formatTime(o.observed_at)} · {o.actor_id}</small><h3>{o.allowed ? 'Allowed' : 'Denied'}: {o.action}</h3><code>{o.project_id} · {o.basis} · {o.variation_id || 'no variation'}</code></div>)}</div></details></section></div>}
+      {tab==='people'&&<Organization key={`${session.csrf_token}:${organizationInitial}`} role={session.role} initial={organizationInitial} projects={session.projects||[]} openRequest={id=>{navigate('journey');void selectRequest(id);}} request={(path,options)=>api(path,session,options)} target={setViewer} requestAccess={(user,project)=>{setViewer(user);setRequestProject(project);setKind('access');setRequestText(accessRequestText(session.projects?.find(p=>p.id===project)?.name||projectName(project)));setRequestOpen(true);}}/>}
+      {tab === 'account' && <AccountSettings key={`${session.user_id}:${session.csrf_token}`} session={session} request={(path, options)=>api(path, session, options)} changed={acceptSession}/>}
+      {tab === 'assurance' && ['admin', 'engineer','manager'].includes(session.role) && <>
+        {session.release_assurance_enabled&&<ReleaseAssurance key={`release:${session.user_id}:${session.tenant_id}:${session.csrf_token}:${session.scope_version}`} role={session.role} tenantId={session.tenant_id} userId={session.user_id} projects={session.projects||[]} request={(path,options)=>api(path,session,options)}/>}
+        <details open={!session.release_assurance_enabled}><summary>Workspace diagnostics</summary><Assurance key={`${session.user_id}:${session.csrf_token}`} tenant={session.tenant_id} request={(path, options) => api(path, session, options)}/></details>
+      </>}
     </main>
-  </div>;
+  </div></SpatialShell>;
 }
 
-createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);
+createRoot(document.getElementById('root')!).render(<React.StrictMode>{window.location.pathname==='/customer'?<CustomerPortal/>:<App/>}</React.StrictMode>);

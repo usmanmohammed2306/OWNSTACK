@@ -10,13 +10,19 @@ from uuid import uuid4
 from fastapi import Depends, FastAPI, Header, HTTPException, Request as HTTPRequest, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from fastapi.exceptions import RequestValidationError
+from fastapi.exception_handlers import request_validation_exception_handler
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select, text, update
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError, OperationalError, InterfaceError, TimeoutError as PoolTimeoutError
 from sqlalchemy.orm import Session
 from ownstack.auth import (CSRF_COOKIE, check_password, create_session, current_principal, db_session,
-                          issue_token, password_hash, rate_limit, require_origin, require_role, revoke_session)
+                          issue_token, password_hash, rate_limit, require_origin, require_role, revoke_session,
+                          session_payload, require_workspace_ai)
 from ownstack.config import Settings
+from ownstack.local_agent import router as local_agent_router
+from ownstack.authorization_clock import authorization_time
+from ownstack.governance import router as governance_router,authorized_variation
 from ownstack.models import (Attempt, ChangeRequest, ConvergenceDecision, Document, EngineeringItem,
                              Event, Evidence, HostObservation, Idempotency, InferenceBudget, Project, Proposal, RuntimePulse, User, Variation)
 from ownstack.policy import Principal, aware, digest
@@ -27,6 +33,7 @@ from ownstack.service import (approve, claim_engineering, create_request, host_p
                               reserve_live_call, scoped, start_attempt, utcnow)
 from ownstack.patch_agent import propose_patch
 from ownstack.proof import export_proof
+from ownstack.repository_recovery import public_result as public_evidence_result
 from ownstack.demo import historical_demo
 from ownstack.repair_api import router as repair_router
 from ownstack.members import router as members_router
@@ -34,15 +41,27 @@ from ownstack.operations import router as operations_router
 from ownstack.proposal_refresh import router as proposal_refresh_router
 from ownstack.assurance import router as assurance_router
 from ownstack.agent_progress import router as progress_router
+from ownstack.investigation_api import router as investigation_router
+from ownstack.accounts import router as accounts_router
+from ownstack.planner_api import router as planner_router
+from ownstack.workspace_map import router as workspace_map_router
 from ownstack.runner import ALLOWED_PATH, CHECKS, ROOT, current_provenance, patch_hash, validate_patch, verify_patch as run_verifier
 from ownstack.http_security import SecurityBoundary
 from ownstack.candidate_sandbox import POLICY_ID
 from ownstack.auth import cookie_name
+from ownstack import repository_cockpit as repository_review
+from ownstack.release_assurance import router as release_assurance_router
+from ownstack.change_agent import router as change_agent_router
 from ownstack.db import SessionLocal
 from ownstack.db_security import runtime_role_safe, enabled_seed_passwords_present
+from ownstack.team_scope import metadata_projects,project_visible,request_visible,require_project,require_request,visible_condition,created_response
+from ownstack.teams import router as teams_router
+from ownstack.organization import router as organization_router
+from ownstack.request_patterns import router as request_workspace_router
+from ownstack.request_context import engineering_prompt
 from ownstack.job_files import read_bytes, read_json
 
-SCHEMA_REVISION = "a14d09c7f602"
+SCHEMA_REVISION = "e28f10d3a603"
 LOGGER = logging.getLogger("ownstack.api")
 DUMMY_PASSWORD_HASH = password_hash("unusable-account-password")
 
@@ -67,10 +86,45 @@ app.include_router(operations_router)
 app.include_router(proposal_refresh_router)
 app.include_router(assurance_router)
 app.include_router(progress_router)
+app.include_router(investigation_router)
+app.include_router(accounts_router)
+app.include_router(planner_router)
+app.include_router(workspace_map_router)
+app.include_router(governance_router)
+app.include_router(teams_router)
+app.include_router(organization_router)
+app.include_router(request_workspace_router)
+app.include_router(local_agent_router)
+app.include_router(repository_review.router)
+app.include_router(release_assurance_router)
+app.include_router(change_agent_router)
+from ownstack.customers import router as customers_router
+app.include_router(customers_router)
+from ownstack.repository_registry import router as repository_registry_router
+app.include_router(repository_registry_router)
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-                   allow_credentials=True, allow_methods=["GET", "POST"],
+                   allow_credentials=True, allow_methods=["GET", "POST","PUT"],
                    allow_headers=["Authorization", "Content-Type", "Idempotency-Key", "X-CSRF-Token"])
 app.add_middleware(SecurityBoundary)
+
+
+@app.exception_handler(OperationalError)
+@app.exception_handler(InterfaceError)
+@app.exception_handler(PoolTimeoutError)
+async def database_temporarily_unavailable(request, exc):
+    # Never return driver text, SQL, connection strings or parameters. A failed
+    # response is not proof that a transaction committed or was rolled back.
+    return JSONResponse(status_code=503, headers={'Retry-After': '2'}, content={
+        'detail': 'Database temporarily unavailable. Retry to check saved progress.'})
+
+
+@app.exception_handler(RequestValidationError)
+async def private_auth_validation(request, exc):
+    if request.url.path.startswith("/v1/accounts") or request.url.path == "/v1/session":
+        # FastAPI's default error includes the rejected input, which can be a password/token.
+        return JSONResponse(status_code=422, content={"detail": [
+            {"loc": list(e["loc"]), "msg": e["msg"], "type": e["type"]} for e in exc.errors()]})
+    return await request_validation_exception_handler(request, exc)
 
 
 @app.middleware("http")
@@ -94,11 +148,13 @@ async def request_context(request: HTTPRequest, call_next):
 
 
 class LoginBody(BaseModel):
+    model_config=ConfigDict(extra='forbid')
     username: str = Field(min_length=1, max_length=40)
     password: str = Field(min_length=1, max_length=256)
 
 
 class RequestBody(BaseModel):
+    model_config=ConfigDict(extra='forbid')
     text: str = Field(min_length=5, max_length=3000)
     kind: str = Field(pattern="^(access|feature)$")
     project_id: str | None = None
@@ -122,15 +178,19 @@ class DecisionBody(BaseModel):
 class EngineeringDecisionBody(BaseModel):
     decision: str = Field(pattern="^(accept_for_manual_release|reject|take_over)$")
     patch_hash: str | None = None
+    verification_id: str | None = None
+    context_hash: str | None = None
+    request_revision: int | None = Field(default=None, ge=1)
 
 
 class ManualPatchBody(BaseModel):
     patch: dict
+    candidate_origin: str | None = None
 
 
 def serialize_request(req: ChangeRequest):
-    return {"id": req.id, "tenant_id": req.tenant_id, "text": req.text, "kind": req.kind,
-            "project_id": req.project_id, "viewer_id": req.viewer_id,
+    return {"id": req.id, "tenant_id": req.tenant_id, "text": req.text, "kind": req.kind,"requester_id":req.requester_id,
+            "project_id": req.project_id, "viewer_id": req.viewer_id,"team_id":req.team_id,
             "expires_at": aware(req.expires_at).isoformat() if req.expires_at else None,
             "status": req.status, "revision": req.revision, "current_attempt_id": req.current_attempt_id,
             "accepted_proposal_id": req.accepted_proposal_id}
@@ -199,25 +259,24 @@ def login(body: LoginBody, request: HTTPRequest, response: Response, db: Session
     settings = Settings()
     require_origin(request, settings)
     rate_limit(db, "login-ip", request.client.host if request.client else "unknown", 30, 300)
-    rate_limit(db, "login-user", body.username, 15, 300)
-    user = db.scalar(select(User).where(User.id == body.username).with_for_update())
+    rate_limit(db, "login-user", body.username.strip().lower(), 15, 300)
+    user = db.scalar(select(User).where(User.id == body.username.strip().lower()).with_for_update())
     matches = check_password(body.password, user.password_hash if user else DUMMY_PASSWORD_HASH)
     if not user or not matches or not user.enabled:
         raise HTTPException(401, "Invalid credentials")
     revoke_session(db, request, response)
     csrf = create_session(db, user, response, settings)
     db.commit()
-    result = {"user_id": user.id, "tenant_id": user.tenant_id, "role": user.role,
-              "ai_mode": settings.ai_mode, "csrf_token": csrf}
+    result = session_payload(db, user, csrf, settings)
     if settings.environment == "local":
         result["token"] = issue_token(user, settings.signing_secret)
     return result
 
 
 @app.get("/v1/session")
-def saved_session(request: HTTPRequest, principal: Principal = Depends(current_principal)):
-    return {**principal.__dict__, "ai_mode": Settings().ai_mode,
-            "csrf_token": request.cookies.get(cookie_name(CSRF_COOKIE, Settings()), "")}
+def saved_session(request: HTTPRequest, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
+    return session_payload(db, db.get(User, principal.user_id),
+                           request.cookies.get(cookie_name(CSRF_COOKIE, Settings()), ""), Settings())
 
 
 @app.post("/v1/session/logout")
@@ -240,6 +299,12 @@ def inference_budget(principal: Principal = Depends(current_principal), db: Sess
     row = db.get(InferenceBudget, "global")
     if row is None:
         raise HTTPException(503, "Database migration required")
+    try:
+        require_workspace_ai(db, principal.tenant_id)
+    except HTTPException:
+        return {"mode": "off", "reserved_calls": row.reserved_calls,
+                "max_live_calls": settings.max_live_calls, "remaining_calls": 0,
+                "note": "AI activation is required for this workspace; the shared provider allowance is unavailable."}
     return {"mode": settings.ai_mode, "reserved_calls": row.reserved_calls,
             "max_live_calls": settings.max_live_calls,
             "remaining_calls": max(settings.max_live_calls - row.reserved_calls, 0) if settings.ai_mode == "nebius" else None,
@@ -258,12 +323,13 @@ def demo_evidence(principal: Principal = Depends(current_principal)):
 
 @app.get("/v1/host/projects")
 def projects(principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    rows = db.scalars(select(Project).where(Project.tenant_id == principal.tenant_id).order_by(Project.id)).all()
-    return [{"id": p.id, "name": p.name, "revision": p.revision} for p in rows]
+    rows = db.scalars(select(Project).where(metadata_projects(db,principal)).order_by(Project.id)).all()
+    return [{"id": p.id, "name": p.name, "revision": p.revision,"team_id":p.team_id} for p in rows]
 
 
 @app.get("/v1/host/projects/{project_id}/documents")
 def list_documents(project_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
+    # The host records the actual team/grant decision, including denied reads.
     project = scoped(db, Project, project_id, principal.tenant_id)
     observe_read(db, principal, project, "list_documents")
     rows = db.scalars(select(Document).where(Document.tenant_id == principal.tenant_id, Document.project_id == project_id).order_by(Document.id)).all()
@@ -274,10 +340,10 @@ def list_documents(project_id: str, principal: Principal = Depends(current_princ
 def access_review(project_id: str, viewer_id: str, response: Response,
                   principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
     """Explain a tenant-local policy snapshot without impersonation or read effects."""
-    require_role(principal, "admin", "engineer")
-    project = scoped(db, Project, project_id, principal.tenant_id)
-    viewer = scoped(db, User, viewer_id, principal.tenant_id)
-    at = utcnow()
+    require_role(principal, "admin", "engineer","manager")
+    project = scoped(db, Project, project_id, principal.tenant_id, actor=principal)
+    viewer = scoped(db, User, viewer_id, principal.tenant_id, actor=principal)
+    at = authorization_time(db,utcnow())
     # Authentication rejects disabled users before any host policy evaluation.
     decision, forecast = access_forecast(db, viewer, project, at)
     allowed = bool(decision and decision.allowed)
@@ -307,7 +373,7 @@ def read_document(project_id: str, document_id: str, principal: Principal = Depe
 
 def observe_read(db: Session, principal: Principal, project: Project, action: str, document_id: str | None = None):
     # One read-time instant for SQL selection, policy and the observation. No TTL cache.
-    at = utcnow()
+    at = authorization_time(db,utcnow())
     decision = host_read_decision(db, principal, project.tenant_id, project.id, at)
     db.add(HostObservation(id=str(uuid4()), tenant_id=principal.tenant_id, project_id=project.id,
                            actor_id=principal.user_id, document_id=document_id, variation_id=decision.variation_id,
@@ -321,10 +387,10 @@ def observe_read(db: Session, principal: Principal, project: Project, action: st
 @app.get("/v1/host-observations")
 def host_observations(variation_id: str | None = None, principal: Principal = Depends(current_principal),
                       db: Session = Depends(db_session)):
-    require_role(principal, "admin", "engineer")
-    statement = select(HostObservation).where(HostObservation.tenant_id == principal.tenant_id)
+    require_role(principal, "admin", "engineer","manager")
+    statement = select(HostObservation).where(visible_condition(HostObservation,principal))
     if variation_id:
-        scoped(db, Variation, variation_id, principal.tenant_id)
+        scoped(db, Variation, variation_id, principal.tenant_id, actor=principal)
         statement = statement.where(HostObservation.variation_id == variation_id)
     rows = db.scalars(statement.order_by(HostObservation.observed_at.desc(), HostObservation.id).limit(500)).all()
     return [{"id": row.id, "project_id": row.project_id, "actor_id": row.actor_id,
@@ -349,20 +415,20 @@ def post_request(body: RequestBody, idempotency_key: str | None = Header(default
         return response
     except IntegrityError:
         db.rollback()
-        return committed_idempotency(db, principal.tenant_id, "create_request", idempotency_key or "", normalized)
+        return created_response(db,principal,committed_idempotency(db, principal.tenant_id, "create_request", idempotency_key or "", normalized))
 
 
 @app.get("/v1/requests")
 def get_requests(principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "member", "engineer")
-    rows = db.scalars(select(ChangeRequest).where(ChangeRequest.tenant_id == principal.tenant_id).order_by(ChangeRequest.created_at.desc())).all()
+    require_role(principal, "admin", "member", "engineer","manager")
+    rows = db.scalars(select(ChangeRequest).where(request_visible(principal)).order_by(ChangeRequest.created_at.desc())).all()
     return [serialize_request(row) for row in rows]
 
 
 @app.get("/v1/requests/{request_id}")
 def get_request(request_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "member", "engineer")
-    return serialize_request(scoped(db, ChangeRequest, request_id, principal.tenant_id))
+    require_role(principal, "admin", "member", "engineer","manager")
+    return serialize_request(scoped(db, ChangeRequest, request_id, principal.tenant_id, actor=principal))
 
 
 @app.post("/v1/requests/{request_id}/interpret", status_code=202)
@@ -372,6 +438,7 @@ def interpret(request_id: str, principal: Principal = Depends(current_principal)
                                                     ChangeRequest.tenant_id == principal.tenant_id).with_for_update())
     if not request:
         raise HTTPException(404, "Not found")
+    require_request(db,principal,request_id,write=True)
     if request.accepted_proposal_id and request.status not in {"failed"}:
         return {"status": request.status, "proposal_id": request.accepted_proposal_id, "attempt_id": request.current_attempt_id}
     if Settings().ai_mode == "off":
@@ -385,7 +452,8 @@ def interpret(request_id: str, principal: Principal = Depends(current_principal)
 
 @app.get("/v1/requests/{request_id}/proof")
 def request_proof(request_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "engineer")
+    require_role(principal, "admin", "engineer","manager")
+    require_request(db,principal,request_id)
     return JSONResponse(content=export_proof(db.get_bind(), request_id, principal.tenant_id),
                         headers={"Content-Disposition": 'attachment; filename="ownstack-proof.json"'})
 
@@ -398,6 +466,7 @@ def post_manual_handoff(request_id: str, idempotency_key: str | None = Header(de
                                                     ChangeRequest.tenant_id == principal.tenant_id).with_for_update())
     if request is None:
         raise HTTPException(404, "Not found")
+    require_request(db,principal,request_id,write=True)
     response = idempotent(db, principal.tenant_id, "manual_handoff", idempotency_key or "",
                           {"request_id": request_id, "actor_id": principal.user_id},
                           lambda: manual_handoff(db, request, principal))
@@ -407,8 +476,8 @@ def post_manual_handoff(request_id: str, idempotency_key: str | None = Header(de
 
 @app.get("/v1/requests/{request_id}/attempts")
 def get_attempts(request_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "member", "engineer")
-    scoped(db, ChangeRequest, request_id, principal.tenant_id)
+    require_role(principal, "admin", "member", "engineer","manager")
+    scoped(db, ChangeRequest, request_id, principal.tenant_id, actor=principal)
     rows = db.scalars(select(Attempt).where(Attempt.tenant_id == principal.tenant_id, Attempt.request_id == request_id).order_by(Attempt.number)).all()
     return [serialize_attempt(row) for row in rows]
 
@@ -421,6 +490,7 @@ def cancel_attempt(request_id: str, principal: Principal = Depends(current_princ
                                                    ChangeRequest.tenant_id == principal.tenant_id).with_for_update())
     if not request:
         raise HTTPException(404, "Not found")
+    require_request(db,principal,request_id,write=True)
     attempt = db.get(Attempt, request.current_attempt_id) if request.current_attempt_id else None
     if attempt and attempt.state in {"queued", "running"}:
         attempt.state, attempt.finished_at, attempt.error_code = "canceled", utcnow(), "LOCAL_CANCEL"
@@ -433,17 +503,17 @@ def cancel_attempt(request_id: str, principal: Principal = Depends(current_princ
 
 @app.get("/v1/proposals/{proposal_id}")
 def get_proposal(proposal_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "member", "engineer")
-    return serialize_proposal(scoped(db, Proposal, proposal_id, principal.tenant_id))
+    require_role(principal, "admin", "member", "engineer","manager")
+    return serialize_proposal(scoped(db, Proposal, proposal_id, principal.tenant_id, actor=principal))
 
 
 @app.post("/v1/proposals/{proposal_id}/preview")
 def preview(proposal_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "engineer")
-    proposal = scoped(db, Proposal, proposal_id, principal.tenant_id)
+    require_role(principal, "admin", "engineer","manager")
+    proposal = scoped(db, Proposal, proposal_id, principal.tenant_id, actor=principal, write=True)
     if proposal.route != "configure":
         raise HTTPException(409, "No host preview for nonconfigurable route")
-    request = scoped(db, ChangeRequest, proposal.request_id, principal.tenant_id)
+    request = scoped(db, ChangeRequest, proposal.request_id, principal.tenant_id, actor=principal, write=True)
     result = host_preview(db, request)
     return {**result, "matches_saved_proposal": result["snapshot_hash"] == proposal.preview_hash}
 
@@ -455,6 +525,7 @@ def post_approve(proposal_id: str, body: ApprovalBody, idempotency_key: str | No
                                                 Proposal.tenant_id == principal.tenant_id).with_for_update())
     if not proposal:
         raise HTTPException(404, "Not found")
+    require_request(db,principal,proposal.request_id,write=True)
     idem_body = {"proposal_id": proposal_id, "proposal_hash": body.proposal_hash, "actor_id": principal.user_id}
     try:
         response = approve(db, proposal, principal, body.proposal_hash, idempotency_key or "")
@@ -467,11 +538,12 @@ def post_approve(proposal_id: str, body: ApprovalBody, idempotency_key: str | No
 
 @app.get("/v1/variations")
 def variations(principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "member", "engineer")
-    rows = db.scalars(select(Variation).where(Variation.tenant_id == principal.tenant_id)).all()
+    require_role(principal, "admin", "member", "engineer","manager")
+    rows = db.scalars(select(Variation).where(visible_condition(Variation,principal))).all()
+    eligible=set(db.scalars(select(Variation.id).where(Variation.tenant_id==principal.tenant_id,authorized_variation())).all())
     at = utcnow()
     return [{"id": v.id, "project_id": v.project_id, "viewer_id": v.viewer_id,
-             "state": "expired" if v.state == "active" and aware(v.expires_at) <= at else v.state,
+             "state": "expired" if v.state == "active" and aware(v.expires_at) <= at else 'suspended' if v.state=='active' and v.id not in eligible else v.state,
              "expires_at": aware(v.expires_at).isoformat()} for v in rows]
 
 
@@ -483,6 +555,7 @@ def revoke(variation_id: str, body: RevokeBody | None = None, idempotency_key: s
                                                  Variation.tenant_id == principal.tenant_id).with_for_update())
     if not variation:
         raise HTTPException(404, "Not found")
+    require_project(db,principal,variation.project_id,write=True)
     # All revokes serialize with grant approval on this project. Lock the subject
     # too so offboarding cannot change the reviewed identity before this commit.
     db.scalar(select(Project).where(Project.id == variation.project_id,
@@ -515,17 +588,17 @@ def revoke(variation_id: str, body: RevokeBody | None = None, idempotency_key: s
 def get_revoke_preview(variation_id: str, response: Response,
                        principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
     require_role(principal, "admin")
-    variation = scoped(db, Variation, variation_id, principal.tenant_id)
+    variation = scoped(db, Variation, variation_id, principal.tenant_id, actor=principal)
     response.headers["Cache-Control"] = "no-store"
     return revoke_preview(db, variation, principal.user_id, utcnow())
 
 
 @app.get("/v1/events")
 def events(request_id: str | None = None, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "member", "engineer")
-    statement = select(Event).where(Event.tenant_id == principal.tenant_id)
+    require_role(principal, "admin", "member", "engineer","manager")
+    statement = select(Event).where(visible_condition(Event,principal))
     if request_id:
-        scoped(db, ChangeRequest, request_id, principal.tenant_id)
+        scoped(db, ChangeRequest, request_id, principal.tenant_id, actor=principal)
         statement = statement.where(Event.request_id == request_id)
     rows = db.scalars(statement.order_by(Event.created_at)).all()
     return [{"id": e.id, "request_id": e.request_id, "type": e.event_type, "payload": e.payload,
@@ -534,32 +607,45 @@ def events(request_id: str | None = None, principal: Principal = Depends(current
 
 @app.get("/v1/evidence/{request_id}")
 def evidence(request_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "member", "engineer")
-    scoped(db, ChangeRequest, request_id, principal.tenant_id)
+    require_role(principal, "admin", "member", "engineer","manager")
+    scoped(db, ChangeRequest, request_id, principal.tenant_id, actor=principal)
     rows = db.scalars(select(Evidence).where(Evidence.tenant_id == principal.tenant_id, Evidence.request_id == request_id)).all()
     return [{"id": e.id, "kind": e.kind, "subject_hash": e.subject_hash,
-             "result": e.result, "limitation": e.limitation} for e in rows]
+             "result": public_evidence_result(e),
+             "limitation": e.limitation} for e in rows]
 
 
 @app.get("/v1/engineering")
 def engineering(principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "engineer", "admin")
-    rows = db.scalars(select(EngineeringItem).where(EngineeringItem.tenant_id == principal.tenant_id)).all()
+    require_role(principal, "engineer", "admin","manager")
+    rows = db.execute(select(EngineeringItem,ChangeRequest).join(ChangeRequest,
+        (ChangeRequest.id==EngineeringItem.request_id)&(ChangeRequest.tenant_id==EngineeringItem.tenant_id))
+        .where(EngineeringItem.tenant_id==principal.tenant_id,request_visible(principal))).all()
+    def thumbnail(w):
+        edits=w.patch.get('edits',[]) if isinstance(w.patch,dict) else []
+        first=edits[0] if edits and isinstance(edits[0],dict) else {}
+        return {'path':str(first.get('path',''))[:160],'code':str(first.get('new',''))[:800]}
     return [{"id": w.id, "request_id": w.request_id, "status": w.status,
-             "patch_hash": w.patch_hash, "human_decision": w.human_decision} for w in rows]
+             "patch_hash": w.patch_hash, "human_decision": w.human_decision,
+             "requested_by": r.requester_id,"request_text":r.text[:160],"team_id":r.team_id,
+             "thumbnail":thumbnail(w)} for w,r in rows]
 
 
 @app.get("/v1/engineering/{item_id}")
 def engineering_item(item_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "engineer", "admin")
-    item = scoped(db, EngineeringItem, item_id, principal.tenant_id)
-    request = scoped(db, ChangeRequest, item.request_id, principal.tenant_id)
+    require_role(principal, "engineer", "admin","manager")
+    item = scoped(db, EngineeringItem, item_id, principal.tenant_id, actor=principal)
+    request = scoped(db, ChangeRequest, item.request_id, principal.tenant_id, actor=principal)
     checks = db.scalars(select(Evidence).where(Evidence.request_id == request.id, Evidence.tenant_id == principal.tenant_id, Evidence.kind == "patch_checks")).all()
+    if repository_review.is_repository(item):
+        repository_review.expire_check(db, item)
+        db.commit()
     return {"id": item.id, "request": serialize_request(request), "status": item.status,
             "patch": item.patch, "patch_hash": item.patch_hash, "human_decision": item.human_decision,
             "current_checks_usable": bool(item.patch_hash and matching_checks(db, item)),
             "operation_deadline": aware(item.operation_deadline).isoformat() if item.operation_deadline else None,
-            "checks": [{"subject_hash": e.subject_hash, "result": e.result, "limitation": e.limitation} for e in checks]}
+            "checks": [{"subject_hash": e.subject_hash, "result": e.result, "limitation": e.limitation} for e in checks],
+            "repository": repository_review.view(db, item)}
 
 
 @app.get("/v1/engineering-source")
@@ -573,7 +659,11 @@ def engineering_source(principal: Principal = Depends(current_principal)):
 def manual_patch(item_id: str, body: ManualPatchBody,
                  principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
     require_role(principal, "engineer")
-    item = scoped(db, EngineeringItem, item_id, principal.tenant_id)
+    item = scoped(db, EngineeringItem, item_id, principal.tenant_id, actor=principal, write=True)
+    if repository_review.is_repository(item):
+        result = repository_review.save_candidate(db, item, body.patch, body.candidate_origin, principal)
+        db.commit()
+        return result
     if item.status not in {"needs_engineer", "draft_failed", "drafting", "checks_failed"}:
         raise HTTPException(409, "Work item already has a patch or human decision")
     try:
@@ -607,16 +697,19 @@ def manual_patch(item_id: str, body: ManualPatchBody,
 @app.post("/v1/engineering/{item_id}/draft")
 def draft_patch(item_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
     require_role(principal, "engineer")
-    item = scoped(db, EngineeringItem, item_id, principal.tenant_id)
+    item = scoped(db, EngineeringItem, item_id, principal.tenant_id, actor=principal, write=True)
+    if repository_review.is_repository(item):
+        raise HTTPException(409, 'This local repository work item uses supplied candidates and no model calls')
     if item.status not in {"needs_engineer", "draft_failed"}:
         return {"id": item.id, "status": item.status, "patch_hash": item.patch_hash}
-    request = scoped(db, ChangeRequest, item.request_id, principal.tenant_id)
+    request = scoped(db, ChangeRequest, item.request_id, principal.tenant_id, actor=principal, write=True)
     settings = Settings()
     operation_id = claim_engineering(db, item, "drafting", settings.ai_timeout + 5)
-    reserve_live_call(db, settings)
+    reserve_live_call(db, settings, principal.tenant_id)
     db.commit()
     try:
-        draft = propose_patch(request.text)
+        prompt=engineering_prompt(db,request)
+        draft = propose_patch(prompt)
         patch, model_id = draft[:2]
         metrics = draft[2] if len(draft) > 2 else {"live": False, "source": "test-double"}
         candidate_hash = patch_hash(patch)
@@ -631,26 +724,29 @@ def draft_patch(item_id: str, principal: Principal = Depends(current_principal),
         if changed.rowcount != 1:
             db.rollback()
             raise HTTPException(409, "AI draft was superseded by an engineer")
+        # The authorized job may finish for its team after an actor transfer.
+        # Persist its untrusted proposal, then recheck before returning content.
         item = scoped(db, EngineeringItem, item_id, principal.tenant_id)
         db.refresh(item)
         db.add(Evidence(id=str(uuid4()), tenant_id=principal.tenant_id, request_id=request.id,
                         kind="patch_generation", subject_hash=candidate_hash,
-                        result={"model_id": model_id, **metrics},
+                        result={"model_id": model_id, **metrics,"request_context_hash":digest(prompt)},
                         limitation="A generated patch is an untrusted proposal, not a checked or released build."))
         record(db, principal.tenant_id, request.id, "engineering.patch_drafted", {"item_id": item.id, "patch_hash": item.patch_hash, "model_id": model_id})
         db.commit()
+        require_request(db,principal,request.id,write=True)
         return {"id": item.id, "status": item.status, "patch_hash": item.patch_hash, "model_id": model_id}
     except HTTPException:
         raise
     except Exception as error:
         db.rollback()
-        item = scoped(db, EngineeringItem, item_id, principal.tenant_id)
+        item = scoped(db, EngineeringItem, item_id, principal.tenant_id, actor=principal, write=True)
         changed = db.execute(update(EngineeringItem)
                              .where(EngineeringItem.id == item_id, EngineeringItem.status == "drafting",
                                     EngineeringItem.operation_id == operation_id)
                              .values(status="draft_failed", operation_id=None, operation_deadline=None))
         if changed.rowcount == 1:
-            safe_codes = {"MODEL_OUTPUT_TRUNCATED", "INVALID_MODEL_OUTPUT", "AI_OFF",
+            safe_codes = {"MODEL_OUTPUT_TRUNCATED", "INVALID_MODEL_OUTPUT", "MODEL_SOURCE_SYNTAX_INVALID", "MODEL_SOURCE_PROTOCOL_INVALID", "AI_OFF",
                           "One bounded edit is required", "Patch may edit only sample_app/report.py",
                           "Invalid patch text or size", "Patch anchor must match exactly once"}
             code = str(error) if str(error) in safe_codes else "MODEL_DRAFT_ERROR"
@@ -663,7 +759,11 @@ def draft_patch(item_id: str, principal: Principal = Depends(current_principal),
 @app.post("/v1/engineering/{item_id}/verify")
 def verify_patch(item_id: str, principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
     require_role(principal, "engineer")
-    item = scoped(db, EngineeringItem, item_id, principal.tenant_id)
+    item = scoped(db, EngineeringItem, item_id, principal.tenant_id, actor=principal, write=True)
+    if repository_review.is_repository(item):
+        result = repository_review.enqueue(db, item, principal)
+        db.commit()
+        return JSONResponse(result, status_code=202 if result['state'] in {'queued', 'running', 'recovering', 'recovery_blocked'} else 200)
     if item.status not in {"drafted", "checks_failed", "checks_passed"} or not item.patch:
         raise HTTPException(409, "No draft patch to verify")
     request_id, patch, expected_hash = item.request_id, item.patch, item.patch_hash
@@ -691,6 +791,7 @@ def verify_patch(item_id: str, principal: Principal = Depends(current_principal)
                     limitation="These checks cover only the owned fixture. A pass is not a security guarantee or a release."))
     record(db, principal.tenant_id, request_id, "engineering.checks_finished", {"item_id": item_id, "passed": result["passed"], "patch_hash": expected_hash})
     db.commit()
+    require_request(db,principal,request_id,write=True)
     return result
 
 
@@ -698,10 +799,26 @@ def verify_patch(item_id: str, principal: Principal = Depends(current_principal)
 def engineering_decide(item_id: str, body: EngineeringDecisionBody,
                        principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
     require_role(principal, "engineer")
+    # Acquire current actor/team authority before the item lock, matching other
+    # engineering mutations and closing direct cross-team take-over/reject calls.
+    scoped(db,EngineeringItem,item_id,principal.tenant_id,actor=principal,write=True)
     item = db.scalar(select(EngineeringItem).where(EngineeringItem.id == item_id,
                                                   EngineeringItem.tenant_id == principal.tenant_id).with_for_update())
     if item is None:
         raise HTTPException(404, "Not found")
+    # Modern review clients pin every decision, including rejection, to the
+    # displayed candidate. A late rejection must not decide replacement code.
+    if body.patch_hash is not None and body.patch_hash != item.patch_hash:
+        raise HTTPException(409, "Patch changed. Review the current candidate.")
+    if body.request_revision is not None:
+        request_row = db.get(ChangeRequest, item.request_id)
+        if not request_row or request_row.revision != body.request_revision:
+            raise HTTPException(409, "Request changed. Review the current requirements.")
+    if repository_review.is_repository(item):
+        result = repository_review.decide(db, item, principal, body.decision, body.patch_hash,
+                                          body.verification_id, body.context_hash)
+        db.commit()
+        return result
     if item.human_decision:
         raise HTTPException(409, "Decision already recorded")
     if body.decision == "accept_for_manual_release":
@@ -713,12 +830,14 @@ def engineering_decide(item_id: str, body: EngineeringDecisionBody,
     item.status = "human_decided"
     item.operation_id, item.operation_deadline = None, None
     record(db, principal.tenant_id, item.request_id, "engineering.human_decision",
-           {"decision": body.decision, "patch_hash": item.patch_hash if body.decision == "accept_for_manual_release" else None})
+           {"decision": body.decision,"actor_id":principal.user_id,"item_id":item.id, "patch_hash": item.patch_hash if body.decision == "accept_for_manual_release" else None})
     db.commit()
     return {"decision": body.decision, "release_state": "not_deployed"}
 
 
 def matching_checks(db: Session, item: EngineeringItem) -> list[dict]:
+    if repository_review.is_repository(item):
+        return repository_review.matching(db, item)
     from ownstack.pdf_oracle import is_external_pass
     provenance = current_provenance()
     evidence = db.scalars(select(Evidence).where(Evidence.request_id == item.request_id,
@@ -733,8 +852,10 @@ def matching_checks(db: Session, item: EngineeringItem) -> list[dict]:
 @app.get("/v1/engineering/{item_id}/artifact")
 def engineering_artifact(item_id: str, principal: Principal = Depends(current_principal),
                          db: Session = Depends(db_session)):
-    require_role(principal, "engineer")
-    item = scoped(db, EngineeringItem, item_id, principal.tenant_id)
+    require_role(principal, "engineer","manager","admin")
+    item = scoped(db, EngineeringItem, item_id, principal.tenant_id, actor=principal)
+    if repository_review.is_repository(item):
+        return repository_review.artifact(db, item)
     if item.human_decision != "accept_for_manual_release" or not item.patch:
         raise HTTPException(409, "Human acceptance of the checked patch is required")
     validate_patch(item.patch)
@@ -754,14 +875,14 @@ def engineering_artifact(item_id: str, principal: Principal = Depends(current_pr
 
 @app.get("/v1/convergence")
 def convergence(principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "engineer", "product_owner")
+    require_role(principal, "admin", "engineer", "product_owner","manager")
     rows = []
     for need_key, predicate in [
         ("pdf-export", (ChangeRequest.kind == "feature") & ChangeRequest.text.ilike("%pdf%")),
         ("temporary-project-view", ChangeRequest.kind == "access"),
     ]:
         local_count = db.scalar(select(func.count(ChangeRequest.id)).where(
-            ChangeRequest.tenant_id == principal.tenant_id, predicate)) or 0
+            request_visible(principal), predicate)) or 0
         affected = None
         if principal.role == "product_owner":
             affected = db.scalar(select(func.count(func.distinct(ChangeRequest.tenant_id))).where(predicate)) or 0
@@ -773,12 +894,12 @@ def convergence(principal: Principal = Depends(current_principal), db: Session =
             statement = select(func.count(HostObservation.id)).where(
                 HostObservation.allowed.is_(True), HostObservation.basis == "variation")
             if principal.role != "product_owner":
-                statement = statement.where(HostObservation.tenant_id == principal.tenant_id)
+                statement = statement.where(visible_condition(HostObservation,principal))
             usage = db.scalar(statement) or 0
         rows.append({"need_key": need_key, "your_tenant_request_count": local_count,
                      "affected_tenant_count": affected, "decision": latest.decision if latest else None,
                      "observed_granted_reads": usage,
-                     "usage_scope": "all_tenants" if principal.role == "product_owner" else "your_tenant",
+                     "usage_scope": "all_tenants" if principal.role == "product_owner" else "your_teams",
                      "note": "Counts are synthetic lab signals, not validated demand. PDF matching is lexical. "
                              "Observed reads count authorized API requests, including retries, not distinct people "
                              "or proof of response delivery. Previews are excluded. Only the product owner sees cross-tenant counts."})

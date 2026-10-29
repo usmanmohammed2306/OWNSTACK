@@ -10,12 +10,13 @@ from ownstack.models import (Approval, Attempt, ChangeRequest, Contract, Deliver
 from ownstack.repair_models import RepairRun
 from ownstack.policy import Principal, aware, digest
 from ownstack.service import host_preview, scoped, utcnow
+from ownstack.team_scope import visible_condition
 
 router = APIRouter(prefix="/v1/assurance")
 REPORTS = {}
 
 
-def report(key, title, description, filters=(), required=(), roles=("admin", "engineer")):
+def report(key, title, description, filters=(), required=(), roles=("admin", "engineer","manager")):
     def register(function):
         REPORTS[key] = {"key": key, "title": title, "description": description,
                         "filters": list(filters), "required": list(required), "roles": list(roles), "run": function}
@@ -34,6 +35,9 @@ class Context:
     truncated: bool = False
 
     def collect(self, statement):
+        entities={d.get('entity') for d in statement.column_descriptions if d.get('entity') is not None}
+        for entity in entities:
+            if hasattr(entity,'tenant_id'):statement=statement.where(visible_condition(entity,self.principal))
         rows = self.db.execute(statement.limit(self.limit + 1)).mappings().all()
         self.truncated |= len(rows) > self.limit
         return [{key: aware(value).isoformat() if isinstance(value, datetime) else value
@@ -54,7 +58,7 @@ class Context:
 
 @router.get("/catalogue")
 def catalogue(principal: Principal = Depends(current_principal)):
-    require_role(principal, "admin", "engineer")
+    require_role(principal, "admin", "engineer","manager")
     return [{key: value for key, value in spec.items() if key != "run"}
             for spec in REPORTS.values() if principal.role in spec["roles"]]
 
@@ -65,7 +69,7 @@ def run_report(report_id: str, project_id: str | None = Query(default=None, max_
                request_id: str | None = Query(default=None, max_length=200),
                limit: int = Query(default=25, ge=1, le=100), days: int = Query(default=7, ge=1, le=30),
                principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "engineer")
+    require_role(principal, "admin", "engineer","manager")
     spec = REPORTS.get(report_id)
     if spec is None: raise HTTPException(404, "Report not found")
     require_role(principal, *spec["roles"])
@@ -73,7 +77,7 @@ def run_report(report_id: str, project_id: str | None = Query(default=None, max_
     if set(scope) - set(spec["filters"]) or set(spec["required"]) - set(scope):
         raise HTTPException(422, "Supply only supported filters and all required scope")
     for key, model in (("project_id", Project), ("viewer_id", User), ("request_id", ChangeRequest)):
-        if key in scope: scoped(db, model, scope[key], principal.tenant_id)
+        if key in scope: scoped(db, model, scope[key], principal.tenant_id, actor=principal)
     ctx = Context(db, principal, utcnow(), limit, days, scope)
     items = spec["run"](ctx)
     return {"report": report_id, "tenant_id": principal.tenant_id, "scope": scope,
@@ -96,7 +100,7 @@ def approval_inbox(ctx):
 def stale_previews(ctx):
     findings = []
     for row in ctx.rows(Proposal, "id request_id preview_hash", Proposal.route == "configure", Proposal.status == "ready"):
-        request = scoped(ctx.db, ChangeRequest, row["request_id"], ctx.principal.tenant_id)
+        request = scoped(ctx.db, ChangeRequest, row["request_id"], ctx.principal.tenant_id, actor=ctx.principal)
         try:
             preview = host_preview(ctx.db, request)
             if preview["snapshot_hash"] != row["preview_hash"]:
@@ -203,7 +207,7 @@ def viewer_access_matrix(ctx):
     statement = select(User.id, User.role, User.enabled).where(User.tenant_id == ctx.principal.tenant_id)
     if "viewer_id" in ctx.scope: statement = statement.where(User.id == ctx.scope["viewer_id"])
     rows = ctx.collect(statement.order_by(User.id))
-    project = scoped(ctx.db, Project, ctx.scope["project_id"], ctx.principal.tenant_id)
+    project = scoped(ctx.db, Project, ctx.scope["project_id"], ctx.principal.tenant_id, actor=ctx.principal)
     for row in rows:
         decision = host_read_decision(ctx.db, Principal(row["id"], project.tenant_id, row["role"]), project.tenant_id, project.id, ctx.at) if row["enabled"] else None
         row.update(project_id=project.id, allowed=bool(decision and decision.allowed), basis=decision.basis if decision else "account_disabled", variation_id=decision.variation_id if decision else None)
@@ -241,7 +245,7 @@ def engineering_review(ctx):
     from ownstack.api import matching_checks
     rows = ctx.rows(EngineeringItem, "id request_id status patch_hash human_decision", EngineeringItem.status.in_(("checks_passed", "human_decided")))
     for row in rows:
-        item = scoped(ctx.db, EngineeringItem, row["id"], ctx.principal.tenant_id)
+        item = scoped(ctx.db, EngineeringItem, row["id"], ctx.principal.tenant_id, actor=ctx.principal)
         row["current_checks_usable"] = bool(item.patch_hash and matching_checks(ctx.db, item))
         row["release_state"] = "not_deployed"
     return rows

@@ -1,0 +1,1 @@
+{"edits":[{"path":"src/flask/json/__init__.py","old":"import io\n","new":"import decimal\nimport io\n"},{"path":"src/flask/json/__init__.py","old":"        if isinstance(o, uuid.UUID):\n","new":"        if isinstance(o, (uuid.UUID, decimal.Decimal)):\n"}]}

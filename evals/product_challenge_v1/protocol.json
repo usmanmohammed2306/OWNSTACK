@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "date": "2026-10-25",
+  "origin": "Authored fictional composites of realistic operational problems, not customer observations or copies of company incidents.",
+  "purpose": "Challenge product fit and expose unsupported requirements; separately stress the local trained UI planner.",
+  "bands": ["bounded", "complex_business", "distributed_failure", "hostile", "catastrophic_external"],
+  "cases_per_band": 10,
+  "training_relationship": "Written after the original 288-row training dataset and training run. Not used for training. Same author, not independently held out; no tuning against this challenge run.",
+  "model_measure": "Strict JSON and role-schema validity, followed by exact match to one prespecified acceptable UI plan. This measures navigation/draft/refusal behavior, never business fulfillment.",
+  "control_measure": "Passed related test functions in a supplied JUnit report, with current test hashes. Related controls do not execute each complete scenario or certify its domain.",
+  "forbidden_claims": ["50 scenarios fulfilled", "universal safety", "customer demand validated", "production ready because unit tests passed", "planner refusal implies host security", "AI beats the baseline"],
+  "sources": [
+    {"id":"feature_approvals","url":"https://launchdarkly.com/docs/home/releases/approvals","use":"Existing approval capability is a comparison, not an OwnStack novelty claim."},
+    {"id":"scheduled_flags","url":"https://launchdarkly.com/docs/api/scheduled-changes/post-flag-config-scheduled-changes","use":"Existing scheduled flag changes are a simpler alternative to compare."},
+    {"id":"evaluation_context","url":"https://openfeature.dev/specification/sections/evaluation-context/","use":"Existing context-targeted flag evaluation; does not itself define application authorization."},
+    {"id":"partition_failure","url":"https://github.blog/news-insights/company-news/oct21-post-incident-analysis/","use":"Primary account of divergent database state after a partition; inspiration for failure classes, not a customer story."},
+    {"id":"retry_overload","url":"https://sre.google/sre-book/handling-overload/","use":"Primary discussion of retry budgets and overload amplification; no claim OwnStack implements Google's system."}
+  ]
+}

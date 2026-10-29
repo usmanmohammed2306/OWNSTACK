@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-10-28",
+  "provider": "Nebius Token Factory",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "fresh_provider_calls": 1,
+  "data_origin": "Owned Python application and two synthetic customer accounts",
+  "requirements_approval": "Explicit synthetic engineer answers and separate synthetic administrator approval",
+  "cases": 147,
+  "initial_candidate_passed": 138,
+  "initial_candidate_failed": 9,
+  "model_candidate_passed": 147,
+  "model_candidate_failed": 0,
+  "operator_corrected_model_source": false,
+  "release_state": "not_deployed",
+  "review_origin": "Synthetic operator acting through engineer account, not independent customer review",
+  "live_stage": "Patch proposal only; requirements and approval were explicitly supplied",
+  "latency_ms": 7770,
+  "input_tokens": 2891,
+  "output_tokens": 1836,
+  "estimated_token_cost_usd": 0.0025197,
+  "estimate_is_reconciled_bill": false,
+  "independent_report_sha256": "373926cb601b0cebed976b5b57098ad898985490a99122b8c0d62c799aa719f6",
+  "checked_source_sha256": "700890a3247599c803d365ff5f86579d2a64a337b9fe685bb31b838c77d34a83",
+  "source_diff": "--- before/customer_policy.py\n+++ checked/customer_policy.py\n@@ -7,11 +7,12 @@\n         return 404, {}\n     if data['actor_role'] == 'anonymous':\n         return 403, {}\n-    assigned_role = data['actor_role'] in ('engineer', 'manager')\n-    grant = False\n+    allowed_roles = ('engineer', 'manager')\n+    role_ok = data['actor_role'] in allowed_roles and data.get('assigned', False)\n+    grant_ok = False\n     if data.get('grant_starts_at') and not data.get('grant_revoked', False):\n         at = datetime.fromisoformat(data['at'])\n-        grant = datetime.fromisoformat(data['grant_starts_at']) <= at < datetime.fromisoformat(data['grant_expires_at'])\n-    if assigned_role or grant:\n+        grant_ok = datetime.fromisoformat(data['grant_starts_at']) <= at < datetime.fromisoformat(data['grant_expires_at'])\n+    if role_ok or grant_ok:\n         return 200, {'id': data['resource_id'], 'title': 'Synthetic project brief'}\n     return 403, {}\n",
+  "limits": [
+    "One bounded synthetic profile, not a general success rate",
+    "Diagnostic inference transport was removed and is not a bundled public service",
+    "Tests do not establish certified isolation or customer demand"
+  ]
+}

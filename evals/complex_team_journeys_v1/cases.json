@@ -1,0 +1,39 @@
+{
+  "schema": "ownstack.connected-team-stories.v1",
+  "source": "Authored synthetic connected episodes, not observed customers",
+  "uses_live_provider": false,
+  "cases": [
+    {
+      "id": "paired-grants-and-manager-handover",
+      "story": "One auditor has separate Payments/Billing grants. Payments changes managers without moving Billing authority or revoking an already approved customer grant."
+    },
+    {
+      "id": "failed-patch-transfer-and-peer-repair",
+      "story": "A settlement patch genuinely fails independent tests. Its author transfers to CRM; a remaining teammate fixes it and a new authorized colleague reviews the exact replacement."
+    },
+    {
+      "id": "quorum-handover-selected-reviewers",
+      "story": "A first administrator leaves CRM before quorum completes. Only the two currently eligible exact reviews activate access; an excluded review cannot replace a selected signer whose sessions are revoked."
+    },
+    {
+      "id": "queued-work-loses-authority-and-explicit-peer-retry",
+      "story": "A queued Billing check loses its engineer before dispatch. It saves superseded evidence without executing; a peer explicitly retries and obtains fresh actual checks."
+    },
+    {
+      "id": "manager-offboarding-and-return",
+      "story": "Billing temporarily loses its manager. The backup lead retains only Billing; restoring the original account does not revive old sessions."
+    },
+    {
+      "id": "pending-proposal-expires-before-approval",
+      "story": "A Deals access proposal expires while a review is delayed. Neither late approval nor refresh extends the original expiry or creates a grant."
+    },
+    {
+      "id": "real-expiry-separated-from-neighbor-and-renewal",
+      "story": "Payments expires on the actual clock while Billing remains accessible. A new explicitly approved Payments request restores access; old approval replay never revives the expired grant."
+    },
+    {
+      "id": "durable-history-restart-and-ai-off-replay",
+      "story": "A completed-state restart preserves failed checks, selected reviewers, expired grants and exact reviewed handoffs. Refresh dispatches no model or replacement check."
+    }
+  ]
+}

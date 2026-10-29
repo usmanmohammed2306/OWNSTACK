@@ -12,7 +12,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 from ownstack.config import Settings
 from ownstack.db import SessionLocal
-from ownstack.models import RateWindow, User, WebSession
+from ownstack.models import Project, RateWindow, Tenant, User, WebSession
 from ownstack.policy import Principal, aware
 
 SESSION_COOKIE = "ownstack_session"
@@ -21,19 +21,35 @@ SESSION_SECONDS = 8 * 60 * 60
 
 
 def cookie_name(name, settings):
-    return '__Host-' + name if settings.secure_cookies else name
+    # Browser cookies are scoped by hostname/path, not TCP port. Independent
+    # localhost labs need different names while the existing default stays stable.
+    scoped=(settings.cookie_namespace+'-' if settings.cookie_namespace else '')+name
+    return '__Host-' + scoped if settings.secure_cookies else scoped
 
 
 def password_hash(password: str, salt: bytes | None = None) -> str:
     salt = salt or secrets.token_bytes(16)
-    key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 300_000)
-    return f"{salt.hex()}:{key.hex()}"
+    key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 600_000)
+    return f"pbkdf2_sha256:600000:{salt.hex()}:{key.hex()}"
 
 
 def check_password(password: str, stored: str) -> bool:
-    salt, expected = stored.split(":")
-    actual = password_hash(password, bytes.fromhex(salt)).split(":")[1]
-    return hmac.compare_digest(actual, expected)
+    """Read existing 300k records without resetting or invalidating an account."""
+    try:
+        parts = stored.split(":")
+        if len(parts) == 2:
+            salt, expected = parts; iterations = 300_000
+        elif len(parts) == 4 and parts[:2] == ["pbkdf2_sha256", "600000"]:
+            _, _, salt, expected = parts; iterations = 600_000
+        else:
+            return False
+        raw_salt = bytes.fromhex(salt)
+        if len(raw_salt) != 16 or len(expected) != 64:
+            return False
+        actual = hashlib.pbkdf2_hmac("sha256", password.encode(), raw_salt, iterations).hex()
+        return hmac.compare_digest(actual, expected)
+    except (ValueError, TypeError, AttributeError):
+        return False
 
 
 def hash_secret(value: str) -> str:
@@ -144,7 +160,9 @@ def current_principal(request: Request, authorization: str | None = Header(defau
         user_id = row.user_id
     else:
         raise HTTPException(401, "Sign in required")
-    user = db.scalar(select(User).where(User.id == user_id))
+    user_query=select(User).where(User.id==user_id)
+    if request.method not in {'GET','HEAD','OPTIONS'}:user_query=user_query.with_for_update(read=True)
+    user = db.scalar(user_query)
     if not user or not user.enabled:
         raise HTTPException(status_code=401, detail="Unknown user")
     if settings.environment == "local" and authorization and authorization.startswith("Bearer "):
@@ -155,3 +173,33 @@ def current_principal(request: Request, authorization: str | None = Header(defau
 def require_role(principal: Principal, *roles: str) -> None:
     if principal.role not in roles:
         raise HTTPException(status_code=403, detail="Role cannot perform this action")
+
+
+def require_workspace_ai(db: Session, tenant_id: str) -> None:
+    """A public account never inherits the operator's finite provider allowance."""
+    tenant = db.get(Tenant, tenant_id)
+    if not tenant or not tenant.ai_enabled:
+        raise HTTPException(403, "AI has not been activated for this workspace. Saved work and manual review remain available.")
+
+
+def session_payload(db: Session, user: User, csrf: str, settings: Settings) -> dict:
+    from ownstack.models import Team,TeamMembership
+    from ownstack.team_scope import metadata_projects,team_ids
+    from ownstack.policy import digest
+    import os
+    tenant = db.get(Tenant, user.tenant_id)
+    principal=Principal(user.id,user.tenant_id,user.role)
+    projects=db.scalars(select(Project).where(metadata_projects(db,principal)).order_by(Project.id)).all()
+    project=projects[0] if projects else None
+    teams=db.scalars(select(Team).where(Team.tenant_id==user.tenant_id,Team.id.in_(team_ids(principal))).order_by(Team.id)).all()
+    membership_rows=db.execute(select(TeamMembership.team_id,TeamMembership.role,TeamMembership.enabled,TeamMembership.revision,Team.enabled)
+        .join(Team,(Team.id==TeamMembership.team_id)&(Team.tenant_id==TeamMembership.tenant_id))
+        .where(TeamMembership.user_id==user.id,TeamMembership.tenant_id==user.tenant_id).order_by(TeamMembership.id)).all()
+    return {"user_id": user.id, "tenant_id": user.tenant_id, "role": user.role,
+            "display_name": user.display_name or user.id, "workspace_name": tenant.name,
+            "project_id": project.id if project else None, "project_name": project.name if project else None,
+            "ai_mode": settings.ai_mode if tenant.ai_enabled else "off", "csrf_token": csrf,
+            "release_assurance_enabled": settings.environment=='local' and os.getenv('OWNSTACK_RELEASE_ASSURANCE')=='true',
+            "teams":[{'id':t.id,'name':t.name} for t in teams],
+            "projects":[{'id':p.id,'name':p.name,'team_id':p.team_id} for p in projects],
+            "scope_version":digest({'role':user.role,'memberships':[list(r) for r in membership_rows],'projects':[p.id for p in projects]})}

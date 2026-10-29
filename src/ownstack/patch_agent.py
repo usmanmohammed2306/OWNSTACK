@@ -6,11 +6,16 @@ import httpx
 from ownstack.config import Settings
 from ownstack.policy import digest
 from ownstack.runner import ALLOWED_PATH, ROOT, validate_patch
-from ownstack.model_contracts import validate_proposal
+from ownstack import source_proposals
 
-GENERATION_PARAMETERS = {"temperature": 1.0, "top_p": 1.0, "max_tokens": 8000}
+GENERATION_PARAMETERS = {"temperature": 0, "max_tokens": 8000}
 PATCH_SYSTEM_PROMPT = """Propose a concise complete Python replacement for sample_app/report.py in an owned sample app.
-Return JSON only with exactly one field: replacement (the complete Python source string).
+Return JSON only with exactly one field: lines (an array of physical Python source lines).
+Example shape: {"lines":["def export_pdf(project_name, rows):","    ..."]}.
+Each element is one physical source line with indentation preserved. Use an empty
+string for a blank line. Never include a newline character or a separator made
+of backslash-n inside a line. Literal escapes inside Python string literals remain
+normal Python source. The server joins the elements with LF and a final newline.
 The server owns the file path and binds your replacement to the exact supplied source snapshot.
 Implement export_pdf(project_name: str, rows: list[str]) -> bytes using only Python standard library.
 This is a deliberately narrow owned output contract, not support for every valid PDF format:
@@ -30,7 +35,9 @@ Use failure descriptions only to diagnose the implementation. Your returned byte
 
 def generation_configuration() -> dict:
     """Freeze prompt/parser/fixture code and decoding parameters for repair runs."""
-    return {"generator_hash": digest(Path(__file__).read_text()), **GENERATION_PARAMETERS}
+    return {"generator_hash": digest(Path(__file__).read_text()),
+            "source_protocol": source_proposals.PROTOCOL,
+            "source_protocol_hash": digest(Path(source_proposals.__file__).read_text()), **GENERATION_PARAMETERS}
 
 
 REFERENCE_IMPLEMENTATION = '''"""A tiny dependency-free PDF encoder for the owned fixture."""
@@ -102,7 +109,8 @@ def propose_patch(request_text: str, settings: Settings | None = None, *, repair
         json={"model": model_id,
               "messages": [
                   {"role": "system", "content": PATCH_SYSTEM_PROMPT},
-                  {"role": "user", "content": f"Customer request: {request_text[:3000]}\nCurrent source:\n{source}{repair_data}"}],
+                  {"role": "user", "content": json.dumps({"customer_request":request_text[:3000],
+                    "current_source":source_proposals.model_sources({ALLOWED_PATH:source}),"untrusted_repair_evidence":repair_data})}],
               "response_format": {"type": "json_object"}, **GENERATION_PARAMETERS},
         timeout=settings.ai_timeout)
     response.raise_for_status()
@@ -111,10 +119,10 @@ def propose_patch(request_text: str, settings: Settings | None = None, *, repair
         raise ValueError("MODEL_OUTPUT_TRUNCATED")
     if any(data["choices"][0]["message"].get(key) for key in ("refusal", "tool_calls", "function_call")):
         raise ValueError("INVALID_MODEL_OUTPUT")
-    proposed = validate_proposal(data["choices"][0]["message"]["content"], "propose_replacement")
+    replacement = source_proposals.replacement(data["choices"][0]["message"]["content"])
     # The model cannot choose a path or invent the old-source anchor. The host
     # binds the untrusted replacement to the exact snapshot sent for this call.
-    patch = {"edits": [{"path": ALLOWED_PATH, "old": source, "new": proposed.replacement}]}
+    patch = {"edits": [{"path": ALLOWED_PATH, "old": source, "new": replacement}]}
     validate_patch(patch)
     usage = data.get("usage") or {}
     return patch, model_id, {"live": True, "latency_ms": int((time.monotonic() - started) * 1000),

@@ -1,0 +1,36 @@
+[
+  {
+    "schema_version": 1,
+    "key": "atlas-assigned-visibility",
+    "version": 1,
+    "customer_tenant_id": "atlas",
+    "title": "Synthetic example: contractors see assigned documents only",
+    "source_ref": "SYNTHETIC-EXAMPLE-001",
+    "owner_id": "example-review-owner",
+    "expires_at": null,
+    "cases": [
+      {
+        "case_id": "atlas-unassigned-denied",
+        "title": "Unassigned Atlas contractor is denied",
+        "kind": "target",
+        "input": {
+          "actor_id": "atlas-contractor", "actor_tenant_id": "atlas", "actor_role": "contractor",
+          "resource_id": "atlas-document", "resource_tenant_id": "atlas", "assigned": false,
+          "at": "2026-10-27T12:00:00Z", "grant_starts_at": null, "grant_expires_at": null, "grant_revoked": false
+        },
+        "expected": {"status_code": 403, "visible_fields": []}
+      },
+      {
+        "case_id": "nova-member-control",
+        "title": "Nova standard member remains unchanged",
+        "kind": "control",
+        "input": {
+          "actor_id": "nova-member", "actor_tenant_id": "nova", "actor_role": "member",
+          "resource_id": "nova-document", "resource_tenant_id": "nova", "assigned": true,
+          "at": "2026-10-27T12:00:00Z", "grant_starts_at": null, "grant_expires_at": null, "grant_revoked": false
+        },
+        "expected": {"status_code": 200, "visible_fields": ["id", "title", "internal_notes"]}
+      }
+    ]
+  }
+]

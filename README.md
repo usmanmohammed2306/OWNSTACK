@@ -1,217 +1,191 @@
-<div align="center">
-
 # OwnStack
 
-### Adapt the edge. Keep the core.
+### Customer changes. One shared product.
 
-Customer-specific changes. One shared application. Human control.
+A customer asks for a small exception.
 
-</div>
+“Let this contractor read Project Atlas until Friday.”
 
-## One request, two very different changes
+Then another customer needs a different rule. A third asks for a new feature.
+Soon, the team is maintaining a collection of flags, custom branches and promises
+that ordinary tests do not understand.
 
-> “Give this contractor read-only access to Project Atlas until Friday.”
-
-OwnStack turns that request into a narrow, versioned Capability Contract. The
-host previews the effect, an authenticated admin approves the exact proposal,
-and the application enforces the temporary grant. Atlas changes. Nova does not.
-Expiry and revocation are checked on protected reads.
-
-> “Now add PDF export.”
-
-That needs code, not a disguised configuration flag. The Engineer Cockpit keeps
-the exact diff, independent checks and human decision together. A passing patch
-is still **not a deployment**.
+OwnStack connects each customer promise to an explicit policy, a scoped change
+and evidence that the shared product still behaves as agreed.
 
 ```mermaid
-flowchart TD
-    R[Customer request] --> C{Existing capability?}
-    C -->|Yes| P[Host-derived preview]
-    P --> A[Exact admin approval]
-    A --> H[Tenant-scoped host enforcement]
-    C -->|No| E[Engineering work item]
-    E --> V[Bounded patch + independent verifier]
-    V --> D[Human review, never silent deployment]
-    H -.-> Q[Convergence Queue]
-    D -.-> Q
+flowchart LR
+    A[Customer request] --> B[Clarify expected behavior]
+    B --> C{Existing capability?}
+    C -->|Yes| D[Preview exact effect]
+    D --> E[Admin approval]
+    E --> F[Host enforces scope and expiry]
+    C -->|Needs code| G[Nemotron proposes a patch]
+    G --> H[Independent repository checks]
+    H --> I[Engineer reviews exact diff]
+    H -->|Fails| J[Keep evidence and revise]
+    J --> G
+    I --> K[Reviewed, awaiting manual release]
 ```
 
-Python/FastAPI, PostgreSQL, SQLAlchemy/Alembic, LangGraph, React/TypeScript and
-Three.js. NVIDIA Nemotron proposals use Nebius Token Factory when explicitly
-enabled; the application and manual engineering path also work with AI off.
+## One request, two paths
 
-## Run locally with AI off
+**Temporary access:** preview the actual policy effect, approve that exact proposal
+and enforce it in the host app. A grant for Atlas does not authorize Nova.
+Expiry, revocation and account changes are checked by the server.
 
-Prerequisites: Docker Desktop with Compose and Linux containers. Candidate
-verification requires Linux x86_64 or aarch64, Landlock ABI 3 or later and
-libseccomp. Unsupported isolation fails closed.
+**A code change:** clarify and approve the customer's expected behavior, bind it to
+a repository version, propose a bounded patch and compare the baseline and
+candidate against independent customer checks. Passing checks lead to review.
+Acceptance records a decision; it does not merge or deploy code.
+
+Customers have a separate portal. Engineers see their teams' work; managers see
+the teams they manage. Customers receive an explicit status update without
+internal code, comments or another customer's requests.
+
+## What has been demonstrated
+
+A real NVIDIA Nemotron Super response, served through Nebius Token Factory,
+fixed an assignment regression in the owned Python sample application:
+
+| Candidate | Passed | Failed |
+| --- | ---: | ---: |
+| Deliberately defective version | 138 | 9 |
+| Exact Nemotron repair | 147 | 0 |
+
+The model's source was not manually corrected. The check included tenant
+isolation, assigned and unassigned people, grant start/expiry boundaries, revoked
+grants and preservation of response fields. Synthetic engineer review, private
+customer updates and saved-state replay were exercised afterward.
+
+The provider response took 7.77 seconds and reported 2,891 input / 1,836 output
+tokens. Its estimated token cost was $0.00252 at the observed price, not a
+reconciled bill or a general performance benchmark. This is one finite synthetic
+journey, not a measured success rate across arbitrary repositories.
+
+The [recorded repair evidence](docs/evidence/customer-repair.json) includes the
+exact diff, independent report digest, usage and limitations. Earlier failed
+proposals remain in the historical runtime evidence.
+
+## Run locally
+
+Requires Docker with Compose. The default local stack uses PostgreSQL and binds
+the web application to loopback.
 
 ```bash
 git clone https://github.com/usmanmohammed2306/OWNSTACK.git
 cd OWNSTACK
 
-export OWNSTACK_AI_MODE=off
-export OWNSTACK_MAX_LIVE_CALLS=0
-export NEBIUS_API_KEY=
-export NEBIUS_MODEL_ID=
-export NEBIUS_PATCH_MODEL_ID=
-
+OWNSTACK_AI_MODE=off OWNSTACK_MAX_LIVE_CALLS=0 \
+NEBIUS_API_KEY= NEBIUS_MODEL_ID= NEBIUS_PATCH_MODEL_ID= \
 docker compose -f compose.full.yaml up -d --build
-curl -fsS http://127.0.0.1:8080/health/ready
+
+curl --fail http://127.0.0.1:8080/health/ready
 ```
 
-Wait for the images, migrations and background services to become ready.
-Expected health response:
+Open **http://127.0.0.1:8080/**.
 
-```json
-{"status":"ready","ai_mode":"off"}
-```
+Local fixture accounts: `atlas-admin`, `atlas-engineer`, `atlas-contractor`
+and the corresponding `nova-*` accounts. Their local-only passphrase is
+`demo-only-pass`. Keep this fixture stack private.
 
-Open **http://127.0.0.1:8080**. Synthetic accounts:
-
-| Account | Purpose |
-| --- | --- |
-| `atlas-admin` | Preview, approve and revoke Atlas access |
-| `atlas-engineer` | Prepare manual proposals and inspect patches |
-| `atlas-contractor` | Try the protected Atlas reads |
-| `nova-admin`, `nova-contractor` | Check the separate tenant |
-| `platform-owner` | Review aggregate convergence decisions |
-
-The password for a new default fixture is `demo-only-pass`.
-**These are local demo credentials. Never expose this default stack publicly.**
-
-With AI off, use the engineer's manual handoff to prepare the request. The admin
-still has to review and approve the exact access proposal. Verify the contractor's
-read, then revoke access and verify denial. PDF changes follow the manual patch
-and verification path, with a separate human decision.
-
-Stop the local stack without deleting its saved data:
+To stop this checkout's stack without deleting its data:
 
 ```bash
 docker compose -f compose.full.yaml down
 ```
 
-Do not delete database volumes to renew an inference allowance. The original
-ten-call allowance is exhausted; this setup authorizes no provider usage.
+The customer portal is at `/customer`. Staff create customer accounts and
+invitations through the authenticated customer APIs. Customer invitations and
+staff invitations are separate. Empty customer lists are not simulated customers.
 
-## What is in this repository
+### Repository comparisons
 
-Only the runnable application, its required assets and build configuration:
+The local operator declares the supported source files, records approved customer
+expectations and runs comparisons independently of the candidate. Install the
+Python development dependencies below, then inspect the commands:
 
-```text
-src/ownstack/        Control API, host policy, worker, repair graph and verifier
-web/                Studio source, frontend build and reverse proxy
-migrations/         PostgreSQL schema migrations
-sample_app/         Owned application targeted by bounded PDF patches
-checks/             Runtime patch-check contract
-docs/evidence/      Five saved JSON records read by the historical-demo screen
-compose.full.yaml   Local database, API, worker, verifier and Studio
-Dockerfile          Python application image
+```bash
+python scripts/customer_release.py --help
+python scripts/release_assurance_operator.py --help
+python scripts/change_agent_operator.py --help
 ```
 
-The JSON records and `checks/test_report.py` are runtime inputs, not disposable
-documentation or the application regression suite. Removing them breaks those
-features. Research reports, learning plans, test suites and experiment tooling
-are not in the current runtime-only tree; earlier commits retain them.
+`examples/counterexample_workspace/` contains the small owned application,
+its deliberate regression and an explicitly supplied offline repair. Those
+fixtures are reproducible examples, not fresh model output. Repository execution
+requires Docker and the matching verifier image.
 
-## Explain access without impersonation
+### Live AI and credit controls
 
-Admins and engineers can use **Why can they access this?** in Requests to check
-a tenant-local viewer against the host's current policy. The inspector explains
-role access, a matching temporary grant, a disabled account or denial. It does
-not expose document contents, create read observations, grant access or run AI.
-Results are timestamped diagnostic snapshots; actual reads always recheck policy.
+Inference credentials belong on the server. Local startup above sends no model
+requests. Saved results and manual engineering paths remain usable without AI.
 
-**When will access change?** forecasts the next allowed/denied transition within
-seven days from saved grant start/expiry boundaries, using the same pure host
-policy. Overlapping or back-to-back grants do not create a false access cutoff.
-The forecast assumes account, role and grants stay unchanged; it neither renews
-access nor predicts future approvals. Above 128 matching grants it withholds the
-forecast instead of trusting a partial schedule. Protected reads are unchanged.
+The measured repair used an operator-authorized, one-call diagnostic transport.
+That private bridge and its credentials are not part of this repository. The
+ordinary repair endpoint remains gated; adding an API key does not enable
+unrestricted coding or authorize additional calls. Investigation/interpretation
+adapters, strict output validation and durable reservation controls are included.
 
-## Agent progress without model authority
+Never reset a reservation ledger to obtain more calls. Configure and approve a
+budget before any live run. A client timeout does not prove remote inference
+was canceled.
 
-Requests now show a scoped **Agent progress** view for admins and engineers.
-Watching or reconnecting reads saved state; it never starts inference or repeats
-an attempt. Local stop/disconnect detaches the viewer, not the durable worker.
-Session revocation and project/request/revision/attempt changes end the feed.
+## Development and checks
 
-Interpretation has an opt-in native Token Factory streaming adapter, enabled by
-`OWNSTACK_STREAM_INFERENCE=true` only when inference is separately permitted.
-The default is false. This flag does not enable AI, renew the exhausted call
-allowance or authorize spending. Existing deployments are not reconfigured.
+Python 3.12 and Node.js 24 are the supported development versions.
 
-The upstream adapter consumes bounded content/function-argument deltas and waits
-for a matching finish reason, `[DONE]` and strict complete schema validation.
-Its only advertised function proposes a route and reason, not permissions,
-commands or deployment. Complete route/replacement responses also reject extra
-fields, wrong types, duplicate keys, invalid Unicode and excessive nesting.
-The host still owns patch paths/anchors, policy and exact human approval.
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -c constraints.txt -e '.[dev]'
+OWNSTACK_AI_MODE=off OWNSTACK_MAX_LIVE_CALLS=0 pytest --tb=short
+```
 
-The browser's separate SSE feed shows saved byte/delta counts and a validated
-final route, **not raw model tokens, partial arguments, private prompts or
-reasoning**. Status streaming alone is not proof of native LLM API streaming.
-Native transport has been tested with offline HTTP mocks, not a live provider.
-PDF/repair generation remains complete-response based. Production stream load,
-proxy/TLS behavior and model-specific compatibility remain unverified.
+```bash
+cd web
+corepack enable
+corepack prepare pnpm@12.6.0 --activate
+pnpm install --frozen-lockfile
+pnpm test
+pnpm build
+```
 
-## Assurance workbench
+Tests use controlled model responses unless a result is explicitly labeled live.
+A green test suite is not a security certification or proof of customer demand.
 
-Admins and engineers can open **Assurance** to inspect tenant-local saved records
-without running AI or changing permissions. The catalogue lists the implemented
-reports and their supported scope filters. Unsupported filters are rejected, and
-foreign identifiers return not found. Identity audit reports are admin-only.
+## Structure
 
-The 30 reports cover approval inbox/drift/lineage/expiry; pending, overdue,
-failed and discarded work; current, expiring, expired, scheduled, disabled,
-unobserved and overlapping grants; grant/denied/role observations; project access
-matrix and document inventory; contract/approval/recovery audit; engineering and
-failed-check review; repair inbox/failures; dead letters, receipts and identity
-audit. These are diagnostic reports within one workbench, not 30 independent
-products or an exhaustive security evaluation.
+| Directory | Purpose |
+| --- | --- |
+| `src/ownstack/` | Host policy, API, durable workflows, model boundaries and verification |
+| `web/` | React/TypeScript workspace and interactive Three.js views |
+| `migrations/` | Versioned database changes |
+| `checks/` | Independent PDF verifier contract |
+| `examples/`, `sample_app/`, `sample_apps_*/` | Owned applications and deliberately failing fixtures |
+| `tests/`, `web/tests/` | Backend and frontend regression checks |
+| `evals/` | Evaluation inputs and source-linked repository cases |
+| `scripts/`, `ops/` | Local operators, recovery checks and execution images |
+| `training/` | Small planner training/evaluation code and synthetic data |
+| `docs/evidence/` | Runtime-read historical observations, including failures |
 
-Reports default to 25 source rows, with a maximum page size of 100. Truncation is
-explicit; empty or partial findings are not a clean bill of health. Nested policy
-checks may inspect additional host records, so this is not a database latency cap.
-Reports do not replace live authorization, independent security review or a release
-decision. Private identifiers and metadata should be reviewed before sharing.
+The planner experiment uses supervised LoRA on a small Qwen model. It is separate
+from the runtime NVIDIA Nemotron integration. Training requires its own
+`training/requirements.txt` environment and compute; it does not run during
+startup or tests. Trained weights and private account records are not bundled.
 
 ## Boundaries
 
-### Recover from a changed host snapshot
+This is a locally verified release candidate, not a production security guarantee.
+Repository execution supports bounded Python profiles. External SSO, generic remote
+CI enforcement, independently assessed hostile-code isolation and production
+failover are not established. Docker restrictions are not a certified sandbox.
 
-An old preview can become invalid when host data changes. **Recover changed
-proposal** lets an engineer review the current snapshot and create a new,
-AI-free proposal revision with an audit reason. It preserves the original and
-keeps the exact request, project, contractor and expiry unchanged. The server
-rechecks the reviewed snapshot before saving, and retries share one saved result.
-Unchanged previews cannot generate pointless revisions. Expired intent, changed
-scope, disabled accounts and contract changes require separate resolution.
-
-Refresh grants no access. A tenant admin must run a fresh preview and approve
-the new exact proposal. The old proposal cannot authorize it. This recovery
-path is separate from engineering-patch acceptance and deployment.
-
-Studio's **Review revoke** shows the host's predicted before/after access for one
-grant. It warns if another grant or role would still permit access, then requires
-an acknowledgement. Reviewed revokes recheck the snapshot under project/identity
-locks and reject changed state. Retries use an idempotency key. Existing direct
-admin revoke API clients remain supported; this is a Studio review safeguard,
-not a new universal approval requirement or proof of recalling in-flight reads.
-
-This is a **local reference implementation**, not a hosted service or certified
-production sandbox. The verifier shares a Linux kernel and reuses its supervisor.
-Independent security review, production identity/TLS operation, customer validation
-and final hackathon submission remain open.
-
-The historical-demo screen shows saved synthetic results, not current permissions
-or a fresh inference. Live model PDF proposals failed checks; assisted manual
-recovery is not a model-only success. No new performance or full-suite claim is
-made by this repository cleanup.
-
-A preview is not an observation. A patch is not a release.
-A test pass is not a security guarantee.
+The hosted preview can differ from this source. Customer savings and willingness
+to pay remain hypotheses; the accounts and organizations used in tests are
+synthetic. There is no automatic promotion of customer-specific changes into the
+shared product.
 
 ## License
 
-[MIT](LICENSE). Dependencies, models and external services retain their own terms.
+[MIT](LICENSE).

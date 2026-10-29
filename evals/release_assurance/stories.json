@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "provenance": "Authored finite evaluation stories. A calendar entry or story definition is not a passed execution. Actual outcomes are saved separately by the runner.",
+  "status": "planned",
+  "stories": [
+    {"id": "RA01", "persona": "release-owner", "story": "An owner approves exactly the Atlas visibility requirement reviewed, not a later edited revision.", "acceptance": ["Approval binds the current requirement digest", "Editing expectations requires new approval"]},
+    {"id": "RA02", "persona": "implementing-engineer", "story": "A shared download change leaks an unassigned Atlas document while Nova's standard-access control still succeeds.", "acceptance": ["Actual repository operation reproduces the Atlas mismatch", "Nova control result is retained", "Failure report identifies exact source and requirement digests"]},
+    {"id": "RA03", "persona": "implementing-engineer", "story": "The engineer corrects the implementation without changing the approved requirement.", "acceptance": ["Corrected source passes all approved cases", "Original failure remains in history", "No code is deployed automatically"]},
+    {"id": "RA04", "persona": "security-reviewer", "story": "The baseline already violates the customer requirement before the proposed change.", "acceptance": ["The result is baseline-invalid or blocked", "The report does not claim the proposal introduced the existing defect"]},
+    {"id": "RA05", "persona": "control-tenant-engineer", "story": "An unrelated refactor preserves the same tenant effects.", "acceptance": ["Approved behavior passes for baseline and candidate", "No invented regression is reported"]},
+    {"id": "RA06", "persona": "customer-admin", "story": "An expired requirement is present when a release check is requested.", "acceptance": ["It cannot be accepted as a currently approved active requirement", "Expiry is checked on the server rather than trusted from the browser"]},
+    {"id": "RA07", "persona": "release-owner", "story": "An engineer tries to loosen expected status or visible fields after owner approval.", "acceptance": ["The requirement digest changes or the edit is refused", "Old approval cannot authorize the changed expectations"]},
+    {"id": "RA08", "persona": "on-call-operator", "story": "Repeated submission of the same check arrives while work is queued or running.", "acceptance": ["An exact duplicate returns saved identity and status", "It does not cause duplicate accepted execution"]},
+    {"id": "RA09", "persona": "control-tenant-engineer", "story": "A Nova actor requests Atlas's requirement, run or private report by identifier.", "acceptance": ["Detail routes do not disclose the object", "List routes exclude it", "Export does not reveal private customer context"]},
+    {"id": "RA10", "persona": "other-team-manager", "story": "A manager of another team tries to inspect or approve the Atlas review.", "acceptance": ["Current team membership scopes visibility", "Manager role alone does not confer write approval"]},
+    {"id": "RA11", "persona": "security-reviewer", "story": "The requester's enabled membership changes after enqueue but before completion.", "acceptance": ["Current authority is rechecked", "Stale authorization does not make the result reviewable"]},
+    {"id": "RA12", "persona": "on-call-operator", "story": "The owner cancels a running comparison.", "acceptance": ["Saved cancellation persists", "A late answer cannot reopen canceled work", "Remote process termination is only claimed when verified"]},
+    {"id": "RA13", "persona": "on-call-operator", "story": "Attempt one arrives after a replacement attempt has begun.", "acceptance": ["Only the current attempt may publish its accepted result", "Discarded evidence remains historical"]},
+    {"id": "RA14", "persona": "implementing-engineer", "story": "The API restarts after a completed report is saved.", "acceptance": ["Saved report identity and exact hashes replay", "Readback does not dispatch the executor again"]},
+    {"id": "RA15", "persona": "security-reviewer", "story": "The oracle, source snapshot or result artifact differs from the approved identities.", "acceptance": ["The report is blocked or unusable", "A superficially passing candidate cannot acquire a valid review"]},
+    {"id": "RA16", "persona": "skeptical-buyer", "story": "The requested repository or behavior cannot be executed by the available bounded profile.", "acceptance": ["Unsupported scope is explicit", "No fabricated pass or universal compatibility claim is emitted"]}
+  ]
+}

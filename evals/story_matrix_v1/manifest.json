@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "cases": 1000,
+  "domains": 25,
+  "technical_patterns": 40,
+  "origin": "Authored combinatorial fictional composites, not real customer observations or 1000 independent business systems",
+  "cases_sha256": "89a3b3ae4a0bb74045e8530e5503fc2376fc58e5d9eb943b758f4c96a4067889",
+  "generator_sha256": "1ca8d6bb46ce6fa62ac40cdedd2ece7c9e21220da82bc93628ecd51db41fe79b",
+  "scope": "Executable owned-host journeys; controls are repeated across domain contexts. Model quality and human fallback must be reported separately."
+}

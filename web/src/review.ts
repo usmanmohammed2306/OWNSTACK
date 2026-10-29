@@ -1,4 +1,9 @@
 /** Presentation-only derivations. None of these helpers authorize host access. */
+export function repositoryCheckLabel(state:string|undefined,currentUsable:boolean):string {
+  if(state==='passed')return currentUsable?'Current checks passed':'Saved checks passed';
+  const labels:Record<string,string>={queued:'Waiting for the local operator',running:'Checking the baseline and candidate',recovering:'Recovering interrupted checks',recovery_blocked:'Recovery needs attention',recovered:'Replaced after worker crash',failed:'Checks failed',blocked:'Checks blocked',timed_out:'Checks timed out',canceled:'Attempt stopped locally',superseded:'Attempt replaced'};
+  return state?labels[state]||'Unrecognized check state':'No saved checks';
+}
 export type RequestFilter = 'all' | 'attention' | 'active' | 'closed';
 type RequestSummary = { id: string; text: string; status: string; kind: string };
 export function filterRequests<T extends RequestSummary>(rows: T[], query: string, filter: RequestFilter): T[] {

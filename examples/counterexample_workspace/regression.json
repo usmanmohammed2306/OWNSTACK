@@ -1,0 +1,1 @@
+{"edits":[{"path":"customer_policy.py","old":"assigned_role = data['assigned'] and data['actor_role'] in ('engineer', 'manager')","new":"assigned_role = data['actor_role'] in ('engineer', 'manager')"}]}

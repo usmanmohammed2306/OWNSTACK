@@ -46,12 +46,12 @@ class ReadDecision:
     variation_id: str | None = None
 
 
-def read_decision(principal: Principal, project_tenant: str, project_id: str, variations: list, at: datetime) -> ReadDecision:
+def read_decision(principal: Principal, project_tenant: str, project_id: str, variations: list, at: datetime, *, role_scope:bool=True) -> ReadDecision:
     """One pure decision for preview and enforcement. Preview fixtures need no saved ID."""
     if principal.tenant_id != project_tenant:
         return ReadDecision(False, "denied")
-    if principal.role in {"admin", "member", "engineer"}:
-        return ReadDecision(True, "role")
+    if principal.role in {"admin", "member", "engineer","manager"}:
+        return ReadDecision(role_scope, "role" if role_scope else "team_scope")
     if principal.role != "contractor":
         return ReadDecision(False, "denied")
     for v in variations:

@@ -7,6 +7,7 @@ from ownstack.auth import current_principal, db_session, require_role
 from ownstack.models import ChangeRequest, Contract, Evidence, Project, Proposal, User
 from ownstack.policy import CONTRACT, Principal, aware, digest
 from ownstack.service import host_preview, idempotent, manual_handoff, record, scoped
+from ownstack.team_scope import require_request
 
 router = APIRouter()
 
@@ -37,7 +38,7 @@ def refresh_review(db, proposal, request, principal):
             or contract is None or contract.manifest != CONTRACT
             or contract.manifest_hash != digest(CONTRACT) or proposal.contract_hash != contract.manifest_hash):
         raise HTTPException(409, "Contract changed; refreshing cannot authorize a different capability")
-    viewer = scoped(db, User, request.viewer_id or "", principal.tenant_id)
+    viewer = scoped(db, User, request.viewer_id or "", principal.tenant_id, actor=principal)
     if not viewer.enabled:
         raise HTTPException(409, "Viewer is disabled; refreshing cannot restore account access")
     preview = host_preview(db, request)
@@ -57,8 +58,8 @@ def refresh_review(db, proposal, request, principal):
 def get_refresh_review(proposal_id: str, response: Response,
                        principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
     require_role(principal, "admin", "engineer")
-    proposal = scoped(db, Proposal, proposal_id, principal.tenant_id)
-    request = scoped(db, ChangeRequest, proposal.request_id, principal.tenant_id)
+    proposal = scoped(db, Proposal, proposal_id, principal.tenant_id, actor=principal)
+    request = scoped(db, ChangeRequest, proposal.request_id, principal.tenant_id, actor=principal)
     response.headers["Cache-Control"] = "no-store"
     return refresh_review(db, proposal, request, principal)
 
@@ -75,6 +76,7 @@ def refresh_proposal(proposal_id: str, body: RefreshBody, idempotency_key: str |
         ChangeRequest.tenant_id == principal.tenant_id).with_for_update().execution_options(populate_existing=True))
     if request is None:
         raise HTTPException(404, "Not found")
+    require_request(db,principal,request.id,write=True)
 
     def create():
         if body.proposal_hash != proposal.proposal_hash:

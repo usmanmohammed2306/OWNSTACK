@@ -1,0 +1,9 @@
+{
+  "edits": [
+    {
+      "path": "sphinx/util/inspect.py",
+      "old": "    if hasattr(args, \"posonlyargs\"):\n        for arg in args.posonlyargs:  # type: ignore\n            annotation = ast_unparse(arg.annotation) or Parameter.empty\n            params.append(Parameter(arg.arg, Parameter.POSITIONAL_ONLY,\n                                    annotation=annotation))\n\n    for i, arg in enumerate(args.args):\n        if len(args.args) - i <= len(args.defaults):\n            default = ast_unparse(args.defaults[-len(args.args) + i])\n        else:\n            default = Parameter.empty\n\n        annotation = ast_unparse(arg.annotation) or Parameter.empty\n        params.append(Parameter(arg.arg, Parameter.POSITIONAL_OR_KEYWORD,\n                                default=default, annotation=annotation))",
+      "new": "    positional_only = getattr(args, \"posonlyargs\", [])\n    positional = positional_only + args.args\n    first_default = len(positional) - len(args.defaults)\n    for i, arg in enumerate(positional):\n        if i >= first_default:\n            default = ast_unparse(args.defaults[i - first_default])\n        else:\n            default = Parameter.empty\n\n        kind = (Parameter.POSITIONAL_ONLY if i < len(positional_only)\n                else Parameter.POSITIONAL_OR_KEYWORD)\n        annotation = ast_unparse(arg.annotation) or Parameter.empty\n        params.append(Parameter(arg.arg, kind, default=default,\n                                annotation=annotation))"
+    }
+  ]
+}

@@ -9,7 +9,14 @@ class Base(DeclarativeBase):
 
 
 def make_engine(url: str):
-    engine = create_engine(url, pool_pre_ping=True, connect_args={"check_same_thread": False} if url.startswith("sqlite") else {})
+    postgres = url.startswith(('postgresql+psycopg://', 'postgresql://'))
+    engine = create_engine(url, pool_pre_ping=True,
+        **({'pool_timeout': 5} if postgres else {}),
+        connect_args={"check_same_thread": False} if url.startswith("sqlite") else {})
+    if postgres:
+        from ownstack.database_transport import install_deadline
+        if engine.dialect.driver == 'psycopg':
+            install_deadline(engine)
     if url.startswith("sqlite"):
         @event.listens_for(engine, "connect")
         def enable_foreign_keys(connection, _record):
@@ -37,4 +44,6 @@ def transaction(factory=SessionLocal):
 def init_db(bind=engine):
     from ownstack import models  # noqa: F401
     from ownstack import repair_models  # noqa: F401
+    from ownstack import workspace_models  # noqa: F401
+    from ownstack import customer_models  # noqa: F401
     Base.metadata.create_all(bind)

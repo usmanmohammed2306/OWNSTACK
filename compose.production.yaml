@@ -1,0 +1,104 @@
+# Use with compose.full.yaml after setting an owned domain and production secrets.
+services:
+  db:
+    mem_limit: 512m
+    pids_limit: 128
+    cpus: 1.0
+    environment:
+      POSTGRES_PASSWORD: ${OWNSTACK_DB_PASSWORD:?Set a strong database password}
+    restart: unless-stopped
+
+  migrate:
+    # Never seed shared demo passwords into a public deployment. Initialize the
+    # empty target once through the explicit operator-only bootstrap service.
+    command: ["alembic", "upgrade", "head"]
+    environment:
+      OWNSTACK_DATABASE_URL: postgresql+psycopg://ownstack:${OWNSTACK_DB_PASSWORD}@db:5432/ownstack
+      OWNSTACK_TRUSTED_PROXY_IPS: ${OWNSTACK_WEB_INTERNAL_IP:?Pin the trusted web proxy IP}
+
+  bootstrap:
+    build: .
+    profiles: ["setup"]
+    command: ["python", "-m", "ownstack.deployment", "initialize"]
+    stdin_open: true
+    environment:
+      OWNSTACK_DATABASE_URL: postgresql+psycopg://ownstack:${OWNSTACK_DB_PASSWORD}@db:5432/ownstack
+      OWNSTACK_ENV: production
+      OWNSTACK_DB_IO_TIMEOUT_SECONDS: ${OWNSTACK_DB_IO_TIMEOUT_SECONDS:-15}
+      OWNSTACK_AI_MODE: "off"
+      OWNSTACK_MAX_LIVE_CALLS: "0"
+      OWNSTACK_OBSERVED_RESERVATIONS: ${OWNSTACK_OBSERVED_RESERVATIONS:?Read and preserve the original ledger count}
+      NEBIUS_API_KEY: ""
+      NEBIUS_MODEL_ID: ""
+      NEBIUS_PATCH_MODEL_ID: ""
+      OWNSTACK_SIGNING_SECRET: ${OWNSTACK_SIGNING_SECRET:?Set a private signing secret}
+      OWNSTACK_DEMO_PASSWORD: ${OWNSTACK_DEMO_PASSWORD:?Set an independent private bootstrap secret}
+      OWNSTACK_RUNTIME_DB_USER: ${OWNSTACK_RUNTIME_DB_USER:-ownstack_app}
+      OWNSTACK_RUNTIME_DB_PASSWORD: ${OWNSTACK_RUNTIME_DB_PASSWORD:?Set an independent runtime password}
+      OWNSTACK_PUBLIC_ORIGIN: ${OWNSTACK_PUBLIC_ORIGIN:?Set the canonical HTTPS origin}
+      OWNSTACK_TRUSTED_PROXY_IPS: ${OWNSTACK_WEB_INTERNAL_IP:?Pin the trusted web proxy IP}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=16m"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+
+  api:
+    mem_limit: 512m
+    pids_limit: 128
+    cpus: 1.0
+    command: ["python", "-m", "uvicorn", "ownstack.api:app", "--host", "0.0.0.0", "--port", "8800", "--proxy-headers", "--forwarded-allow-ips", "${OWNSTACK_WEB_INTERNAL_IP:?Pin the trusted web proxy IP}", "--limit-concurrency", "100", "--ws", "none"]
+    environment:
+      OWNSTACK_DATABASE_URL: postgresql+psycopg://${OWNSTACK_RUNTIME_DB_USER:-ownstack_app}:${OWNSTACK_RUNTIME_DB_PASSWORD:?Provision a least-privileged runtime role}@db:5432/ownstack
+      OWNSTACK_TRUSTED_PROXY_IPS: ${OWNSTACK_WEB_INTERNAL_IP:?Pin the trusted web proxy IP}
+
+  worker:
+    mem_limit: 512m
+    pids_limit: 128
+    cpus: 1.0
+    environment:
+      OWNSTACK_DATABASE_URL: postgresql+psycopg://${OWNSTACK_RUNTIME_DB_USER:-ownstack_app}:${OWNSTACK_RUNTIME_DB_PASSWORD:?Provision a least-privileged runtime role}@db:5432/ownstack
+      OWNSTACK_TRUSTED_PROXY_IPS: ${OWNSTACK_WEB_INTERNAL_IP:?Pin the trusted web proxy IP}
+
+  web:
+    mem_limit: 128m
+    pids_limit: 64
+    cpus: 0.5
+    ports: !reset []
+    environment:
+      OWNSTACK_EDGE_INTERNAL_IP: ${OWNSTACK_EDGE_INTERNAL_IP:?Pin the trusted TLS edge IP}
+    networks:
+      default:
+        ipv4_address: ${OWNSTACK_WEB_INTERNAL_IP:?Pin the trusted web proxy IP}
+
+  edge:
+    mem_limit: 128m
+    pids_limit: 64
+    cpus: 0.5
+    image: caddy:2-alpine
+    environment:
+      OWNSTACK_DOMAIN: ${OWNSTACK_DOMAIN:?Set your owned public domain}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./ops/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [web]
+    restart: unless-stopped
+    networks:
+      default:
+        ipv4_address: ${OWNSTACK_EDGE_INTERNAL_IP:?Pin the trusted TLS edge IP}
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: ${OWNSTACK_SERVICE_SUBNET:?Choose an unused private service subnet}
+
+volumes:
+  caddy_data:
+  caddy_config:

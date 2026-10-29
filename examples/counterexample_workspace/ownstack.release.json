@@ -1,0 +1,1 @@
+{"version":1,"name":"Customer policy fixture","profile":"python-repository-http-v1","entrypoint":"serve.py","files":["customer_policy.py","serve.py"]}

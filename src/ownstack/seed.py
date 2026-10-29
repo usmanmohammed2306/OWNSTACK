@@ -5,6 +5,7 @@ from ownstack.config import Settings
 from ownstack.db import transaction
 from ownstack.models import Contract, Document, Project, Tenant, User
 from ownstack.policy import CONTRACT, digest
+from ownstack.team_scope import ensure_general_team,add_general_member
 
 
 def seed() -> None:
@@ -15,11 +16,14 @@ def seed() -> None:
             if not db.get(Tenant, "platform"):
                 db.add(Tenant(id="platform", name="OwnStack product team"))
                 db.flush()
-                db.add(User(id="platform-owner", tenant_id="platform", role="product_owner", password_hash=password_hash(settings.demo_password)))
+                ensure_general_team(db,'platform')
+                owner=User(id="platform-owner", tenant_id="platform", role="product_owner", password_hash=password_hash(settings.demo_password))
+                db.add(owner);db.flush();add_general_member(db,owner)
             return
         db.add_all([Tenant(id="atlas", name="Atlas Industries"), Tenant(id="nova", name="Nova Labs"),
                     Tenant(id="platform", name="OwnStack product team")])
         db.flush()
+        for tenant in ['atlas','nova','platform']:ensure_general_team(db,tenant)
         users = [
             ("atlas-admin", "atlas", "admin"),
             ("atlas-contractor", "atlas", "contractor"),
@@ -29,6 +33,8 @@ def seed() -> None:
             ("platform-owner", "platform", "product_owner"),
         ]
         db.add_all(User(id=name, tenant_id=tenant, role=role, password_hash=password_hash(settings.demo_password)) for name, tenant, role in users)
+        db.flush()
+        for user in db.scalars(select(User)).all():add_general_member(db,user)
         db.add_all([
             Project(id="atlas-project", tenant_id="atlas", name="Project Atlas", revision=1),
             Project(id="nova-project", tenant_id="nova", name="Project Nova", revision=1),

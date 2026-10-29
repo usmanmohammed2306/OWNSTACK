@@ -5,11 +5,13 @@ from sqlalchemy import engine_from_config, pool
 from ownstack.db import Base
 from ownstack import models  # noqa: F401
 from ownstack import repair_models  # noqa: F401
+from ownstack import workspace_models  # noqa: F401
+from ownstack import customer_models  # noqa: F401
 
 config = context.config
 if config.config_file_name:
     fileConfig(config.config_file_name)
-config.set_main_option("sqlalchemy.url", os.getenv("OWNSTACK_DATABASE_URL", "sqlite:///./ownstack.db"))
+config.set_main_option("sqlalchemy.url", os.getenv("OWNSTACK_DATABASE_URL", "sqlite:///./ownstack.db").replace('%', '%%'))
 target_metadata = Base.metadata
 
 

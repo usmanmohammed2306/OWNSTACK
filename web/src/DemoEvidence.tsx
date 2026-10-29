@@ -77,7 +77,7 @@ export function DemoEvidence({ mode, role, navigate }: { mode: string; role: str
       <details><summary>Sources, exact hashes and limits</summary>
         <p className="muted">{data.notice}</p>
         {data.artifacts.map(artifact => <div className="hash-line" key={artifact.path}><span>{artifact.path}</span><code>{artifact.sha256}</code></div>)}
-        <p className="tiny">Still unproven: production identity, hostile-repository isolation, public hosting, independent usability and customer demand. Reproduction steps are in docs/JUDGE_QUICKSTART.md; remaining gates are in docs/UNPROVEN.md.</p>
+        <p className="tiny">Local synthetic results, not a production deployment or customer study. Production identity, stronger isolation and independent validation remain open.</p>
       </details>
       <div className="button-row"><button className="secondary" onClick={() => navigate(role === 'product_owner' ? 'convergence' : 'journey')}>{role === 'contractor' ? 'Check your current access' : role === 'product_owner' ? 'Open product decisions' : 'Open current requests'} <ArrowRight size={15} aria-hidden="true"/></button></div>
     </section>

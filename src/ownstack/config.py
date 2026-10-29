@@ -4,6 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from urllib.parse import urlsplit
 import ipaddress
+import re
 
 
 load_dotenv(Path.cwd() / ".env", override=False)
@@ -19,18 +20,26 @@ class Settings:
     nebius_patch_model: str = field(default_factory=lambda: os.getenv("NEBIUS_PATCH_MODEL_ID", ""))
     ai_timeout: float = field(default_factory=lambda: float(os.getenv("OWNSTACK_AI_TIMEOUT_SECONDS", "20")))
     stream_inference: bool = field(default_factory=lambda: os.getenv("OWNSTACK_STREAM_INFERENCE", "false").lower() == "true")
+    investigation_baseline: bool = field(default_factory=lambda: os.getenv("OWNSTACK_INVESTIGATION_BASELINE", "false").lower() == "true")
+    investigation_transport: str = field(default_factory=lambda: os.getenv("OWNSTACK_INVESTIGATION_TRANSPORT", "json"))
     max_live_calls: int = field(default_factory=lambda: int(os.getenv("OWNSTACK_MAX_LIVE_CALLS", "0")))
     demo_password: str = field(default_factory=lambda: os.getenv("OWNSTACK_DEMO_PASSWORD", "demo-only-pass"))
     environment: str = field(default_factory=lambda: os.getenv("OWNSTACK_ENV", "local"))
     public_origin: str = field(default_factory=lambda: os.getenv("OWNSTACK_PUBLIC_ORIGIN", "http://127.0.0.1:8080").rstrip("/"))
     require_background: bool = field(default_factory=lambda: os.getenv("OWNSTACK_REQUIRE_BACKGROUND", "true" if os.getenv("OWNSTACK_ENV") == "production" else "false").lower() == "true")
     trusted_proxy_ips: str = field(default_factory=lambda: os.getenv('OWNSTACK_TRUSTED_PROXY_IPS', ''))
+    public_signup: bool = field(default_factory=lambda: os.getenv('OWNSTACK_PUBLIC_SIGNUP', 'false').lower() == 'true')
+    cookie_namespace: str = field(default_factory=lambda: os.getenv('OWNSTACK_COOKIE_NAMESPACE',''))
 
     @property
     def secure_cookies(self) -> bool:
         return self.environment == "production"
 
     def validate(self) -> None:
+        if self.cookie_namespace and not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,31}',self.cookie_namespace):
+            raise ValueError('Use a short lowercase cookie namespace without punctuation except hyphens')
+        if self.investigation_transport not in {"json", "tools"}:
+            raise ValueError("Investigation transport must be json or tools")
         if self.ai_mode not in {"fixture", "nebius", "off"}:
             raise ValueError("OWNSTACK_AI_MODE must be fixture, nebius, or off")
         if self.ai_mode == "nebius" and (not self.nebius_key or not self.nebius_model):
@@ -48,9 +57,14 @@ class Settings:
             raise ValueError("OWNSTACK_ENV must be local or production")
         if not 1 <= self.ai_timeout <= 120:
             raise ValueError("AI timeout must be between 1 and 120 seconds")
-        if not 0 <= self.max_live_calls <= 10:
-            raise ValueError("This build is authorized for at most 10 live calls")
+        # October 28: one further credit-only call explicitly approved, preserving
+        # one demo reservation after the single current isolated test.
+        # This cumulative ceiling never resets the existing reservation ledger.
+        if not 0 <= self.max_live_calls <= 41:
+            raise ValueError("This build is authorized for at most 41 cumulative live calls")
         if self.environment == "production":
+            if self.investigation_baseline:
+                raise ValueError("The deterministic investigation baseline is local-lab only")
             origin = urlsplit(self.public_origin)
             if (origin.scheme != 'https' or not origin.hostname or origin.username or origin.password
                     or origin.path or origin.query or origin.fragment or origin.netloc.endswith(':')

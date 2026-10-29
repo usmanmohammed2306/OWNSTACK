@@ -17,6 +17,7 @@ from ownstack.policy import aware, digest
 from ownstack.repair_models import RepairAttempt, RepairRun
 from ownstack.runner import current_provenance, patch_hash, verify_patch
 from ownstack.service import record, reserve_live_call, utcnow
+from ownstack.request_context import engineering_prompt
 
 ACTIVE = {"queued", "generating", "candidate_ready", "verifying"}
 
@@ -68,7 +69,7 @@ def _matches(db, run, item):
     return (item is not None and item.status == "repairing" and item.operation_id == run.id
             and item.human_decision is None and item.patch_hash == run.original_patch_hash
             and digest(item.patch) == run.original_patch_hash
-            and request.revision == run.request_revision and digest(request.text) == run.request_hash)
+            and request.revision == run.request_revision and digest(engineering_prompt(db,request)) == run.request_hash)
 
 
 def _end(db, run, item, state, code):
@@ -131,7 +132,7 @@ def start_repair(db, item_id, principal, key, expected_hash, max_attempts=2, set
         run = RepairRun(id=str(uuid4()), tenant_id=item.tenant_id, item_id=item.id,
             request_id=item.request_id, actor_id=principal.user_id, state="running",
             original_patch=item.patch, original_patch_hash=expected_hash,
-            request_revision=request.revision, request_hash=digest(request.text),
+            request_revision=request.revision, request_hash=digest(engineering_prompt(db,request)),
             configuration=configuration(settings), provenance=current_provenance(),
             max_attempts=max_attempts,
             deadline_at=utcnow() + timedelta(seconds=(settings.ai_timeout + 100) * max_attempts))
@@ -232,7 +233,7 @@ def claim_work(db, settings):
                 continue
             try:
                 settings.validate()
-                reserve_live_call(db, settings)
+                reserve_live_call(db, settings, run.tenant_id)
             except (HTTPException, ValueError):
                 _failure(db, run, item, attempt, "BUDGET_OR_CONFIGURATION_BLOCKED", stop=True)
                 continue
@@ -248,7 +249,7 @@ def claim_work(db, settings):
         db.refresh(attempt)
         _event(db, run, state, {"attempt_id": attempt.id, "number": attempt.number})
         request = db.get(ChangeRequest, run.request_id)
-        return {"attempt_id": attempt.id, "phase": state, "text": request.text,
+        return {"attempt_id": attempt.id, "phase": state, "text": engineering_prompt(db,request),
                 "input_patch": attempt.input_patch, "feedback": attempt.feedback,
                 "candidate": attempt.candidate, "model_id": attempt.model_id}
     return None

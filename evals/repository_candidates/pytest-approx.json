@@ -1,0 +1,9 @@
+{
+  "edits": [
+    {
+      "path": "src/_pytest/python_api.py",
+      "old": "                max_rel_diff = max(\n                    max_rel_diff,\n                    abs((approx_value.expected - other_value) / approx_value.expected),\n                )",
+      "new": "                abs_diff = abs(approx_value.expected - other_value)\n                max_rel_diff = max(\n                    max_rel_diff,\n                    math.inf if approx_value.expected == 0 else abs_diff / abs(approx_value.expected),\n                )"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "dataset": "princeton-nlp/SWE-bench",
+  "dataset_revision": "e48e2bd1e9fecd5bbd641e9414ac59da9f2e69f6",
+  "source_parquet_sha256": "db4f70ef735b3162c74801ddcdf8d7bae8d704193788c6d844f898c20b571cbb",
+  "source_url": "https://huggingface.co/datasets/princeton-nlp/SWE-bench/tree/e48e2bd1e9fecd5bbd641e9414ac59da9f2e69f6",
+  "catalog_sha256": "faebcf8a30e552c10f27ee5333c3a48d63f0ddf6742dfe5e8a645b7a41a9fa29",
+  "source_records": 2294,
+  "eligible_distinct_records": 2207,
+  "curated": 1000,
+  "repositories": {
+    "astropy/astropy": 92,
+    "django/django": 112,
+    "matplotlib/matplotlib": 112,
+    "mwaskom/seaborn": 21,
+    "pallets/flask": 10,
+    "psf/requests": 43,
+    "pydata/xarray": 108,
+    "pylint-dev/pylint": 56,
+    "pytest-dev/pytest": 112,
+    "scikit-learn/scikit-learn": 112,
+    "sphinx-doc/sphinx": 111,
+    "sympy/sympy": 111
+  },
+  "excluded": {
+    "duplicate_problem_patch_or_test": 21,
+    "insufficient_problem_or_oracle": 66
+  },
+  "unique_source_urls": 1000,
+  "unique_problem_hashes": 1000,
+  "target_total": 100000,
+  "source_shortfall_to_target": 99000,
+  "completed_business_journeys": 0,
+  "generated_or_multiplied_cases": 0,
+  "semantic_independence_certified": false,
+  "persona_assignments": 0,
+  "scope": "Published distinct issue/PR records, not OwnStack customers; no issue is counted as fixed by importing it."
+}

@@ -38,6 +38,13 @@ def write_json(path: Path, value, limit=1_048_576):
             os.fchown(stream.fileno(), -1, path.parent.stat().st_gid)
             os.fchmod(stream.fileno(), 0o640)
             stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
         os.replace(temporary, path)  # Replaces the link itself, never its target.
+        directory = os.open(path.parent, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
     finally:
         Path(temporary).unlink(missing_ok=True)

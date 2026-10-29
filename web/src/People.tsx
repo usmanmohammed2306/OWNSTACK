@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { boundedResponse, type BoundedResponse } from './responseDeadline';
+import { InvitationManager } from './WorkspaceAccounts';
 
 type Member = { id: string; role: string; enabled: boolean };
 type Audit = { id: string; subject_id: string; action: string; created_at: string };
@@ -51,13 +52,14 @@ export function People({ request }: {
   }
   return <section className="panel" aria-label="Workspace people">
     <h2>People and access</h2>
-    <p className="muted">Manage identities in your workspace. Disabling a person ends their sessions. Re-enabling requires a fresh sign-in.</p>
+    <InvitationManager request={request}/>
+    <p className="muted">Disable access to end a person’s sessions.</p>
     {error && <p role="alert" className="alert error">{error}</p>}
     {error && <button className="secondary" disabled={busy} onClick={() => { setError(''); void refresh().catch(err => setError(String(err))); }}>Refresh saved access</button>}
     <p role="status" aria-live="polite">{busy ? 'Saving access change…' : !loaded && !error ? 'Loading people…' : ''}</p>
     {members.map(member => <div className="convergence-card" key={member.id}>
       <div><h3>{member.id}</h3><p>{member.role} · {member.enabled ? 'Enabled' : 'Disabled'}</p></div>
-      {['contractor', 'engineer', 'member'].includes(member.role) && <button className="secondary"
+      {['contractor', 'engineer', 'member','manager'].includes(member.role) && <button className="secondary"
         disabled={busy} onClick={() => setSelection(member)}>{member.enabled ? 'Disable access' : 'Enable access'}</button>}
     </div>)}
     {selection && <div className="review-verdict" role="group" aria-label="Confirm account change">
@@ -66,7 +68,8 @@ export function People({ request }: {
       <div className="button-row"><button className="primary" disabled={busy} onClick={change}>Confirm {selection.enabled ? 'disable' : 'enable'}</button>
         <button className="secondary" disabled={busy} onClick={() => setSelection(null)}>Cancel</button></div>
     </div>}
-    <h3>Recent identity changes</h3>
+    <details className="technical-disclosure"><summary>Recent identity changes</summary>
     {audit.length ? audit.map(event => <p key={event.id}>{event.subject_id} · {event.action.replaceAll('_', ' ')} · {new Date(event.created_at).toLocaleString()}</p>) : loaded && <p className="muted">No saved identity changes.</p>}
+    </details>
   </section>;
 }

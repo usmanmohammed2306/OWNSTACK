@@ -1,0 +1,13 @@
+{
+  "provenance": "Authored synthetic personas for engineering evaluation. These are not interviewed customers, adoption evidence or willingness-to-pay observations.",
+  "personas": [
+    {"id": "release-owner", "name": "Maya", "role": "engineering release owner", "need": "Approve a specific customer requirement while keeping the shared release review accountable.", "risk": "A reviewed requirement is silently rewritten after approval."},
+    {"id": "implementing-engineer", "name": "Idris", "role": "implementation engineer", "need": "Find an exact reproducible failing operation before spending time investigating a release.", "risk": "A report blames the wrong source revision or test fixture."},
+    {"id": "customer-admin", "name": "Elena", "role": "Atlas customer administrator", "need": "Keep contractors limited to assigned project documents during the agreed access window.", "risk": "A shared download refactor grants access the customer never approved."},
+    {"id": "control-tenant-engineer", "name": "Jun", "role": "Nova engineer", "need": "Preserve standard workspace behavior while another customer's exception is protected.", "risk": "The fix overrestricts unaffected tenants or reveals their private review details."},
+    {"id": "security-reviewer", "name": "Farah", "role": "security reviewer", "need": "Inspect denied operations and independent expectations, including cross-tenant attempts.", "risk": "The candidate changes its own oracle or a model decides what should be permitted."},
+    {"id": "other-team-manager", "name": "Tomas", "role": "unrelated team manager", "need": "Inspect only the reviews belonging to teams currently managed.", "risk": "A tenant-wide manager label accidentally grants access to another team's code and customer context."},
+    {"id": "on-call-operator", "name": "Amina", "role": "local test operator", "need": "Recover saved work after cancellation, process failure or restart without running checks twice.", "risk": "An old completion overwrites a newer candidate or canceled run."},
+    {"id": "skeptical-buyer", "name": "Noah", "role": "prospective platform buyer", "need": "Compare total setup and maintenance effort with existing CI and policy tests.", "risk": "Synthetic correctness results are sold as proof of customer demand or cost savings."}
+  ]
+}

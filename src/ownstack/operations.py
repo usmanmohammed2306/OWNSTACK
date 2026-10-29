@@ -6,15 +6,16 @@ from ownstack.auth import current_principal, db_session, require_role
 from ownstack.models import Outbox, RuntimePulse
 from ownstack.policy import Principal, aware
 from ownstack.service import utcnow
+from ownstack.team_scope import visible_condition
 
 router = APIRouter(prefix="/v1/operations")
 
 
 @router.get("")
 def operations(principal: Principal = Depends(current_principal), db: Session = Depends(db_session)):
-    require_role(principal, "admin", "engineer")
+    require_role(principal, "admin", "engineer","manager")
     counts = dict(db.execute(select(Outbox.state, func.count(Outbox.id))
-                  .where(Outbox.tenant_id == principal.tenant_id).group_by(Outbox.state)).all())
+                  .where(visible_condition(Outbox,principal)).group_by(Outbox.state)).all())
     pulse = db.get(RuntimePulse, "worker")
     age = max(0, (utcnow() - aware(pulse.touched_at)).total_seconds()) if pulse else None
     signals = []

@@ -1,0 +1,157 @@
+{
+  "schema": "ownstack.team-stories.v1",
+  "source": "Authored synthetic business stories, not observed customer cases",
+  "independent_business_integrations": false,
+  "cases": [
+    {
+      "id": "setup",
+      "section": "organization",
+      "story": "An administrator creates five teams without silently gaining their private reviews."
+    },
+    {
+      "id": "payments-request",
+      "section": "requests",
+      "story": "Return exact Decimal settlement amounts in customer JSON reports; preserve cents and never recapture a payment. The unsupported change must become a saved engineering work item, not an access grant."
+    },
+    {
+      "id": "notifications-request",
+      "section": "requests",
+      "story": "Deduplicate a partner delivery retry after a provider timeout without sending the same security alert twice. The unsupported change must become a saved engineering work item, not an access grant."
+    },
+    {
+      "id": "billing-request",
+      "section": "requests",
+      "story": "Preserve leading whitespace in native credit-note templates so a customer reconciliation retains its indentation. The unsupported change must become a saved engineering work item, not an access grant."
+    },
+    {
+      "id": "crm-request",
+      "section": "requests",
+      "story": "Merge duplicate company contacts while preserving the audit trail and excluding contacts owned by another customer. The unsupported change must become a saved engineering work item, not an access grant."
+    },
+    {
+      "id": "deals-request",
+      "section": "requests",
+      "story": "Export a PDF renewal summary while preserving the negotiated approval threshold and discount history. The unsupported change must become a saved engineering work item, not an access grant."
+    },
+    {
+      "id": "payments-review",
+      "section": "code",
+      "story": "Payments engineers and their manager inspect their work; a different team cannot read or take it over."
+    },
+    {
+      "id": "notifications-review",
+      "section": "code",
+      "story": "Notifications engineers and their manager inspect their work; a different team cannot read or take it over."
+    },
+    {
+      "id": "billing-review",
+      "section": "code",
+      "story": "Billing engineers and their manager inspect their work; a different team cannot read or take it over."
+    },
+    {
+      "id": "crm-review",
+      "section": "code",
+      "story": "CRM engineers and their manager inspect their work; a different team cannot read or take it over."
+    },
+    {
+      "id": "deals-review",
+      "section": "code",
+      "story": "Deals engineers and their manager inspect their work; a different team cannot read or take it over."
+    },
+    {
+      "id": "payments-temporary-access",
+      "section": "access",
+      "story": "An external auditor reads settlement evidence, then loses access on revoke."
+    },
+    {
+      "id": "notifications-temporary-access",
+      "section": "access",
+      "story": "A delivery investigator receives read-only incident evidence without access to billing."
+    },
+    {
+      "id": "billing-temporary-access",
+      "section": "access",
+      "story": "A temporary reconciliation reviewer previews exact invoice-brief access before approval."
+    },
+    {
+      "id": "crm-temporary-access",
+      "section": "access",
+      "story": "A migration contractor receives customer-brief access without changing ownership."
+    },
+    {
+      "id": "deals-temporary-access",
+      "section": "access",
+      "story": "A renewal reviewer reads the deal brief without approving or editing the deal."
+    },
+    {
+      "id": "manager-union",
+      "section": "people",
+      "story": "A Payments lead also manages Billing, sees the exact union, and remains unable to change either review."
+    },
+    {
+      "id": "employee-transfer",
+      "section": "people",
+      "story": "A Payments author transfers to CRM; the saved settlement review stays with Payments colleagues."
+    },
+    {
+      "id": "unassigned-engineer",
+      "section": "people",
+      "story": "An enabled engineer with no team gets an empty workspace and cannot borrow a project identifier."
+    },
+    {
+      "id": "manager-invitation",
+      "section": "accounts",
+      "story": "An invitation enrolls a new manager in Billing only; the one-time token cannot create a second account."
+    },
+    {
+      "id": "team-activity",
+      "section": "activity",
+      "story": "A notification manager audits only notification events, evidence and request progress."
+    },
+    {
+      "id": "team-patterns",
+      "section": "patterns",
+      "story": "A Deals manager sees its PDF demand count and real grant reads; other teams do not inflate its counts."
+    },
+    {
+      "id": "all-assurance-sections",
+      "section": "evidence",
+      "story": "A CRM manager inspects every assurance section without receiving another team request or code item."
+    },
+    {
+      "id": "preview-host-parity",
+      "section": "access",
+      "story": "A Billing engineer guessed a Payments URL; both current policy preview and actual protected read deny it."
+    },
+    {
+      "id": "forged-team",
+      "section": "requests",
+      "story": "A caller attempts to overwrite the server-derived team using an extra body field and a foreign project."
+    },
+    {
+      "id": "team-name-identity",
+      "section": "organization",
+      "story": "Identical team names in two organizations cannot confer access; normalized duplicates conflict locally."
+    },
+    {
+      "id": "payments-real-repository",
+      "section": "code",
+      "story": "Payments runs a pinned published software case in actual baseline/candidate containers and saves an exact reviewed patch, without deployment."
+    },
+    {
+      "id": "billing-real-repository",
+      "section": "code",
+      "story": "Billing runs a pinned published software case in actual baseline/candidate containers and saves an exact reviewed patch, without deployment."
+    },
+    {
+      "id": "manual-continuation",
+      "section": "code",
+      "story": "An unsupported notification retry change stays inspectable and can be taken over by a teammate while the model is unavailable."
+    },
+    {
+      "id": "scope-audit",
+      "section": "organization",
+      "story": "An administrator can inspect membership revisions without implicitly changing existing approved grants or hiding historical review authors."
+    }
+  ]
+}

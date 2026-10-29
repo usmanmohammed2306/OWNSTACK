@@ -1,0 +1,28 @@
+/* The agent is the entry point. Detail stays behind the selected object. */
+.arctic-shell .world-canvas{background:radial-gradient(ellipse at 60% 38%,#fff 0,#e4edf3 65%,#cddce7 100%)}
+.arctic-shell .world-atmosphere{background:linear-gradient(100deg,#f5f9fc70,transparent 36%),linear-gradient(0deg,#e4edf380,transparent 30%);box-shadow:inset 0 0 120px #b6cfde25}
+.arctic-shell .world-hotspot{border-color:#ffffffdd;box-shadow:0 8px 24px #17415d20,inset 0 1px 0 #fff;background:#f8fcfff2;color:#23475c;font-weight:600;transition:box-shadow .25s,background .25s}
+.arctic-shell .world-hotspot:hover{background:#fff;box-shadow:0 8px 30px #277a9b35,0 0 0 4px #1f94ac0d}
+.arctic-shell .world-view-controls>.zoom-level-label{background:none;color:#305f79;font-size:10px;width:auto;flex-shrink:0;max-width:78px;overflow:hidden;text-overflow:ellipsis;padding:0 9px 0 2px;border-right:1px solid #aac5d65c}
+.arctic-shell .world-view-controls{gap:4px}
+/* The spatial home lets pointer input reach the canvas. Top-layer forms must
+   explicitly reclaim it, including requests opened by the AI composer. */
+.arctic-shell dialog{pointer-events:auto}
+.arctic-shell .spatial-title h2{font-weight:530;letter-spacing:-.065em;line-height:1.02;color:#193b51}
+.arctic-shell .spatial-title h2 em{color:#64879d}
+.arctic-shell .agent-command-dock{right:28px;left:auto;bottom:26px;transform:none;width:min(660px,calc(100vw - 340px));color:#264d64}
+.arctic-shell .agent-command-dock>form{border:1px solid #ffffffed;box-shadow:0 12px 45px #153f5829,inset 0 1px 0 #fff;background:#f9fcfff0;border-radius:20px;min-height:68px}
+.arctic-shell .agent-command-dock .agent-send{background:#12435c;border-color:#12435c;box-shadow:0 3px 10px #173b5320}
+.agent-intake-hint{padding:0 4px 13px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.agent-intake-hint>span{font-size:13px;font-weight:600;letter-spacing:-.025em}
+.agent-intake-hint>div{display:flex;gap:6px}
+.agent-command-dock .agent-intake-hint button{background:#f9fcffa8;border:1px solid #fff;min-height:29px;padding:6px 9px;border-radius:9px;font-size:10px;color:#4b7189}
+.arctic-shell[data-exploring]:not([data-exploring=""]) .agent-intake-hint{display:none}
+.local-agent-review{padding:20px;border:1px solid #d4e7ee;border-radius:18px;background:linear-gradient(135deg,#edf9fb,#f8fbfe);margin:18px 0}
+.local-agent-heading{display:flex;align-items:center;gap:13px}.local-agent-heading strong{font-size:17px;font-weight:580;letter-spacing:-.03em}.local-agent-heading p{font-size:12px;line-height:1.5;color:#608293;margin:4px 0 0}
+.agent-sigil{display:grid;place-items:center;flex-shrink:0;width:48px;height:48px;border-radius:16px;background:linear-gradient(145deg,#fff,#cae8ee);border:1px solid #fff;color:#237d91;box-shadow:0 5px 20px #3b889c18}
+.agent-sigil.is-working{animation:agent-glow 1.4s ease-in-out infinite alternate}.agent-route{display:flex;align-items:center;gap:10px;margin:22px 0;color:#50768b}.agent-route>span{display:flex;align-items:center;gap:6px;font-size:11px}.agent-route>i{height:1px;flex:1;background:#a5cbd8}.local-agent-review .technical-disclosure{margin-top:15px}
+@keyframes agent-glow{to{box-shadow:0 0 0 8px #39b6c70b,0 0 22px #39b6c730}}
+@media(max-width:1000px){.agent-intake-hint{align-items:flex-start;flex-direction:column;gap:8px}}
+@media(max-width:700px){.arctic-shell .agent-command-dock{right:15px;bottom:18px;width:calc(100vw - 30px)}.arctic-shell .world-view-controls{bottom:100px}.arctic-shell[data-level=workspace]:has(.agent-intake-hint) .world-view-controls{bottom:172px}.agent-intake-hint{padding:0 8px 10px;flex-direction:row;align-items:center}.agent-intake-hint>span{max-width:140px}.arctic-shell .world-view-controls>.zoom-level-label{max-width:65px}.agent-route{gap:7px}.agent-route>span{font-size:10px;gap:4px}}
+@media(prefers-reduced-motion:reduce){.agent-sigil.is-working{animation:none}.arctic-shell .world-hotspot{transition:none}}

@@ -1,0 +1,14 @@
+{
+  "edits": [
+    {
+      "path": "src/jinja2/nativetypes.py",
+      "old": "from ast import literal_eval\n",
+      "new": "from ast import literal_eval\nfrom ast import parse\n"
+    },
+    {
+      "path": "src/jinja2/nativetypes.py",
+      "old": "        return literal_eval(raw)\n",
+      "new": "        return literal_eval(parse(raw, mode=\"eval\"))\n"
+    }
+  ]
+}

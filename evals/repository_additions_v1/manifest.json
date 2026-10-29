@@ -1,0 +1,13 @@
+{
+  "catalog_sha256": "da8ff54969ef0221096741c035aa1b63d866ac92650c6763d2338162b6006054",
+  "cases": 1,
+  "source_split": "train",
+  "dataset": "nebius/SWE-rebench-V2-PRs",
+  "revision": "fbf0ecf50f268d5344149e2f0097db6bede83737",
+  "source_shard": "data/train-00001-of-00003.parquet",
+  "source_ordinal": 17969,
+  "raw_row_sha256": "9ef2a45a07f740e2cdd2595868d5ac55f57e98b349f77165f0a717e4998a5fd9",
+  "reference_patches_private": true,
+  "training_eligible": false,
+  "requires": "Actual independent execution and human data/rights review; generated problem provenance needs review"
+}

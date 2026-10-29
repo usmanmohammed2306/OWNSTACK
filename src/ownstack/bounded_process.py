@@ -5,9 +5,10 @@ import subprocess
 import tempfile
 import time
 import selectors
+import json
 
 
-def capture(command: list[str], payload: bytes, *, timeout: float, limit: int, **kwargs) -> dict:
+def capture(command: list[str], payload: bytes, *, timeout: float, limit: int, process_record=None, **kwargs) -> dict:
     with tempfile.TemporaryFile() as incoming:
         incoming.write(payload)
         incoming.seek(0)
@@ -21,6 +22,14 @@ def capture(command: list[str], payload: bytes, *, timeout: float, limit: int, *
             os.set_blocking(pipe.fileno(), False)
             streams.register(pipe, selectors.EVENT_READ, name)
         try:
+            if process_record is not None:
+                # Written only by the trusted parent, outside the repository
+                # mount. A crash reaper must prove this exact child identity.
+                fd = os.open(process_record, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                with os.fdopen(fd, 'w') as record:
+                    json.dump({'pid': process.pid, 'pgid': process.pid, 'argv': command}, record)
+                    record.flush()
+                    os.fsync(record.fileno())
             while streams.get_map() or process.poll() is None:
                 if time.monotonic() > deadline:
                     failure = "Local check deadline exceeded"

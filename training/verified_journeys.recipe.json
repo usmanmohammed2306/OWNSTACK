@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "purpose": "Candidate protocol for learning from reviewed, independently checked engineering trajectories",
+  "training_enabled": false,
+  "training_has_run": false,
+  "initial_method_candidate": "SFT with LoRA adapters",
+  "candidate_model_id": null,
+  "model_selection_gate": "Compare a small suitable base/code model and the existing no-training baseline on held-out task groups before selecting size or claiming improvement",
+  "data_gate": {
+    "requires_verified_business_or_issue_outcome": true,
+    "requires_exact_candidate_and_oracle_hashes": true,
+    "requires_all_required_tests_and_reproducing_baseline": true,
+    "requires_human_review_and_right_to_use_data": true,
+    "heldout_repositories_and_issue_families_never_train": true,
+    "public_test_datasets_remain_test": true,
+    "reference_solutions_are_evaluator_only": true,
+    "authentication_checks_are_not_positive_trajectories": true,
+    "failed_or_blocked_work_is_retained_but_not_positive_SFT": true
+  },
+  "later_candidates": {
+    "DPO": "Consider only reviewed chosen/rejected candidates for the same prompt, with valid independent preference evidence; do not invent pairs from unrelated personas",
+    "GRPO": "Consider only after a reliable bounded execution reward, reward-hacking checks, compute estimate and fresh approval exist"
+  },
+  "evaluation": [
+    "End-to-end issue resolution under independent held-out tests",
+    "Tenant/scope violations and false success claims",
+    "Recovery and manual handoff quality",
+    "Latency, tokens and measured cost",
+    "Comparison with rules/manual/no-training baselines"
+  ],
+  "not_a_claim": "No method is perfect or established as best for OwnStack. No new model training or paid compute is authorized by this recipe."
+}
